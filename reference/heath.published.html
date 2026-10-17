@@ -1,0 +1,763 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>The Heath by Moonlight</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: a printed leaf laid on a blue-grey sugar-paper board; the story runs in the text column, the Ledger sits in the outer margin. Designer annotations appear in modern "blue pencil". */
+:root{
+  --board:#c9d1cf; --leaf:#f2f3ef; --ink:#1b1f22; --ink2:#4c555a; --rule:#bcc4c3; --shade:#e5e8e3;
+  --rubric:#9b2a1c; --brass:#86651a; --pencil:#2b58a0; --pencil-bg:#e2e9f4;
+  --w-t:#c4982a; --w-s:#4d6f53; --w-c:#8f7c5a; --w-r:#5b6570; --w-x:#9b2a1c;
+  --good:#3d6a46; --bad:#9b2a1c; --seal:#8e2418;
+  --display:'IM Fell English','Iowan Old Style',Georgia,serif;
+  --caps:'IM Fell English SC','IM Fell English',Georgia,serif;
+  --body:'Libre Caslon Text','Iowan Old Style',Georgia,serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --board:#0a0f12; --leaf:#131a1e; --ink:#ddd6c6; --ink2:#9ba4a7; --rule:#2b363c; --shade:#1b2429;
+  --rubric:#d4664f; --brass:#d2ab4a; --pencil:#86aef0; --pencil-bg:#17243a;
+  --w-t:#d2ab4a; --w-s:#6f9a77; --w-c:#a8936d; --w-r:#7d8996; --w-x:#c9573f;
+  --good:#7fb58a; --bad:#e07a63; --seal:#a8321f; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --board:#0a0f12; --leaf:#131a1e; --ink:#ddd6c6; --ink2:#9ba4a7; --rule:#2b363c; --shade:#1b2429;
+  --rubric:#d4664f; --brass:#d2ab4a; --pencil:#86aef0; --pencil-bg:#17243a;
+  --w-t:#d2ab4a; --w-s:#6f9a77; --w-c:#a8936d; --w-r:#7d8996; --w-x:#c9573f;
+  --good:#7fb58a; --bad:#e07a63; --seal:#a8321f; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--board);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.62;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.sheet{max-width:1120px;margin:0 auto;background:var(--leaf);border:1px solid var(--rule);
+  box-shadow:0 1px 0 var(--rule),0 18px 40px -28px rgba(0,0,0,.45)}
+.inner{padding:clamp(18px,4vw,48px)}
+/* running head */
+.runhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;
+  padding:12px clamp(18px,4vw,48px);border-bottom:1px solid var(--rule);font-family:var(--caps);letter-spacing:.06em;color:var(--ink2);font-size:.95rem}
+.toggles{display:flex;gap:8px;flex-wrap:wrap}
+.tg{font:inherit;font-family:var(--caps);letter-spacing:.05em;color:var(--ink);background:transparent;border:1px solid var(--rule);
+  padding:4px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.tg[aria-pressed="true"]{border-color:var(--ink);background:var(--shade)}
+.tg .dot{width:9px;height:9px;border:1px solid currentColor;border-radius:50%}
+.tg[aria-pressed="true"] .dot{background:currentColor}
+.tg#devBtn[aria-pressed="true"]{color:var(--pencil);border-color:var(--pencil);background:var(--pencil-bg)}
+.tg:focus-visible,.opt:focus-visible,.cant:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(--pencil);outline-offset:2px}
+/* title */
+.titlepage{text-align:center;padding-block:8px 26px;border-bottom:1px solid var(--rule);margin-bottom:28px}
+.eyebrow{font-family:var(--caps);letter-spacing:.14em;color:var(--rubric);font-size:.95rem}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(2.3rem,6vw,3.6rem);line-height:1.05;margin:.2em 0 .15em;text-wrap:balance}
+.sub{font-style:italic;color:var(--ink2);margin:0}
+.prospectus{max-width:40rem;margin:18px auto 0;font-size:.95rem;color:var(--ink2);text-wrap:pretty}
+.prospectus b{color:var(--ink);font-weight:400;font-family:var(--caps);letter-spacing:.05em}
+.fleuron{font-family:var(--display);color:var(--rubric);font-size:1.3rem;letter-spacing:.6em;margin-top:14px}
+/* layout */
+.layout{display:grid;grid-template-columns:minmax(0,40rem) 17.5rem;gap:clamp(24px,5vw,64px);justify-content:center}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}.ledgerwrap{order:-1}}
+main{min-width:0}
+/* chapter */
+.chap{text-align:center;margin-bottom:26px}
+.chap .no{font-family:var(--caps);letter-spacing:.2em;font-size:1.05rem}
+.chap .in{font-family:var(--display);font-style:italic;font-size:1.18rem;line-height:1.4;margin-top:4px;text-wrap:balance;transition:color .6s}
+.chap .in.fresh{color:var(--rubric)}
+.prose p{margin:0 0 .85em;text-wrap:pretty;hyphens:auto}
+.prose p:last-child{margin-bottom:0}
+.opening p:first-child::first-letter{font-family:var(--display);float:left;font-size:3.6em;line-height:.82;padding:.06em .08em 0 0;color:var(--rubric)}
+.beat{margin-top:34px;padding-top:26px;border-top:1px solid var(--rule)}
+.beat h2{font-family:var(--display);font-weight:400;font-size:1.55rem;margin:0 0 .5em;line-height:1.2}
+.beat h2 .num{font-family:var(--caps);color:var(--rubric);letter-spacing:.06em;margin-right:.2em}
+.beat h2 .phase{display:block;font-family:var(--caps);font-size:.82rem;letter-spacing:.14em;color:var(--ink2);margin-bottom:2px}
+.notes{margin-top:14px;padding-top:8px;border-top:1px solid var(--rule);font-size:.84rem;color:var(--ink2);width:60%}
+@media (max-width:560px){.notes{width:100%}}
+.notes p{margin:0 0 .4em}
+sup.fn{font-size:.72em;color:var(--rubric);line-height:0}
+/* cant */
+.cant{border-bottom:1px dotted var(--ink2);cursor:help}
+#gloss{position:absolute;z-index:20;max-width:17rem;background:var(--leaf);border:1px solid var(--ink);padding:10px 12px;font-size:.9rem;
+  box-shadow:0 10px 24px -14px rgba(0,0,0,.5)}
+#gloss .gh{font-family:var(--caps);letter-spacing:.08em;color:var(--ink2);font-size:.78rem}
+#gloss .gt{font-family:var(--display);font-style:italic;font-size:1.15rem}
+/* choices */
+.ask{font-style:italic;color:var(--ink2);margin:16px 0 8px}
+.choices{display:flex;flex-direction:column;border-top:1px solid var(--rule)}
+.opt{all:unset;box-sizing:border-box;display:grid;grid-template-columns:1.6em minmax(0,1fr);column-gap:6px;row-gap:6px;padding:12px 6px 13px 0;
+  border-bottom:1px solid var(--rule);cursor:pointer;width:100%}
+.opt .hand{grid-row:1/span 3;color:var(--rubric);font-size:1.15rem;line-height:1.35;opacity:.25;transition:opacity .15s,transform .15s}
+.opt:hover .hand,.opt:focus-visible .hand{opacity:1;transform:translateX(3px)}
+.opt .lbl{line-height:1.45}
+.opt[disabled]{cursor:default}
+.opt.locked .lbl{color:var(--ink2)}
+.opt.locked .hand{opacity:.12}
+.choices.done .opt:not(.chosen){display:none}
+.choices.done{border-top:0}
+.opt.chosen{border-bottom:0;padding-bottom:4px}
+.opt.chosen .hand{opacity:1}
+.opt.chosen .lbl{font-style:italic}
+.badges{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-family:var(--caps);font-size:.86rem;letter-spacing:.04em;color:var(--ink2)}
+.badge{border:1px solid var(--rule);padding:0 7px;line-height:1.55}
+.badge.ok{color:var(--good);border-color:currentColor}
+.badge.no{color:var(--bad);border-color:currentColor}
+.badge.cost{color:var(--brass);border-color:currentColor}
+.badge.sure{}
+.strip{display:inline-flex;width:116px;height:9px;border:1px solid var(--ink2);vertical-align:middle}
+.strip i{display:block;height:100%}
+.dev{display:none;font-family:var(--mono);font-size:.76rem;line-height:1.5;color:var(--pencil);background:var(--pencil-bg);padding:5px 8px;white-space:pre-wrap;overflow-wrap:anywhere}
+body.devon .dev{display:block}
+.devhead{margin-bottom:10px}
+.opt .dev{grid-column:2}
+/* wheel */
+.wheelbox{display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px;margin:12px 0 4px;padding:14px 0}
+.wheel{width:168px;height:176px;flex:none}
+.wheel .rot{transform-box:view-box;transform-origin:100px 108px;transition:transform 2.3s cubic-bezier(.17,.82,.25,1)}
+@media (prefers-reduced-motion:reduce){.wheel .rot{transition:none}}
+.legend{list-style:none;margin:0;padding:0;font-size:.9rem;min-width:0;flex:1 1 12rem;display:flex;flex-direction:column;gap:3px}
+.legend li{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:8px;align-items:center;padding:1px 6px;border:1px solid transparent}
+.legend .sw{width:12px;height:12px}
+.legend .pc{font-variant-numeric:tabular-nums;color:var(--ink2);font-family:var(--mono);font-size:.78rem}
+.legend li.hit{border-color:var(--ink);font-weight:700}
+.legend li.hit .pc{color:var(--ink)}
+.wheelctl{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--caps);letter-spacing:.04em}
+.verdict{font-family:var(--display);font-size:1.25rem;margin-right:8px}
+.btn{font:inherit;font-family:var(--caps);letter-spacing:.05em;padding:5px 12px;cursor:pointer;background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.btn.primary{background:var(--ink);color:var(--leaf)}
+.result{margin-top:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-family:var(--mono);font-size:.76rem;padding:1px 7px;border:1px solid var(--rule);color:var(--ink2)}
+.chip.good{color:var(--good);border-color:currentColor}
+.chip.bad{color:var(--bad);border-color:currentColor}
+.chip.neu{color:var(--ink);border-color:var(--ink2)}
+/* ledger */
+.ledgerwrap{min-width:0}
+details.ledger{position:sticky;top:16px;border:1px solid var(--ink);background:var(--leaf)}
+@media (max-width:860px){details.ledger{position:static}}
+details.ledger summary{list-style:none;cursor:pointer;padding:10px 14px;font-family:var(--caps);letter-spacing:.06em;display:flex;justify-content:space-between;gap:8px}
+details.ledger summary::-webkit-details-marker{display:none}
+@media (min-width:861px){details.ledger summary{display:none}}
+.lg{padding:14px 16px 16px;font-size:.92rem}
+.lg h3{font-family:var(--caps);font-weight:400;letter-spacing:.12em;font-size:.82rem;color:var(--ink2);margin:14px 0 6px;border-bottom:1px solid var(--rule);padding-bottom:2px}
+.who .nm{font-family:var(--display);font-size:1.35rem;line-height:1.1}
+.who .as{font-size:.88rem}
+.who .orig{font-family:var(--caps);letter-spacing:.05em;font-size:.8rem;color:var(--ink2);margin-top:2px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:0}
+.kv dt{color:var(--ink2)}
+.kv dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.row{display:contents}
+.flash{animation:fl 1.6s ease-out}
+@keyframes fl{0%{background:var(--pencil-bg);color:var(--pencil)}100%{background:transparent}}
+@media (prefers-reduced-motion:reduce){.flash{animation:none}}
+.pips{display:flex;gap:4px}
+.pips i{width:14px;height:14px;border:1px solid var(--ink);transform:rotate(45deg) scale(.78)}
+.pips i.on{background:var(--ink)}
+.attrs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 10px}
+.attrs div{display:flex;justify-content:space-between;font-size:.86rem}
+.attrs span{color:var(--ink2)}
+.meter{display:grid;grid-template-columns:6.4rem 1fr auto;gap:8px;align-items:center;font-size:.86rem;margin-bottom:3px}
+.meter .bar{height:7px;border:1px solid var(--ink2);position:relative}
+.meter .bar b{position:absolute;inset:0 auto 0 0;background:var(--ink2)}
+.meter.exp .bar b{background:var(--rubric)}
+.meter em{font-style:normal;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:.75rem;color:var(--ink2)}
+.lst{margin:0;padding:0;list-style:none;font-size:.88rem}
+.lst li{padding-left:1em;text-indent:-1em}
+.lst li::before{content:"· ";color:var(--rubric)}
+.lst .none{color:var(--ink2);font-style:italic}
+.lst .none::before{content:""}
+/* reckoning */
+.account{width:100%;border-collapse:collapse;font-size:.95rem;margin-top:8px}
+.account th,.account td{padding:5px 8px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.account th{font-family:var(--caps);font-weight:400;letter-spacing:.06em;color:var(--ink2)}
+.account td.n{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.account td.d{font-family:var(--mono);font-size:.8rem;text-align:right;white-space:nowrap}
+.account td.d.good{color:var(--good)} .account td.d.bad{color:var(--bad)}
+.tablewrap{overflow-x:auto}
+.gained{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:14px;margin-top:14px}
+.gained h4{font-family:var(--caps);font-weight:400;letter-spacing:.1em;font-size:.84rem;color:var(--ink2);margin:0 0 4px}
+.letters{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:14px;margin-top:12px}
+.letter{position:relative;border:1px solid var(--rule);background:var(--shade);padding:14px 16px 14px 52px;font-size:.92rem}
+.letter .seal{position:absolute;left:12px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--seal);
+  box-shadow:inset 0 0 0 3px rgba(0,0,0,.18),0 1px 2px rgba(0,0,0,.3);display:grid;place-items:center;color:#f3e6d6;font-family:var(--display);font-size:.85rem}
+.letter .wk{font-family:var(--caps);letter-spacing:.06em;font-size:.8rem;color:var(--ink2)}
+.letter .fr{font-family:var(--display);font-style:italic;font-size:1.05rem;line-height:1.25;margin:1px 0 4px}
+.next{margin-top:22px;padding:14px 0 0;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.next p{margin:0;color:var(--ink2);font-style:italic;flex:1 1 18rem}
+h3.sec{font-family:var(--caps);font-weight:400;letter-spacing:.12em;font-size:1rem;margin:24px 0 2px;color:var(--rubric)}
+.finis{text-align:center;font-family:var(--caps);letter-spacing:.3em;margin-top:30px;color:var(--ink2)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+
+<div class="sheet">
+  <div class="runhead">
+    <span>The Life &amp; Adventures of Capt. O'Rourke</span>
+    <div class="toggles">
+      <button class="tg" id="longsBtn" aria-pressed="false" title="Print with the long s"><span class="dot"></span>Long ſ</button>
+      <button class="tg" id="devBtn" aria-pressed="false"><span class="dot"></span>Designer's view</button>
+    </div>
+  </div>
+  <div class="inner">
+    <header class="titlepage">
+      <div class="eyebrow">Fortune's Ladder · A Venture</div>
+      <h1>The Heath by Moonlight</h1>
+      <p class="sub">Being a Night upon the Hampstead Road, in five Beats</p>
+      <p class="prospectus"><b>A playable proof of concept.</b> One Venture from a picaresque roguelike set in London, 1719–1745. Choices are gated by skills, possessions and reputation; risky ones go to Fortune's Wheel, with the odds shown first; consequences land at once, or arrive weeks later as rumours. Turn on the designer's view to see the machinery under each choice.</p>
+      <div class="fleuron" aria-hidden="true">❧ ❧ ❧</div>
+    </header>
+
+    <div class="layout">
+      <main>
+        <div class="chap">
+          <div class="no">Chap. XIV.</div>
+          <div class="in" id="chapIn">In which our Hero takes the Air upon Hampstead Heath.</div>
+        </div>
+        <div id="story"></div>
+        <div id="live" class="sr" aria-live="polite"></div>
+      </main>
+      <div class="ledgerwrap">
+        <details class="ledger" id="ledgerBox" open>
+          <summary><span>The Ledger</span><span id="ledSum"></span></summary>
+          <div class="lg" id="ledger"></div>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="gloss" hidden role="note"></div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const story=$('#story'), ledger=$('#ledger');
+
+/* ---------- glossary ---------- */
+const CANT={
+  prancer:'A horse.',
+  pad:'The highway. A gentleman of the high pad is a highwayman.',
+  cull:'A man; commonly, a dupe. A rum cull is a rich one.',
+  rum:'Fine, good, valuable.',
+  glim:'A light; a dark lantern.',
+  lope:'To leap, or run away.',
+  darbies:'Fetters.',
+  'nubbing-cheat':'The gallows.',
+  bit:'Money.'
+};
+const c=(t,shown)=>`<span class="cant" tabindex="0" role="button" data-t="${t}">${shown||t}</span>`;
+
+/* ---------- state ---------- */
+const SEG=[['T','Triumph'],['S','Success'],['C','Success at a cost'],['R','Reversal'],['X','Catastrophe']];
+function fresh(){return{
+  purse:330, debts:5760, composure:5, luck:1, exposure:2, notoriety:0, celebrity:1,
+  attrs:{Address:3,Wit:3,Nerve:4,Constitution:3,Countenance:3,Learning:1},
+  hum:{Sanguine:2,Choleric:1,Melancholic:2,Phlegmatic:0},
+  tags:['Rake (Covent Garden)'],
+  items:['A hired grey prancer, from the Bell in Holborn','A brace of pistols, one doubtful','A crape mask','A fine coat, not paid for'],
+  hooks:['Will Gallow, an old acquaintance of the road'],
+  flags:{}, log:[], rumours:[], spoils:0
+};}
+let S, START, fx, prevLedger={};
+const LIM={composure:[0,8],exposure:[0,10],luck:[0,3],celebrity:[0,10],notoriety:[0,10]};
+const NAME={purse:'Purse',debts:'Debts',composure:'Composure',luck:'Luck',exposure:'Exposure',notoriety:'Notoriety',celebrity:'Celebrity'};
+const UPGOOD={purse:1,composure:1,luck:1,celebrity:1,debts:-1,exposure:-1,notoriety:-1};
+
+function money(p){const n=p<0;p=Math.abs(p);const L=Math.floor(p/240),s=Math.floor(p%240/12),d=p%12;const a=[];if(L)a.push('£'+L);if(s)a.push(s+'s');if(d)a.push(d+'d');return (n?'−':'')+(a.join(' ')||'nothing');}
+function sgn(n){return n>0?'+'+n:'−'+Math.abs(n);}
+function adj(path,d,why){
+  if(!d)return; const [a,b]=path.split('.');
+  if(b){S[a][b]=Math.max(0,Math.min(5,S[a][b]+d));}
+  else{let v=S[a]+d;if(LIM[a])v=Math.max(LIM[a][0],Math.min(LIM[a][1],v));S[a]=v;}
+  const nm=b||NAME[a]; const isM=(a==='purse'||a==='debts');
+  const tone=b?(a==='hum'?'neu':(d>0?'good':'bad')):((UPGOOD[a]||0)*d>0?'good':'bad');
+  fx.push({t:`${nm} ${isM?(d>0?'+':'−')+money(Math.abs(d)):sgn(d)}`,tone});
+  S.log.push(`${nm} ${isM?(d>0?'+':'−')+money(Math.abs(d)):sgn(d)} — ${why}`);
+}
+function loot(p,why){adj('purse',p,why);S.spoils+=p;S.flags.robbed=1;}
+function tag(t,why){if(!S.tags.includes(t)){S.tags.push(t);fx.push({t:'Tag: '+t,tone:'neu'});S.log.push(`Tag gained: ${t} — ${why}`);}}
+function item(t,why){S.items.push(t);fx.push({t:'Gained: '+t.split(',')[0],tone:'good'});S.log.push(`Item gained: ${t} — ${why}`);}
+function lose(t,why){const i=S.items.indexOf(t);if(i>-1){S.items.splice(i,1);fx.push({t:'Lost: '+t.split(',')[0],tone:'bad'});S.log.push(`Item lost: ${t} — ${why}`);}}
+function hook(t,why){S.hooks.push(t);fx.push({t:'New hook',tone:'neu'});S.log.push(`Hook: ${t} — ${why}`);}
+function rumour(r){if(S.rumours.some(x=>x.id===r.id))return;S.rumours.push(r);fx.push({t:'A rumour is abroad',tone:'bad'});S.log.push(`Rumour queued (week ${r.week}): ${r.from} — ${r.effect}`);}
+
+/* ---------- beats ---------- */
+const B={};
+
+B.approach={num:'I',phase:'The Approach',title:'The Hampstead Road',sid:'heath.01.approach',
+ dev:'requires venture=heath ∧ hour=night · Composure starts at Nerve + 1 = 5',
+ text:s=>`<p>It is the third week of October, 1724, and the Town talks of nothing but Jack Sheppard, who has lately walked out of the Castle at Newgate as another man might leave a dull assembly.<sup class="fn">*</sup> Our hero has heard the story eleven times. On each telling he has grown more thoughtful. He owes four-and-twenty pounds to a tailor in the Strand for the coat he stands up in. The coat is very fine. The tailor is very patient, though not, he has been given to understand, indefinitely.</p>
+ <p>So it is that Captain O'Rourke, late of no regiment whatever, finds himself past midnight upon the Hampstead road, on a grey ${c('prancer')} hired from the Bell in Holborn, with a crape mask in his pocket and a brace of pistols, one of which may be relied upon.</p>
+ <p>Below him the lamps of London lie spread like a gaming table after the candles are snuffed. The coaches that come up the hill at this hour carry gentlemen home to their villas at Hampstead and Highgate: men with watches, rings, and an aversion to being shot.</p>`,
+ notes:['* Sheppard escaped from the Castle, Newgate’s strongest room, on 15 October 1724. He was retaken a fortnight later and hanged at Tyburn on 16 November, before a crowd reckoned at two hundred thousand.'],
+ ask:'How does the Captain go to work?',
+ opts:[
+  {label:'Take post alone in the hollow below the Spaniards toll-gate, and wait.',
+   dev:'Certain. Waiting raises Phlegmatic +1.',
+   do:s=>{adj('hum.Phlegmatic',1,'waiting in the gorse');s.flags.alone=1;
+     return `<p>He waits. The cold comes up through the gorse and into his boots, and finds there a great deal of room. A fox looks at him with professional interest and goes about its business.</p>`},
+   next:'lamps'},
+  {label:'Stand Will Gallow a bottle at the Spaniards, and take him along as partner.',
+   gate:s=>({ok:s.hooks.some(h=>h.startsWith('Will Gallow')),need:'Hook: Will Gallow'}),
+   cost:'2s 6d, and a third of the spoils',
+   dev:'Costed. Purse −2s 6d now; Will takes ⅓ of spoils at the Reckoning. Composure +1. Unlocks a Will option in Beat II.',
+   do:s=>{adj('purse',-30,'a bottle for Will Gallow');adj('composure',1,'company on the road');s.flags.will=1;
+     return `<p>Will Gallow is a long, grey, silent man who has been on the ${c('pad')} since Queen Anne’s time and has never once been taken, which he attributes to never once having been in a hurry. He drinks the bottle, pockets the cork, and nods.</p>`},
+   next:'lamps'},
+  {label:'Steady the nerves in the taproom of the Spaniards first.',
+   check:{attr:'Constitution',diff:3},
+   dev:'Wheel · Constitution vs 3.\nT: Composure +3, Sanguine +1, a tip about tonight’s coach\nS: Composure +2, Sanguine +1\nC: Composure +1, Sanguine +1, seen at the inn (rumour)\nR: Sanguine +2, −1s, seen at the inn\nX: Composure −1, Sanguine +2, seen, leaves a pistol behind',
+   out:{
+    T:s=>{adj('composure',3,'brandy, judiciously');adj('hum.Sanguine',1,'brandy');s.flags.tip=1;
+      return `<p>Two glasses of brandy, no more. At the next settle a coachman is complaining that Sir Gregory Pyke keeps him out till all hours, and that Sir Gregory’s ward carries her mother’s pearls about with her like a Papist with his beads. The Captain pays, tips the potboy a penny, and rides out a new man.</p>`},
+    S:s=>{adj('composure',2,'brandy');adj('hum.Sanguine',1,'brandy');
+      return `<p>The brandy is French, which is to say smuggled, which is to say excellent. He rides out warm and resolute.</p>`},
+    C:s=>{adj('composure',1,'brandy');adj('hum.Sanguine',1,'brandy');s.flags.seenAtInn=1;
+      rumour({id:'potboy',week:42,from:'The Spaniards Inn',text:'The potboy remembers a very fine coat, and is not discreet in his cups.',effect:'Exposure +1 · Notoriety +1'});
+      return `<p>Warm enough, but the potboy has looked a long while at the coat. It is not a coat that goes unremarked in a Hampstead taproom.</p>`},
+    R:s=>{adj('hum.Sanguine',2,'too much brandy');adj('purse',-12,'the reckoning');s.flags.seenAtInn=1;
+      rumour({id:'potboy',week:42,from:'The Spaniards Inn',text:'The potboy remembers a very fine coat, and a gentleman who sang.',effect:'Exposure +1 · Notoriety +1'});
+      return `<p>One glass becomes four, and four become a song about a grenadier. He leaves a shilling poorer, with the potboy’s full attention.</p>`},
+    X:s=>{adj('composure',-1,'drunk');adj('hum.Sanguine',2,'drunk');s.flags.seenAtInn=1;s.flags.onePistol=1;
+      lose('A brace of pistols, one doubtful','left on the settle');S.items.push('One pistol, the doubtful one');
+      rumour({id:'potboy',week:42,from:'The Spaniards Inn',text:'The potboy has a very good pistol to sell, and a story about where he found it.',effect:'Exposure +2 · Notoriety +1'});
+      return `<p>He is halfway down the hill before he discovers that he has left one pistol on the settle. It is, of course, the reliable one.</p>`}
+   }, next:'lamps'},
+  {label:'Send word to the gang at the Blue Boar for a proper ambuscade.',
+   gate:s=>({ok:s.notoriety>=3,need:`Notoriety 3 · you have ${s.notoriety}`}),
+   dev:'Locked here. Shown so the player sees what reputation would buy.'}
+ ]};
+
+B.lamps={num:'II',phase:'The Complication',title:'Lamps upon the Hill',sid:'heath.02.lamps',
+ dev:'requires ¬withdrawn · weight 1.0 · reads flags: tip, will, onePistol',
+ text:s=>`<p>Towards one o’clock a ${c('glim')} comes swaying up the hill from Hampstead: a coach-and-pair, a postilion, and, riding a length behind, a mounted outrider with a blunderbuss across his saddle-bow.</p>
+ <p>${s.flags.tip?'The arms on the panel are a pike rampant. This is Sir Gregory Pyke, as the coachman promised, and somewhere within are a ward and her mother’s pearls.':'The arms on the panel are a pike rampant, which means nothing to the Captain except that their owner can afford a painter.'} The outrider was not in the plan. Outriders seldom are.</p>`,
+ ask:'What is to be done about the outrider?',
+ opts:[
+  {label:'Let Will take the outrider while you take the coach.',
+   gate:s=>({ok:!!s.flags.will,need:s.flags.will?'Will Gallow rides with you':'Will Gallow riding with you'}),
+   check:{attr:'Nerve',diff:4,bonus:s=>[2,'Will at your side']},
+   dev:'Wheel · Nerve 4 + 2 (Will) vs 4.\nT/S: outrider disarmed\nC: disarmed, but Will now wants half\nR: outrider stays armed; Composure −2\nX: Will lopes off; outrider armed; Composure −2',
+   out:{
+    T:s=>{return `<p>Will is out of the dark before the outrider has drawn breath. There is a short, practical conversation, and the blunderbuss goes into the furze. The postilion, seeing which way things are going, goes after it.</p>`},
+    S:s=>`<p>Will has the outrider’s bridle and the outrider has the good sense to let go of his blunderbuss.</p>`,
+    C:s=>{s.flags.willHalf=1;return `<p>Will disarms the outrider very handsomely, and remarks, as he does so, that this was more work than a third of anything.</p>`},
+    R:s=>{adj('composure',-2,'a near thing');s.flags.outriderArmed=1;return `<p>Will’s horse shies. The outrider, a Kentish man of great stolidity, keeps his seat and his blunderbuss, and looks about him for something to discharge it at.</p>`},
+    X:s=>{adj('composure',-2,'abandoned');s.flags.outriderArmed=1;s.flags.will=0;s.flags.willGone=1;
+      return `<p>There is a flash in the dark. When the Captain looks round for Will Gallow, he finds only the place where Will Gallow was. He has ${c('lope','loped')}, as he has always loped, in no hurry at all.</p>`}
+   }, next:'door'},
+  {label:'Ride out of the dark, fire a shot past the outrider’s ear, and cry “Stand and deliver!”',
+   check:{attr:'Nerve',diff:5,bonus:s=>s.flags.onePistol?[-1,'only the doubtful pistol']:[0,'']},
+   dev:'Wheel · Nerve 4 vs 5 (−1 if only the doubtful pistol).\nAlways spends a charge (flag firedShot).\nT: outrider and postilion flee\nS: blunderbuss thrown down\nC: outrider fires and misses; Choleric +1, Composure −1\nR: outrider holds; Composure −2\nX: grazed; Wounded tag, Composure −3',
+   out:{
+    T:s=>{s.flags.firedShot=1;return `<p>The shot passes so close to the outrider’s ear that he will hear it for a week. He and the postilion depart for Highgate by separate routes and at a great pace, leaving the coach alone in the road like a stranded whale.</p>`},
+    S:s=>{s.flags.firedShot=1;return `<p>“Stand and deliver!” It is a phrase that has rarely been bettered. The blunderbuss is laid down in the road with every appearance of relief.</p>`},
+    C:s=>{s.flags.firedShot=1;adj('hum.Choleric',1,'shot at');adj('composure',-1,'shot at');return `<p>The outrider fires back, wildly, into a hawthorn. It is the hawthorn’s worst night in years. He then throws down the empty piece and puts up his hands.</p>`},
+    R:s=>{s.flags.firedShot=1;s.flags.outriderArmed=1;adj('composure',-2,'a stubborn outrider');return `<p>The outrider does not stand, does not deliver, and does not appear to have heard of either. He sits his horse with the blunderbuss levelled, and waits.</p>`},
+    X:s=>{s.flags.firedShot=1;s.flags.outriderArmed=1;s.flags.wounded=1;adj('composure',-3,'a ball in the arm');tag('Wounded (a ball-graze, left arm)','the outrider’s blunderbuss');
+      return `<p>Both pieces go off together. The Captain’s ball goes into the night. The outrider’s goes into the Captain, or at least into the sleeve of the coat that is not paid for, taking a strip of the Captain with it.</p>`}
+   }, next:'door'},
+  {label:'Pay the toll-keeper half a guinea to close his gate and be elsewhere.',
+   gate:s=>({ok:s.purse>=126,need:`half a guinea in hand · you have ${money(s.purse)}`}),
+   cost:'10s 6d, and a witness',
+   dev:'Costed · certain. Outrider disarmed. Queues a rumour: the toll-keeper talks (Notoriety +1, week 44).',
+   do:s=>{adj('purse',-126,'the toll-keeper’s fee');s.flags.tollkeeper=1;
+     rumour({id:'toll',week:44,from:'The Spaniards toll-house',text:'The toll-keeper drinks in Holborn on Sundays, and half a guinea does not buy silence for ever.',effect:'Notoriety +1, unless paid again'});
+     return `<p>The gate swings shut; the toll-keeper discovers urgent business at the back of his house. The coach halts. The outrider dismounts to bang on an empty door, and turns to find a pistol a yard from his waistcoat. He is a reasonable man.</p>`},
+   next:'door'},
+  {label:'Let it pass. There will be other coaches, and other nights.',withdraw:1,
+   dev:'Withdraw · certain. Ends the Venture early. Melancholic +1, Phlegmatic +1.',
+   do:s=>{s.flags.withdrew=1;adj('hum.Melancholic',1,'a lost nerve');adj('hum.Phlegmatic',1,'a lost night');
+     return `<p>The coach goes by in a breath of horse and leather. Inside, someone laughs at something. The Captain sits his prancer in the dark and reflects that prudence is a virtue, and that virtue is its own reward, and that it is a very poor one.</p>`},
+   next:'reckon'}
+ ]};
+
+B.door={num:'III',phase:'The Turn',title:'At the Coach Door',sid:'heath.03.coach_door',
+ dev:'requires coach_stopped · reads flags: tip, will, firedShot · bonuses from Countenance',
+ text:s=>`<p>Inside, by the coach lamp, are three persons. Sir Gregory Pyke: stout, crimson, in the full-bottomed wig of a man who was something at the Treasury before the Bubble and is something rather larger since. A young lady in a travelling hood, very pale and very composed${s.flags.tip?', with a string of pearls at her throat':''}. And her maid, who screams with great energy and no particular object.</p>
+ <p>Sir Gregory says that he knows the Lord Chief Justice. The Captain says that he does not doubt it.</p>`,
+ notes:['† Claude Duval, a French-born highwayman hanged at Tyburn in 1670, was said to have danced a coranto with a lady on Hounslow Heath, and afterwards taken only a part of her husband’s money. Ladies attended his lying-in-state in some numbers.'],
+ ask:'How does he conduct the business?',
+ opts:[
+  {label:'Rob them briskly: purses, watch and rings, and be gone.',
+   check:{attr:'Nerve',diff:4,bonus:s=>s.flags.will?[1,'Will covers the coach']:[0,'']},
+   dev:'Wheel · Nerve 4 (+1 Will) vs 4.\nT: £38 and a gold repeater\nS: £22 and the repeater\nC: £14; Composure −1\nR: £6; Choleric +1, Composure −1\nX: Sir Gregory’s pocket pistol; £0; Composure −3; leads to the chase',
+   out:{
+    T:s=>{s.flags.brisk=1;loot(9120,'Sir Gregory’s purses');item('Sir Gregory’s gold repeater, to be fenced','taken at the coach');
+      return `<p>It is done with a dispatch that would have done credit to the Excise. Two purses, a gold repeater that chimes the quarters, and three rings, one of which Sir Gregory claims is his late wife’s and which the Captain therefore returns. He is not a monster.</p>`},
+    S:s=>{s.flags.brisk=1;loot(5280,'Sir Gregory’s purse');item('Sir Gregory’s gold repeater, to be fenced','taken at the coach');
+      return `<p>A purse, the repeater, and Sir Gregory’s opinion of the age. The first two are worth having.</p>`},
+    C:s=>{s.flags.brisk=1;loot(3360,'Sir Gregory’s purse');adj('composure',-1,'the maid’s screaming');
+      return `<p>He takes one purse and misses the second, which is sewn into the skirts of Sir Gregory’s coat, as the Captain will learn in a fortnight from the newspapers.</p>`},
+    R:s=>{s.flags.brisk=1;loot(1440,'what could be got');adj('hum.Choleric',1,'Sir Gregory’s manner');adj('composure',-1,'the maid’s screaming');
+      return `<p>The maid’s screaming rises to a pitch at which thought is impossible. He comes away with six pounds and a headache, and a strong wish to shoot somebody, preferably the maid.</p>`},
+    X:s=>{s.flags.sirPistol=1;adj('composure',-3,'shot at in the coach door');
+      return `<p>Sir Gregory, it transpires, knows not only the Lord Chief Justice but also the use of a pocket pistol. The ball goes through the Captain’s hat. The horses bolt a yard, the outrider shouts, and the business becomes, all at once, a different business.</p>`}
+   }, next:s=>s.flags.sirPistol||s.flags.outriderArmed?'chase':'known'},
+  {label:'Return the lady’s purse, and beg instead the honour of a dance upon the heath.',
+   gate:s=>({ok:s.attrs.Address>=3,need:`Address 3 · you have ${s.attrs.Address}`}),
+   check:{attr:'Address',diff:4,bonus:s=>s.attrs.Countenance>=3?[1,'a good leg and a fine coat']:[0,'']},
+   dev:'Gated (Address ≥ 3) · Wheel · Address 3 + 1 (Countenance) vs 4.\nT: £30 from Sir Gregory; Gallant; Celebrity +2; newspaper rumour\nS: £18; Gallant; Celebrity +1; rumour\nC: £10; Gallant; she sees your face (harder recognition)\nR: £6 in pique; Choleric +1; she sees your face\nX: a fall in the gorse; Composure −2; Absurd tag',
+   out:{
+    T:s=>{s.flags.danced=1;loot(7200,'Sir Gregory pays for the dance');tag('Gallant (the Quality)','a dance upon the heath');adj('celebrity',2,'a story worth repeating');
+      rumour({id:'post',week:43,from:'The Daily Post',text:'A paragraph: a highwayman of uncommon gallantry, who danced a minuet with a Lady upon Hampstead Heath.',effect:'Celebrity +1 · Gallant spreads to every circle'});
+      return `<p>The lady considers him for a long moment, then gives him her hand. They dance a minuet on the turf by the light of the coach lamps, the postilion humming the air. At the close, Sir Gregory, who has watched it all with the expression of a man passing a stone, hands over thirty pounds “for the lady’s dignity”. It is the best bargain either of them makes that year.<sup class="fn">†</sup></p>`},
+    S:s=>{s.flags.danced=1;loot(4320,'Sir Gregory pays for the dance');tag('Gallant (the Quality)','a dance upon the heath');adj('celebrity',1,'a story worth repeating');
+      rumour({id:'post',week:43,from:'The Daily Post',text:'A paragraph: a gallant gentleman of the road, and a minuet upon the heath.',effect:'Celebrity +1 · Gallant spreads to every circle'});
+      return `<p>They dance. She is light and he is passable. Sir Gregory pays eighteen pounds to have it over with.<sup class="fn">†</sup></p>`},
+    C:s=>{s.flags.danced=1;s.flags.sawFace=1;loot(2400,'Sir Gregory pays, grudgingly');tag('Gallant (the Quality)','a dance upon the heath');
+      return `<p>They dance. Halfway through the figure the mask slips, and for the space of a bar she looks him full in the face. Sir Gregory pays ten pounds.<sup class="fn">†</sup></p>`},
+    R:s=>{s.flags.sawFace=1;loot(1440,'taken in pique');adj('hum.Choleric',1,'refused');
+      return `<p>Sir Gregory says that his ward does not dance with thieves. The lady says nothing, but she lifts her hood a little to look at him better. The Captain takes six pounds in pique and feels much the worse for it.<sup class="fn">†</sup></p>`},
+    X:s=>{adj('composure',-2,'humiliation');adj('hum.Melancholic',1,'humiliation');tag('Absurd (the Quality)','a fall in the gorse');
+      return `<p>He bows, steps back, and goes full length into the gorse. The maid stops screaming in order to laugh. It is the longest silence of the Captain’s life, and it is not silent.<sup class="fn">†</sup></p>`}
+   }, next:s=>s.flags.sirPistol||s.flags.outriderArmed?'chase':'known'},
+  {label:'Ignore the purses altogether. Take Sir Gregory’s dispatch-case.',
+   gate:s=>({ok:s.attrs.Learning>=1,need:`Learning 1 · you have ${s.attrs.Learning}`}),
+   cost:'the purses',
+   dev:'Gated (Learning ≥ 1) · costed: no money taken · certain.\nGains item + Hook (a Secret about the South Sea compensation). Composure +1.\nRumour: Sir Gregory wants his letters back (Nemesis).',
+   do:s=>{s.flags.letters=1;item('Sir Gregory’s dispatch-case, with letters','taken at the coach');adj('composure',1,'a cool head');
+     hook('Sir Gregory’s letters: a Treasury lord, two South Sea directors, and a sum of money that was never there','read by the coach lamp');
+     rumour({id:'sirg',week:42,from:'Sir Gregory Pyke',text:'Sir Gregory wants his letters back, and has not gone to a magistrate. This is more alarming than if he had.',effect:'Nemesis: Sir Gregory Pyke'});
+     return `<p>Sir Gregory goes white, which on so red a man is remarkable. That alone is worth more than his purse. The Captain reads three lines by the coach lamp, closes the case, and bows. He knows nothing of finance, but he knows what a man looks like who has been found out.</p>`},
+   next:s=>s.flags.outriderArmed?'chase':'known'},
+  {label:'Note the square and compasses on Sir Gregory’s ring, and claim him as a Brother.',
+   gate:s=>({ok:s.tags.some(t=>t.startsWith('Brother')),need:'the Brother tag · you are not initiated'}),
+   dev:'Locked: requires initiation at a lodge (see The occult undercurrent).'}
+ ]};
+
+B.known={num:'IV',phase:'The Crisis',title:'A Lady with a Memory',sid:'heath.04.recognised',
+ dev:'requires coach_robbed ∧ ¬outriderArmed ∧ ¬sirPistol · Persona at risk: Capt. O’Rourke (Exposure 2/10)\nPress on, or withdraw.',
+ text:s=>`<p>He has gathered up the reins when the young lady speaks, quite calmly, through the window. “I believe, sir, that we have met. At Lady Bellaston’s, in September. You told me a very long story about Flanders, and you wore that coat.”</p>
+ <p>This is Miss Sophia Harland, Sir Gregory’s ward. She has twelve thousand pounds in the Funds and, it appears, an excellent memory.</p>`,
+ ask:'Press on, or withdraw?',
+ opts:[
+  {label:'Press on: bow, kiss her hand, and beg her to keep a poor soldier’s secret.',
+   check:{attr:'Address',diff:5,bonus:s=>{let b=0,w=[];if(s.flags.danced&&!s.flags.sawFace){b+=2;w.push('you have danced');}if(s.flags.sawFace){b-=1;w.push('she has seen your face');}return [b,w.join(', ')];}},
+   dev:'Press on · Wheel · Address 3 vs 5 (+2 if you danced; −1 if she saw your face).\nT: her glove and her silence; Hook (an heiress); Celebrity +1\nS: her silence, mostly; Hook; Exposure +1 later\nC: Sir Gregory heard the name; Exposure +2 later\nR: she will tell; Exposure +3 later; Composure −1\nX: Sir Gregory roars the name; Exposure +2 now, +3 later; Notoriety +2',
+   out:{
+    T:s=>{s.flags.glove=1;item('A lady’s glove, scented with orris','Miss Harland');adj('celebrity',1,'a secret worth keeping');
+      hook('Miss Sophia Harland, £12,000, who knows exactly who you are and has decided not to say','her glove');
+      return `<p>She lets him kiss her hand, and when he straightens there is a glove in his. “Flanders,” she says, “is a long way off, Captain. I shall try to forget where it is.” Sir Gregory, who has been counting his losses, notices nothing.</p>`},
+    S:s=>{hook('Miss Sophia Harland, £12,000, who knows who you are','a kissed hand');
+      rumour({id:'bell',week:43,from:'Lady Bellaston’s drawing room',text:'Miss Harland has been heard to say that she found the Hampstead road “unexpectedly agreeable”.',effect:'Exposure +1 (Capt. O’Rourke)'});
+      return `<p>She says nothing, and goes on saying nothing in a way that is not quite a promise. But she smiles.</p>`},
+    C:s=>{hook('Miss Sophia Harland, £12,000, who knows who you are','a kissed hand');
+      rumour({id:'bell',week:42,from:'Lady Bellaston’s drawing room',text:'Sir Gregory has been heard to wonder aloud what became of a certain Captain O’Rourke.',effect:'Exposure +2 (Capt. O’Rourke)'});
+      return `<p>She will keep his secret. Sir Gregory, unhappily, has caught the word “Flanders” and is turning it over with the air of a man who will turn it over for some time.</p>`},
+    R:s=>{adj('composure',-1,'refused');
+      rumour({id:'bell',week:42,from:'Lady Bellaston’s drawing room',text:'Miss Harland tells the story of the Hampstead road at every rout in Mayfair, and names names.',effect:'Exposure +3 (Capt. O’Rourke)'});
+      return `<p>“I shall tell everyone,” she says pleasantly. “It is the most interesting thing that has happened to me since I came out.”</p>`},
+    X:s=>{adj('exposure',2,'named in the road');adj('notoriety',2,'named in the road');
+      rumour({id:'bell',week:42,from:'Bow Street, and every drawing room in Mayfair',text:'Sir Gregory swears an information against one O’Rourke, calling himself a captain.',effect:'Exposure +3 (Capt. O’Rourke) · Notoriety +1'});
+      return `<p>“O’Rourke!” roars Sir Gregory, who has followed none of it until this moment. “By God, I’ll see you on the ${c('nubbing-cheat')}!” The name goes off into the dark like a ball, and he has no means of calling it back.</p>`}
+   }, next:'reckon'},
+  {label:'Press on: put the pistol to Sir Gregory’s wig, and tell her what will happen if she remembers anything.',
+   check:{attr:'Nerve',diff:4,bonus:s=>(s.flags.firedShot||s.flags.onePistol)?[-2,'only the doubtful pistol is loaded']:[0,'']},
+   dev:'Press on · Wheel · Nerve 4 vs 4 (−2 if only the doubtful pistol is left).\nT: total silence; Cruel tag; Choleric +1\nS: Cruel; the maid talks (Exposure +1 later)\nC: Cruel; Exposure +2 later; Melancholic +1\nR: the pistol misfires; Exposure +3 later; Composure −2\nX: misfire, disarmed; Notoriety +2; Exposure +4 later',
+   out:{
+    T:s=>{s.flags.cruel=1;tag('Cruel (the Underworld)','a threat to a young lady');adj('hum.Choleric',1,'cruelty');
+      return `<p>She looks at the pistol, and at him, and says that she has a very bad memory for faces. Sir Gregory, under the muzzle, agrees that hers is notoriously poor. The Captain rides away with his secret, and with the knowledge of how he kept it, which he finds weighs rather more.</p>`},
+    S:s=>{s.flags.cruel=1;tag('Cruel (the Underworld)','a threat to a young lady');
+      rumour({id:'maid',week:43,from:'A servants’ hall in Hampstead',text:'The maid has a great deal to say about a highwayman in a very fine coat.',effect:'Exposure +1 (Capt. O’Rourke)'});
+      return `<p>The lady is silenced. The maid, who was not addressed, is not.</p>`},
+    C:s=>{s.flags.cruel=1;tag('Cruel (the Underworld)','a threat to a young lady');adj('hum.Melancholic',1,'shame');
+      rumour({id:'maid',week:42,from:'Lady Bellaston’s drawing room',text:'It is said that Captain O’Rourke threatened a young lady with a pistol on the Hampstead road.',effect:'Exposure +2 (Capt. O’Rourke)'});
+      return `<p>She promises. Her eyes say otherwise, and he finds he cannot meet them.</p>`},
+    R:s=>{adj('composure',-2,'a misfire');
+      rumour({id:'maid',week:42,from:'Lady Bellaston’s drawing room',text:'A highwayman’s pistol misfired at Sir Gregory’s wig, and Miss Harland laughed in his face.',effect:'Exposure +3 (Capt. O’Rourke)'});
+      return `<p>He draws the trigger for emphasis. The doubtful pistol lives up to its name with a damp click. Miss Harland laughs. It is a charming laugh, and it will be heard in every drawing room in Mayfair by Thursday.</p>`},
+    X:s=>{adj('notoriety',2,'disarmed by a baronet');
+      rumour({id:'maid',week:42,from:'Bow Street',text:'Sir Gregory describes the highwayman to a magistrate, with a pistol in evidence.',effect:'Exposure +4 (Capt. O’Rourke) · Notoriety +1'});
+      lose(s.items.find(i=>i.includes('pistol')),'knocked out of your hand');
+      return `<p>Click. Sir Gregory, discovering a courage he did not know he had, knocks the pistol out of the Captain’s hand and into the coach, where it is kept as evidence.</p>`}
+   }, next:'reckon'},
+  {label:'Show her the letters, and suggest that all three of them keep their secrets.',
+   gate:s=>({ok:!!s.flags.letters,need:'Sir Gregory’s letters'}),
+   dev:'Gated (letters) · certain. No Exposure. Miss Harland becomes a conspirator; Sir Gregory a Nemesis.',
+   do:s=>{hook('Miss Sophia Harland, £12,000, your accomplice, who would like to know what her guardian has done with her fortune','the letters');
+     return `<p>Miss Harland reads the first letter over his arm by the coach lamp. Then she reads it again, and looks at her guardian in a manner that the Captain would not wish to be looked at. “I think,” she says, “that none of us was on the Hampstead road tonight.” Sir Gregory agrees with great feeling.</p>`},
+   next:'reckon'},
+  {label:'Withdraw: deny everything in a passable Yorkshire accent, and ride off.',withdraw:1,
+   dev:'Withdraw · certain. Keeps the spoils. Exposure +2 arrives later as a rumour.',
+   do:s=>{rumour({id:'bell',week:43,from:'Lady Bellaston’s drawing room',text:'Miss Harland thinks she saw Captain O’Rourke on the Hampstead road, though he spoke like a Yorkshireman.',effect:'Exposure +2 (Capt. O’Rourke)'});
+     return `<p>“Ee, I’m sure I never were in Flanders, miss,” says the Captain, and spurs away. The accent is passable. Unhappily, the coat is not.</p>`},
+   next:'reckon'}
+ ]};
+
+B.chase={num:'IV',phase:'The Crisis',title:'Pursued across the Furze',sid:'heath.04b.chase',
+ dev:'requires outriderArmed ∨ sirPistol · replaces the recognition crisis\nPress on, or withdraw.',
+ text:s=>`<p>The outrider has found his courage, and his blunderbuss, and the Captain’s back. Behind him the lamps swing and somebody is shouting “Thief!” in a voice used to being obeyed. Ahead, the heath falls away into black furze, rabbit-holes and the ponds.</p>
+ ${s.flags.wounded?'<p>His left arm has gone warm and stupid. He holds the reins in his right.</p>':''}`,
+ ask:'Press on, or withdraw?',
+ opts:[
+  {label:'Withdraw: lope for it across the heath, by the ponds.',withdraw:1,
+   check:{attr:'Constitution',diff:4,bonus:s=>s.flags.wounded?[-1,'wounded']:[0,'']},
+   dev:'Withdraw · Wheel · Constitution 3 vs 4 (−1 if wounded).\nT/S: clean away with everything\nC: a purse lost in the furze (half the spoils)\nR: the grey goes lame; Debts +£3 to the Bell\nX: thrown; spoils lost; Exposure +2, Notoriety +2',
+   out:{
+    T:s=>{s.flags.chase=1;return `<p>The grey knows the heath better than he does. They go down among the ponds like a pair of ghosts, and the shouting falls behind and becomes an argument between the outrider and the postilion about whose fault it was.</p>`},
+    S:s=>{s.flags.chase=1;return `<p>A ball goes somewhere over his head. Then there is only furze, and wind, and the long slope to Kentish Town.</p>`},
+    C:s=>{s.flags.chase=1;const h=Math.floor(s.spoils/2);if(h)adj('purse',-h,'a purse lost in the furze');s.spoils-=h;
+      return `<p>He gets clear, but at the bottom of the hill one of the purses is no longer in his coat. Some Hampstead cowman will have a very good Christmas.</p>`},
+    R:s=>{s.flags.chase=1;adj('debts',720,'a lamed horse, owed to the Bell');adj('composure',-1,'a long walk');
+      return `<p>A rabbit-hole. The grey stumbles and comes up lame. He walks her home to Holborn as the sun comes up, and the ostler at the Bell looks at her leg and names a figure.</p>`},
+    X:s=>{s.flags.chase=1;s.flags.thrown=1;if(s.spoils)adj('purse',-s.spoils,'spoils scattered in the fall');s.spoils=0;adj('exposure',2,'the horse is traced');adj('notoriety',2,'a hue and cry');
+      lose('A hired grey prancer, from the Bell in Holborn','caught by the outrider');adj('debts',2400,'the Bell’s grey, lost');
+      return `<p>The grey goes over and he goes over the grey. He comes to in a ditch with nothing in his pockets but furze. The outrider leads the prancer back to Hampstead in triumph. It carries the Bell’s brand on its quarter.</p>`}
+   }, next:'reckon'},
+  {label:'Press on: wheel about and face him.',
+   check:{attr:'Nerve',diff:6,bonus:s=>s.flags.wounded?[-1,'wounded']:[0,'']},
+   dev:'Press on · Wheel · Nerve 4 vs 6.\nT: he flees; Brave tag; Celebrity +1\nS: he throws down his piece\nC: both fire, both miss; Composure −2\nR: wounded; Composure −2\nX: wounded; Exposure +2; Notoriety +2',
+   out:{
+    T:s=>{tag('Brave (the Underworld)','faced an outrider');adj('celebrity',1,'a story worth repeating');return `<p>He wheels about and rides straight at the lamps, roaring. The outrider, who is paid by the week, makes a sound calculation and leaves.</p>`},
+    S:s=>`<p>He turns. The outrider considers the distance, the dark, and his wages, and throws down the blunderbuss.</p>`,
+    C:s=>{adj('composure',-2,'shot at');return `<p>Both fire; both miss. In the long astonished pause that follows, the Captain leaves.</p>`},
+    R:s=>{adj('composure',-2,'shot');if(!s.flags.wounded)tag('Wounded (a ball-graze, left arm)','the outrider');s.flags.wounded=1;return `<p>He turns, and receives the blunderbuss’s opinion in the shoulder. He gets away, but only just, and not all of him feels it was worth it.</p>`},
+    X:s=>{adj('composure',-2,'shot');adj('exposure',2,'seen close by the lamps');adj('notoriety',2,'a hue and cry');if(!s.flags.wounded)tag('Wounded (a ball-graze, left arm)','the outrider');s.flags.wounded=1;
+      return `<p>He turns into the full light of the coach lamps with his mask round his neck. The outrider fires, the postilion stares, and both will be able to describe him to a magistrate down to the buttons.</p>`}
+   }, next:'reckon'},
+  {label:'Fling him a purse over your shoulder, and ride on.',
+   gate:s=>({ok:s.spoils>0,need:'spoils to spare'}),
+   cost:'half the spoils',
+   dev:'Costed · certain. Lose half the spoils; clean escape.',
+   do:s=>{const h=Math.ceil(s.spoils/2);adj('purse',-h,'a purse flung to the outrider');s.spoils-=h;
+     return `<p>The purse flies back into the lamplight. The outrider, a practical man, stops to pick it up, and the Captain goes away into the dark like a sum subtracted.</p>`},
+   next:'reckon'}
+ ]};
+
+/* ---------- rendering ---------- */
+function odds(m){let w=[10+5*m,30+5*m,25,25-5*m,10-5*m].map(x=>Math.max(3,x));const t=w.reduce((a,b)=>a+b,0);return w.map(x=>x/t);}
+function checkMargin(o){const ch=o.check;const [b,why]=ch.bonus?ch.bonus(S):[0,''];const comp=S.composure<=0?-2:0;
+  const m=Math.max(-3,Math.min(4,S.attrs[ch.attr]+b-ch.diff+comp));return {m,b,why,comp};}
+function stripHTML(p){const cols=['--w-t','--w-s','--w-c','--w-r','--w-x'];return `<span class="strip" aria-hidden="true">${p.map((x,i)=>`<i style="width:${(x*100).toFixed(1)}%;background:var(${cols[i]})"></i>`).join('')}</span>`;}
+
+function optEl(o){
+  const b=document.createElement('button');b.className='opt';b.type='button';
+  const g=o.gate?o.gate(S):{ok:true};
+  const locked=!g.ok||(!o.do&&!o.check);
+  const badges=[];
+  if(o.gate)badges.push(`<span class="badge ${g.ok?'ok':'no'}">${g.ok?'✓':'✗'} Requires ${g.need}</span>`);
+  if(o.cost)badges.push(`<span class="badge cost">Costs ${o.cost}</span>`);
+  if(o.check){const {m,b:bn,why,comp}=checkMargin(o);const p=odds(m);
+    badges.push(`<span class="badge">Wheel · ${o.check.attr} ${S.attrs[o.check.attr]}${bn?(bn>0?' + ':' − ')+Math.abs(bn):''} vs ${o.check.diff}${comp?' · Composure spent':''}</span>${stripHTML(p)}`);
+    o._why=why;}
+  if(!o.check&&!locked)badges.push(`<span class="badge">Certain</span>`);
+  if(o.withdraw)badges.push(`<span class="badge">Withdraw</span>`);
+  b.innerHTML=`<span class="hand" aria-hidden="true">☞</span><span class="lbl">${o.label}</span><span class="badges">${badges.join('')}</span><span class="dev">${o.dev||''}${o.check&&o._why?'\nmodifier: '+o._why:''}</span>`;
+  if(locked){b.disabled=true;b.classList.add('locked');b.setAttribute('aria-disabled','true');}
+  else b.addEventListener('click',()=>choose(o,b));
+  return b;
+}
+
+let beatCount=0;
+function renderBeat(id){
+  const bt=B[id];beatCount++;
+  const sec=document.createElement('section');sec.className='beat';
+  sec.innerHTML=`<div class="dev devhead">storylet ${bt.sid} · beat ${beatCount} of 5\n${bt.dev}</div>
+   <h2><span class="phase">${bt.phase}</span><span class="num">${bt.num}.</span> ${bt.title}</h2>
+   <div class="prose">${bt.text(S)}</div>
+   <p class="ask">${bt.ask}</p>
+   <div class="choices" role="group" aria-label="${bt.ask}"></div>
+   <div class="out"></div>
+   ${bt.notes?`<div class="notes prose">${bt.notes.map(n=>`<p>${n}</p>`).join('')}</div>`:''}`;
+  const box=sec.querySelector('.choices');
+  bt.opts.forEach(o=>box.appendChild(optEl(o)));
+  story.appendChild(sec);applyLongS(sec);
+  return sec;
+}
+
+function choose(o,btn){
+  const box=btn.parentElement, sec=box.parentElement, out=sec.querySelector('.out');
+  box.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+  box.classList.add('done');btn.classList.add('chosen');
+  fx=[];
+  const finish=(html)=>{
+    const r=document.createElement('div');r.className='result';
+    r.innerHTML=`<div class="prose">${html}</div><div class="chips">${fx.map(f=>`<span class="chip ${f.tone}">${f.t}</span>`).join('')}</div>`;
+    out.appendChild(r);applyLongS(r);renderLedger();
+    const nx=typeof o.next==='function'?o.next(S):o.next;
+    setTimeout(()=>{ if(nx==='reckon')renderReckon(); else renderBeat(nx);
+      r.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});},60);
+  };
+  if(o.check){const {m}=checkMargin(o);spin(out,m,o).then(k=>finish(o.out[k](S)));}
+  else finish(o.do(S));
+}
+
+function spin(out,m,o){
+  return new Promise(res=>{
+    const p=odds(m), cols=['--w-t','--w-s','--w-c','--w-r','--w-x'];
+    const cx=100,cy=108,r=86;const pt=a=>{const t=a*Math.PI/180;return [cx+r*Math.sin(t),cy-r*Math.cos(t)];};
+    let a=0;const arcs=[],mids=[];
+    p.forEach((x,i)=>{const a0=a,a1=a+x*360;const [x0,y0]=pt(a0),[x1,y1]=pt(a1);
+      arcs.push(`<path d="M${cx} ${cy}L${x0.toFixed(2)} ${y0.toFixed(2)}A${r} ${r} 0 ${a1-a0>180?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}Z" fill="var(${cols[i]})" stroke="var(--leaf)" stroke-width="1.5"/>`);
+      mids.push([a0,a1]);a=a1;});
+    const wb=document.createElement('div');wb.className='wheelbox';
+    wb.innerHTML=`<svg class="wheel" viewBox="0 0 200 200" role="img" aria-label="Fortune's Wheel"><g class="rot">${arcs.join('')}</g>
+      <circle cx="${cx}" cy="${cy}" r="10" fill="var(--leaf)" stroke="var(--ink)" stroke-width="1.5"/>
+      <path d="M${cx-9} 4 L${cx+9} 4 L${cx} 26 Z" fill="var(--ink)"/></svg>
+      <ol class="legend">${SEG.map((s,i)=>`<li data-i="${i}"><span class="sw" style="background:var(${cols[i]})"></span><span>${s[1]}</span><span class="pc">${Math.round(p[i]*100)}%</span></li>`).join('')}</ol>
+      <div class="dev" style="flex-basis:100%">margin m = ${o.check.attr} ${S.attrs[o.check.attr]} ${(()=>{const c=checkMargin(o);return (c.b?(c.b>0?'+ ':'− ')+Math.abs(c.b)+' ':'')+(c.comp?'− 2 (Composure 0) ':'');})()}− diff ${o.check.diff} = ${m}\nweights T,S,C,R,X = 10+5m, 30+5m, 25, 25−5m, 10−5m (floor 3), normalised</div>
+      <div class="wheelctl"></div>`;
+    out.appendChild(wb);
+    const g=wb.querySelector('.rot'), ctl=wb.querySelector('.wheelctl');
+    let x=Math.random(),idx=0,acc=0;for(let i=0;i<5;i++){acc+=p[i];if(x<acc||i===4){idx=i;break;}}
+    const land=i=>{const [a0,a1]=mids[i];return a0+(a1-a0)*(0.3+Math.random()*0.4);};
+    let theta=land(idx), R=360*5-theta;
+    const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.transform=`rotate(${R}deg)`;}));
+    const shown=i=>{wb.querySelectorAll('.legend li').forEach(li=>li.classList.toggle('hit',+li.dataset.i===i));
+      $('#live').textContent='The Wheel stops on '+SEG[i][1]+'.';};
+    setTimeout(()=>{
+      shown(idx);
+      const accept=()=>{ctl.innerHTML=`<span class="verdict">${SEG[idx][1]}.</span>`;res(SEG[idx][0]);};
+      if(idx>0&&S.luck>0){
+        ctl.innerHTML=`<span class="verdict">${SEG[idx][1]}.</span><button class="btn primary" type="button">Spend Luck · nudge to ${SEG[idx-1][1]}</button><button class="btn" type="button">Accept the Wheel</button><span class="dev" style="flex-basis:100%">Luck ${S.luck}: moves the result one segment up. Earned through narrative irony; rare.</span>`;
+        const [nb,ab]=ctl.querySelectorAll('button');
+        nb.onclick=()=>{fx=fx||[];adj('luck',-1,'a nudge to the Wheel');renderLedger();
+          const t2=land(idx-1);R=R+(theta-t2);theta=t2;g.style.transform=`rotate(${R}deg)`;idx--;
+          ctl.innerHTML='';setTimeout(()=>{shown(idx);accept();},reduce?0:900);};
+        ab.onclick=accept;
+      } else accept();
+    },reduce?50:2400);
+  });
+}
+
+function renderLedger(){
+  const h=S.hum,a=S.attrs;
+  const vals={purse:money(S.purse),debts:money(S.debts),composure:S.composure,luck:S.luck,exposure:S.exposure,notoriety:S.notoriety,celebrity:S.celebrity,
+    ...Object.fromEntries(Object.entries(h).map(([k,v])=>['h'+k,v])),tags:S.tags.join('|'),items:S.items.join('|'),hooks:S.hooks.join('|')};
+  const f=k=>prevLedger[k]!==undefined&&prevLedger[k]!==vals[k]?' flash':'';
+  const meter=(k,v,max,cls='')=>`<div class="meter ${cls}${f(cls==='exp'?'exposure':'h'+k)}"><span>${k}</span><span class="bar"><b style="width:${v/max*100}%"></b></span><em>${v}/${max}</em></div>`;
+  const list=(arr,none)=>arr.length?arr.map(x=>`<li>${x}</li>`).join(''):`<li class="none">${none}</li>`;
+  ledger.innerHTML=`
+   <div class="who"><div class="nm">Cornelius Byrne</div><div class="as">passing as <i>Capt. O’Rourke</i>, late of no regiment</div><div class="orig">Younger son of an Irish squire · Book II</div></div>
+   <h3>Purse &amp; debts</h3>
+   <dl class="kv"><dt>Purse</dt><dd class="${f('purse').trim()}">${vals.purse}</dd><dt>Debts</dt><dd class="${f('debts').trim()}">${vals.debts}</dd></dl>
+   <h3>Composure</h3>
+   <div class="pips${f('composure')}" aria-label="Composure ${S.composure} of 8">${Array.from({length:8},(_,i)=>`<i class="${i<S.composure?'on':''}"></i>`).join('')}</div>
+   <h3>Attributes</h3>
+   <div class="attrs">${Object.entries(a).map(([k,v])=>`<div><span>${k.slice(0,4)}.</span><b>${v}</b></div>`).join('')}</div>
+   <h3>Humours</h3>
+   ${Object.entries(h).map(([k,v])=>meter(k,v,5)).join('')}
+   <h3>Standing</h3>
+   ${meter('Exposure',S.exposure,10,'exp')}
+   <dl class="kv"><dt>Notoriety</dt><dd class="${f('notoriety').trim()}">${S.notoriety}</dd><dt>Celebrity</dt><dd class="${f('celebrity').trim()}">${S.celebrity}</dd><dt>Luck</dt><dd class="${f('luck').trim()}">${S.luck}</dd></dl>
+   <h3>Tags</h3><ul class="lst${f('tags')}">${list(S.tags,'none')}</ul>
+   <h3>Possessions</h3><ul class="lst${f('items')}">${list(S.items,'nothing')}</ul>
+   <h3>Hooks</h3><ul class="lst${f('hooks')}">${list(S.hooks,'none')}</ul>`;
+  $('#ledSum').textContent=`${vals.purse} · Composure ${S.composure}/8`;
+  prevLedger=vals;
+}
+
+function chapterTitle(){
+  const s=S.flags,p=['In which our Hero takes the Air upon Hampstead Heath'];
+  if(s.withdrew&&!s.robbed&&!s.letters){p.push('considers a Coach very carefully');p.push('upon Reflection does nothing whatever');return p;}
+  if(s.danced)p.push('dances a Minuet with a Lady of Quality');
+  if(s.brisk)p.push('relieves Sir Gregory Pyke of his Watch');
+  if(s.letters)p.push('prefers a Gentleman’s Correspondence to his Purse');
+  if(s.cruel)p.push('behaves very ill to a Young Lady');
+  if(s.chase)p.push('is pursued across the Furze');
+  if(s.thrown)p.push('loses a Horse');
+  if(s.glove)p.push('comes home with a Glove');
+  p.push(S.rumours.some(r=>/Exposure/.test(r.effect))||S.exposure>START.exposure?'finds the Moon a poor Accomplice':'gets home before the Dawn');
+  return p;
+}
+
+function renderReckon(){
+  fx=[];
+  const s=S.flags;
+  let willLine='';
+  if(s.will&&S.spoils>0){const share=Math.floor(S.spoils*(s.willHalf?1/2:1/3));adj('purse',-share,'Will Gallow’s share');
+    willLine=`<p>Will Gallow takes his ${s.willHalf?'half':'third'} (${money(share)}) at the door of the Bell, and is gone into Holborn like a cat into a cellar.</p>`;}
+  if(S.flags.robbed&&!S.rumours.some(r=>r.id==='wild'))rumour({id:'wild',week:42,from:'Mr Wild’s office, in the Old Bailey',text:'Mr Wild’s people are asking at the Holborn inns after a grey horse and a fine coat. Mr Wild will return Sir Gregory’s property, for a consideration.',effect:'Notoriety +1 · stolen goods become hard to fence'});
+  const lines=[];
+  if(s.withdrew&&!S.flags.robbed&&!s.letters)lines.push('<p>He rides home at three, very cold, with nothing to show for the night but the hire of a horse. The tailor in the Strand sleeps soundly. So, after a time, does the Captain.</p>');
+  else{
+    lines.push(`<p>By four he is back at the Bell, rubbing down the grey himself so the ostler will not see the sweat on her. By five he is in bed${S.spoils>0?`, with ${money(S.purse)} under his bolster`:''}. By noon the Town is talking, though not yet about him.</p>`);
+    if(willLine)lines.push(willLine);
+    if(s.letters)lines.push('<p>He spends the hour before dawn reading Sir Gregory’s letters by a rushlight, and does not sleep at all.</p>');
+    if(s.glove)lines.push('<p>The glove smells of orris root. He puts it, after some thought, in the breast of the coat he has not paid for.</p>');
+    if(s.wounded)lines.push('<p>A surgeon in Hart Street dresses the arm for five shillings and no questions, which is to say for ten.</p>');
+  }
+  if(s.wounded)adj('purse',-120,'a surgeon in Hart Street');
+
+  // chapter heading
+  const ct=chapterTitle();const head=ct.length>1?ct.slice(0,-1).join('; ')+'; and '+ct.at(-1)+'.':ct[0]+'.';
+  const ci=$('#chapIn');ci.textContent=head;ci.classList.add('fresh');applyLongS(ci.parentElement);
+
+  // account
+  const rows=[['Purse','purse',1],['Debts','debts',1],['Composure','composure'],['Luck','luck'],['Exposure (Capt. O’Rourke)','exposure'],['Notoriety','notoriety'],['Celebrity','celebrity']]
+   .concat(Object.keys(S.hum).map(k=>[k,'hum.'+k]));
+  const get=(o,p)=>p.split('.').reduce((x,k)=>x[k],o);
+  const UP={purse:1,composure:1,luck:1,celebrity:1,debts:-1,exposure:-1,notoriety:-1};
+  const tr=rows.map(([n,p,m])=>{const a=get(START,p),b=get(S,p);if(a===b&&p.startsWith('hum'))return '';
+    const d=b-a;const tone=p.startsWith('hum')?'':((UP[p]||0)*d>0?'good':d?'bad':'');
+    return `<tr><td>${n}</td><td class="n">${m?money(a):a}</td><td class="n">${m?money(b):b}</td><td class="d ${tone}">${d?(m?(d>0?'+':'−')+money(Math.abs(d)):sgn(d)):'—'}</td></tr>`;}).join('');
+  const diff=(x,y)=>x.filter(i=>!y.includes(i));
+  const li=a=>a.length?a.map(x=>`<li>${x}</li>`).join(''):'<li class="none">nothing</li>';
+
+  const sec=document.createElement('section');sec.className='beat';
+  sec.innerHTML=`<div class="dev devhead">storylet heath.05.reckoning · closes the Venture\nApplies shares and surgeon’s fees · writes the chapter heading · commits rumours to the post queue</div>
+   <h2><span class="phase">The Reckoning</span><span class="num">V.</span> The Ride Home</h2>
+   <div class="prose">${lines.join('')}</div>
+   <h3 class="sec">The Account</h3>
+   <div class="tablewrap"><table class="account"><thead><tr><th></th><th style="text-align:right">Before</th><th style="text-align:right">After</th><th style="text-align:right">Change</th></tr></thead><tbody>${tr}</tbody></table></div>
+   <div class="gained">
+     <div><h4>Tags gained</h4><ul class="lst">${li(diff(S.tags,START.tags))}</ul></div>
+     <div><h4>Possessions</h4><ul class="lst">${li(diff(S.items,START.items).map(x=>'+ '+x).concat(diff(START.items,S.items).map(x=>'− '+x)))}</ul></div>
+     <div><h4>Hooks laid</h4><ul class="lst">${li(diff(S.hooks,START.hooks))}</ul></div>
+   </div>
+   <div class="dev" style="margin-top:12px">ledger of causes\n${S.log.map(l=>'· '+l).join('\n')}</div>
+   <h3 class="sec">Rumours abroad</h3>
+   <p class="ask" style="margin-top:4px">${S.rumours.length?'Sealed, and in the post. They will arrive in the weeks ahead, whatever the Captain does next.':'Nothing is in the post. The night, so far as the Town knows, never happened.'}</p>
+   <div class="letters">${S.rumours.map(r=>`<div class="letter"><span class="seal" aria-hidden="true">${r.from.replace(/^(The |Mr |Lady |A |Sir )/,'')[0]}</span><div class="wk">To be delivered · Week ${r.week}</div><div class="fr">${r.from}</div><div class="prose">${r.text}</div><div class="dev" style="margin-top:6px">on delivery: ${r.effect}</div></div>`).join('')}</div>
+   <div class="next"><p>Upkeep follows: the tailor’s bill, the hire of the grey, a lodging in Covent Garden. Then the Town talks.</p><button class="btn primary" type="button" id="again">Ride out again</button></div>
+   <div class="notes prose"><p>Mr Wild, “Thief-Taker General”, ran London’s thieves and their prosecution at once, and returned stolen goods to their owners for a fee. He was hanged at Tyburn in May 1725.</p></div>
+   <div class="finis">Finis Chap. XIV.</div>`;
+  story.appendChild(sec);applyLongS(sec);renderLedger();
+  sec.querySelector('#again').onclick=start;
+}
+
+/* ---------- long s ---------- */
+let longS=false;
+function applyLongS(root){
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest('.prose,.chap')&&!n.parentElement.closest('.dev')?1:3});
+  let n;while((n=w.nextNode())){n.nodeValue=longS?n.nodeValue.replace(/s(?=[ac-eg-jl-zA-Z])/g,'ſ'):n.nodeValue.replace(/ſ/g,'s');}
+}
+
+/* ---------- glossary popover ---------- */
+const gl=$('#gloss');
+document.addEventListener('click',e=>{const t=e.target.closest('.cant');if(t){showGloss(t);e.stopPropagation();}else if(!e.target.closest('#gloss'))gl.hidden=true;});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')gl.hidden=true;if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('cant')){e.preventDefault();showGloss(e.target);}});
+function showGloss(t){const k=t.dataset.t;gl.innerHTML=`<div class="gh">The Editor’s canting dictionary</div><div class="gt">${k}</div><div>${CANT[k]||''}</div>`;
+  gl.hidden=false;const r=t.getBoundingClientRect();const W=Math.min(272,innerWidth-32);gl.style.maxWidth=W+'px';
+  let x=r.left+scrollX;x=Math.max(16+scrollX,Math.min(x,scrollX+innerWidth-W-16));gl.style.left=x+'px';gl.style.top=(r.bottom+scrollY+6)+'px';}
+
+/* ---------- toggles ---------- */
+const store={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const devBtn=$('#devBtn'),lsBtn=$('#longsBtn');
+function setDev(on){document.body.classList.toggle('devon',on);devBtn.setAttribute('aria-pressed',on);store.set('heath-dev',on?'1':'0');}
+function setLS(on){longS=on;lsBtn.setAttribute('aria-pressed',on);applyLongS(document.querySelector('main'));store.set('heath-ls',on?'1':'0');}
+devBtn.onclick=()=>setDev(!document.body.classList.contains('devon'));
+lsBtn.onclick=()=>setLS(!longS);
+
+/* ledger open on wide screens */
+const mq=matchMedia('(min-width: 861px)');const lb=$('#ledgerBox');const syncL=()=>{if(mq.matches)lb.open=true;};mq.addEventListener('change',syncL);
+if(!mq.matches)lb.open=false;
+
+function start(){
+  S=fresh();START=JSON.parse(JSON.stringify(S));prevLedger={};beatCount=0;fx=[];
+  story.innerHTML=`<div class="prose opening" id="opening"></div>`;
+  const ci=$('#chapIn');ci.textContent='In which our Hero takes the Air upon Hampstead Heath.';ci.classList.remove('fresh');
+  renderLedger();
+  const sec=renderBeat('approach');
+  // move the opening prose to carry the drop cap, unruled
+  sec.style.borderTop='0';sec.style.marginTop='0';sec.style.paddingTop='0';
+  sec.querySelector('.prose').classList.add('opening');
+  $('#opening').remove();
+  applyLongS(document.querySelector('.chap'));
+  if(document.querySelector('.beat')!==sec)return;
+  if(story.getBoundingClientRect().top<0)window.scrollTo({top:0});
+}
+setDev(store.get('heath-dev')==='1');
+start();
+if(store.get('heath-ls')==='1')setLS(true);
+})();
+</script>
+
+</body></html>

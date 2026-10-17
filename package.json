@@ -1,0 +1,29 @@
+{
+  "name": "fortunes-ladder",
+  "version": "1.0.0",
+  "description": "A text-based picaresque roguelike set in London, 1719–1745.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bovrilgesellschaft/fortunes-ladder.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bovrilgesellschaft/fortunes-ladder/issues"
+  },
+  "homepage": "https://github.com/bovrilgesellschaft/fortunes-ladder#readme",
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^26.6.5",
+    "ajv": "^8.20.0",
+    "esbuild": "^0.28.2",
+    "js-yaml": "^5.5.0",
+    "jsdom": "^29.1.1",
+    "typescript": "^7.0.2"
+  }
+}

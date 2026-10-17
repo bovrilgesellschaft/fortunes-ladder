@@ -1,0 +1,918 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>A Ball in Hanover Square</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: a printed leaf laid on a blue-grey sugar-paper board; the story runs in the text column, the Ledger sits in the outer margin. Designer annotations appear in modern "blue pencil". */
+:root{
+  --board:#c9d1cf; --leaf:#f2f3ef; --ink:#1b1f22; --ink2:#4c555a; --rule:#bcc4c3; --shade:#e5e8e3;
+  --rubric:#9b2a1c; --brass:#86651a; --pencil:#2b58a0; --pencil-bg:#e2e9f4;
+  --w-t:#c4982a; --w-s:#4d6f53; --w-c:#8f7c5a; --w-r:#5b6570; --w-x:#9b2a1c;
+  --good:#3d6a46; --bad:#9b2a1c; --seal:#8e2418;
+  --display:'IM Fell English','Iowan Old Style',Georgia,serif;
+  --caps:'IM Fell English SC','IM Fell English',Georgia,serif;
+  --body:'Libre Caslon Text','Iowan Old Style',Georgia,serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --board:#0a0f12; --leaf:#131a1e; --ink:#ddd6c6; --ink2:#9ba4a7; --rule:#2b363c; --shade:#1b2429;
+  --rubric:#d4664f; --brass:#d2ab4a; --pencil:#86aef0; --pencil-bg:#17243a;
+  --w-t:#d2ab4a; --w-s:#6f9a77; --w-c:#a8936d; --w-r:#7d8996; --w-x:#c9573f;
+  --good:#7fb58a; --bad:#e07a63; --seal:#a8321f; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --board:#0a0f12; --leaf:#131a1e; --ink:#ddd6c6; --ink2:#9ba4a7; --rule:#2b363c; --shade:#1b2429;
+  --rubric:#d4664f; --brass:#d2ab4a; --pencil:#86aef0; --pencil-bg:#17243a;
+  --w-t:#d2ab4a; --w-s:#6f9a77; --w-c:#a8936d; --w-r:#7d8996; --w-x:#c9573f;
+  --good:#7fb58a; --bad:#e07a63; --seal:#a8321f; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--board);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.62;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.sheet{max-width:1120px;margin:0 auto;background:var(--leaf);border:1px solid var(--rule);
+  box-shadow:0 1px 0 var(--rule),0 18px 40px -28px rgba(0,0,0,.45)}
+.inner{padding:clamp(18px,4vw,48px)}
+/* running head */
+.runhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;
+  padding:12px clamp(18px,4vw,48px);border-bottom:1px solid var(--rule);font-family:var(--caps);letter-spacing:.06em;color:var(--ink2);font-size:.95rem}
+.toggles{display:flex;gap:8px;flex-wrap:wrap}
+.tg{font:inherit;font-family:var(--caps);letter-spacing:.05em;color:var(--ink);background:transparent;border:1px solid var(--rule);
+  padding:4px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.tg[aria-pressed="true"]{border-color:var(--ink);background:var(--shade)}
+.tg .dot{width:9px;height:9px;border:1px solid currentColor;border-radius:50%}
+.tg[aria-pressed="true"] .dot{background:currentColor}
+.tg#devBtn[aria-pressed="true"]{color:var(--pencil);border-color:var(--pencil);background:var(--pencil-bg)}
+.tg:focus-visible,.opt:focus-visible,.cant:focus-visible,.btn:focus-visible,summary:focus-visible{outline:2px solid var(--pencil);outline-offset:2px}
+/* title */
+.titlepage{text-align:center;padding-block:8px 26px;border-bottom:1px solid var(--rule);margin-bottom:28px}
+.eyebrow{font-family:var(--caps);letter-spacing:.14em;color:var(--rubric);font-size:.95rem}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(2.3rem,6vw,3.6rem);line-height:1.05;margin:.2em 0 .15em;text-wrap:balance}
+.sub{font-style:italic;color:var(--ink2);margin:0}
+.prospectus{max-width:40rem;margin:18px auto 0;font-size:.95rem;color:var(--ink2);text-wrap:pretty}
+.prospectus b{color:var(--ink);font-weight:400;font-family:var(--caps);letter-spacing:.05em}
+.fleuron{font-family:var(--display);color:var(--rubric);font-size:1.3rem;letter-spacing:.6em;margin-top:14px}
+/* layout */
+.layout{display:grid;grid-template-columns:minmax(0,40rem) 17.5rem;gap:clamp(24px,5vw,64px);justify-content:center}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}.ledgerwrap{order:-1}}
+main{min-width:0}
+/* chapter */
+.chap{text-align:center;margin-bottom:26px}
+.chap .no{font-family:var(--caps);letter-spacing:.2em;font-size:1.05rem}
+.chap .in{font-family:var(--display);font-style:italic;font-size:1.18rem;line-height:1.4;margin-top:4px;text-wrap:balance;transition:color .6s}
+.chap .in.fresh{color:var(--rubric)}
+.prose p{margin:0 0 .85em;text-wrap:pretty;hyphens:auto}
+.prose p:last-child{margin-bottom:0}
+.opening p:first-child::first-letter{font-family:var(--display);float:left;font-size:3.6em;line-height:.82;padding:.06em .08em 0 0;color:var(--rubric)}
+.beat{margin-top:34px;padding-top:26px;border-top:1px solid var(--rule)}
+.beat h2{font-family:var(--display);font-weight:400;font-size:1.55rem;margin:0 0 .5em;line-height:1.2}
+.beat h2 .num{font-family:var(--caps);color:var(--rubric);letter-spacing:.06em;margin-right:.2em}
+.beat h2 .phase{display:block;font-family:var(--caps);font-size:.82rem;letter-spacing:.14em;color:var(--ink2);margin-bottom:2px}
+.notes{margin-top:14px;padding-top:8px;border-top:1px solid var(--rule);font-size:.84rem;color:var(--ink2);width:60%}
+@media (max-width:560px){.notes{width:100%}}
+.notes p{margin:0 0 .4em}
+sup.fn{font-size:.72em;color:var(--rubric);line-height:0}
+/* cant */
+.cant{border-bottom:1px dotted var(--ink2);cursor:help}
+#gloss{position:absolute;z-index:20;max-width:17rem;background:var(--leaf);border:1px solid var(--ink);padding:10px 12px;font-size:.9rem;
+  box-shadow:0 10px 24px -14px rgba(0,0,0,.5)}
+#gloss .gh{font-family:var(--caps);letter-spacing:.08em;color:var(--ink2);font-size:.78rem}
+#gloss .gt{font-family:var(--display);font-style:italic;font-size:1.15rem}
+/* choices */
+.ask{font-style:italic;color:var(--ink2);margin:16px 0 8px}
+.choices{display:flex;flex-direction:column;border-top:1px solid var(--rule)}
+.opt{all:unset;box-sizing:border-box;display:grid;grid-template-columns:1.6em minmax(0,1fr);column-gap:6px;row-gap:6px;padding:12px 6px 13px 0;
+  border-bottom:1px solid var(--rule);cursor:pointer;width:100%}
+.opt .hand{grid-row:1/span 3;color:var(--rubric);font-size:1.15rem;line-height:1.35;opacity:.25;transition:opacity .15s,transform .15s}
+.opt:hover .hand,.opt:focus-visible .hand{opacity:1;transform:translateX(3px)}
+.opt .lbl{line-height:1.45}
+.opt[disabled]{cursor:default}
+.opt.locked .lbl{color:var(--ink2)}
+.opt.locked .hand{opacity:.12}
+.choices.done .opt:not(.chosen){display:none}
+.choices.done{border-top:0}
+.opt.chosen{border-bottom:0;padding-bottom:4px}
+.opt.chosen .hand{opacity:1}
+.opt.chosen .lbl{font-style:italic}
+.badges{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-family:var(--caps);font-size:.86rem;letter-spacing:.04em;color:var(--ink2)}
+.badge{border:1px solid var(--rule);padding:0 7px;line-height:1.55}
+.badge.ok{color:var(--good);border-color:currentColor}
+.badge.no{color:var(--bad);border-color:currentColor}
+.badge.cost{color:var(--brass);border-color:currentColor}
+.badge.sure{}
+.strip{display:inline-flex;width:116px;height:9px;border:1px solid var(--ink2);vertical-align:middle}
+.strip i{display:block;height:100%}
+.dev{display:none;font-family:var(--mono);font-size:.76rem;line-height:1.5;color:var(--pencil);background:var(--pencil-bg);padding:5px 8px;white-space:pre-wrap;overflow-wrap:anywhere}
+body.devon .dev{display:block}
+.devhead{margin-bottom:10px}
+.opt .dev{grid-column:2}
+/* wheel */
+.wheelbox{display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px;margin:12px 0 4px;padding:14px 0}
+.wheel{width:168px;height:176px;flex:none}
+.wheel .rot{transform-box:view-box;transform-origin:100px 108px;transition:transform 2.3s cubic-bezier(.17,.82,.25,1)}
+@media (prefers-reduced-motion:reduce){.wheel .rot{transition:none}}
+.legend{list-style:none;margin:0;padding:0;font-size:.9rem;min-width:0;flex:1 1 12rem;display:flex;flex-direction:column;gap:3px}
+.legend li{display:grid;grid-template-columns:12px minmax(0,1fr) auto;gap:8px;align-items:center;padding:1px 6px;border:1px solid transparent}
+.legend .sw{width:12px;height:12px}
+.legend .pc{font-variant-numeric:tabular-nums;color:var(--ink2);font-family:var(--mono);font-size:.78rem}
+.legend li.hit{border-color:var(--ink);font-weight:700}
+.legend li.hit .pc{color:var(--ink)}
+.wheelctl{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--caps);letter-spacing:.04em}
+.verdict{font-family:var(--display);font-size:1.25rem;margin-right:8px}
+.btn{font:inherit;font-family:var(--caps);letter-spacing:.05em;padding:5px 12px;cursor:pointer;background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.btn.primary{background:var(--ink);color:var(--leaf)}
+.result{margin-top:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{font-family:var(--mono);font-size:.76rem;padding:1px 7px;border:1px solid var(--rule);color:var(--ink2)}
+.chip.good{color:var(--good);border-color:currentColor}
+.chip.bad{color:var(--bad);border-color:currentColor}
+.chip.neu{color:var(--ink);border-color:var(--ink2)}
+/* ledger */
+.ledgerwrap{min-width:0}
+details.ledger{position:sticky;top:16px;border:1px solid var(--ink);background:var(--leaf)}
+@media (max-width:860px){details.ledger{position:static}}
+details.ledger summary{list-style:none;cursor:pointer;padding:10px 14px;font-family:var(--caps);letter-spacing:.06em;display:flex;justify-content:space-between;gap:8px}
+details.ledger summary::-webkit-details-marker{display:none}
+@media (min-width:861px){details.ledger summary{display:none}}
+.lg{padding:14px 16px 16px;font-size:.92rem}
+.lg h3{font-family:var(--caps);font-weight:400;letter-spacing:.12em;font-size:.82rem;color:var(--ink2);margin:14px 0 6px;border-bottom:1px solid var(--rule);padding-bottom:2px}
+.who .nm{font-family:var(--display);font-size:1.35rem;line-height:1.1}
+.who .as{font-size:.88rem}
+.who .orig{font-family:var(--caps);letter-spacing:.05em;font-size:.8rem;color:var(--ink2);margin-top:2px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:0}
+.kv dt{color:var(--ink2)}
+.kv dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.row{display:contents}
+.flash{animation:fl 1.6s ease-out}
+@keyframes fl{0%{background:var(--pencil-bg);color:var(--pencil)}100%{background:transparent}}
+@media (prefers-reduced-motion:reduce){.flash{animation:none}}
+.pips{display:flex;gap:4px}
+.pips i{width:14px;height:14px;border:1px solid var(--ink);transform:rotate(45deg) scale(.78)}
+.pips i.on{background:var(--ink)}
+.attrs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 10px}
+.attrs div{display:flex;justify-content:space-between;font-size:.86rem}
+.attrs span{color:var(--ink2)}
+.meter{display:grid;grid-template-columns:6.4rem 1fr auto;gap:8px;align-items:center;font-size:.86rem;margin-bottom:3px}
+.meter .bar{height:7px;border:1px solid var(--ink2);position:relative}
+.meter .bar b{position:absolute;inset:0 auto 0 0;background:var(--ink2)}
+.meter.exp .bar b{background:var(--rubric)}
+.meter em{font-style:normal;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:.75rem;color:var(--ink2)}
+.lst{margin:0;padding:0;list-style:none;font-size:.88rem}
+.lst li{padding-left:1em;text-indent:-1em}
+.lst li::before{content:"· ";color:var(--rubric)}
+.lst .none{color:var(--ink2);font-style:italic}
+.lst .none::before{content:""}
+/* reckoning */
+.account{width:100%;border-collapse:collapse;font-size:.95rem;margin-top:8px}
+.account th,.account td{padding:5px 8px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.account th{font-family:var(--caps);font-weight:400;letter-spacing:.06em;color:var(--ink2)}
+.account td.n{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.account td.d{font-family:var(--mono);font-size:.8rem;text-align:right;white-space:nowrap}
+.account td.d.good{color:var(--good)} .account td.d.bad{color:var(--bad)}
+.tablewrap{overflow-x:auto}
+.gained{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:14px;margin-top:14px}
+.gained h4{font-family:var(--caps);font-weight:400;letter-spacing:.1em;font-size:.84rem;color:var(--ink2);margin:0 0 4px}
+.letters{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:14px;margin-top:12px}
+.letter{position:relative;border:1px solid var(--rule);background:var(--shade);padding:14px 16px 14px 52px;font-size:.92rem}
+.letter .seal{position:absolute;left:12px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--seal);
+  box-shadow:inset 0 0 0 3px rgba(0,0,0,.18),0 1px 2px rgba(0,0,0,.3);display:grid;place-items:center;color:#f3e6d6;font-family:var(--display);font-size:.85rem}
+.letter .wk{font-family:var(--caps);letter-spacing:.06em;font-size:.8rem;color:var(--ink2)}
+.letter .fr{font-family:var(--display);font-style:italic;font-size:1.05rem;line-height:1.25;margin:1px 0 4px}
+.next{margin-top:22px;padding:14px 0 0;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.next p{margin:0;color:var(--ink2);font-style:italic;flex:1 1 18rem}
+h3.sec{font-family:var(--caps);font-weight:400;letter-spacing:.12em;font-size:1rem;margin:24px 0 2px;color:var(--rubric)}
+.finis{text-align:center;font-family:var(--caps);letter-spacing:.3em;margin-top:30px;color:var(--ink2)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--rule);margin-bottom:24px}
+.tab{all:unset;cursor:pointer;font-family:var(--caps);letter-spacing:.08em;font-size:1.02rem;padding:8px 14px 9px;color:var(--ink2);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--rubric)}
+.tab:focus-visible{outline:2px solid var(--pencil);outline-offset:2px}
+.tab .new{color:var(--rubric)}
+.storyhead{text-align:center;margin-bottom:22px;padding-bottom:20px;border-bottom:1px solid var(--rule)}
+.storyhead .tt{font-family:var(--display);font-size:clamp(1.35rem,3.6vw,1.75rem);line-height:1.2;text-wrap:balance;margin-top:4px}
+.storyhead .by{font-style:italic;color:var(--ink2);font-size:.92rem;margin-top:4px}
+.voices{display:inline-flex;margin-top:14px;border:1px solid var(--ink)}
+.voices button{all:unset;cursor:pointer;font-family:var(--caps);letter-spacing:.05em;padding:4px 14px;font-size:.92rem}
+.voices button[aria-pressed="true"]{background:var(--ink);color:var(--leaf)}
+.voices button:focus-visible{outline:2px solid var(--pencil);outline-offset:2px}
+.storyprose{font-size:1.05rem;line-height:1.72}
+.storyprose p{text-indent:1.5em;margin:0;padding:2px 0}
+.storyprose p.first{text-indent:0}
+.storyprose p.first::first-letter{font-family:var(--display);float:left;font-size:3.5em;line-height:.82;padding:.06em .08em 0 0;color:var(--rubric)}
+.storyprose p.fresh{animation:fr 3.5s ease-out}
+@keyframes fr{0%{background:var(--pencil-bg)}100%{background:transparent}}
+@media (prefers-reduced-motion:reduce){.storyprose p.fresh{animation:none}}
+.empty{font-style:italic;color:var(--ink2);text-align:center;padding:28px 0;max-width:30rem;margin:0 auto}
+.result .storylink{margin-top:12px}
+.storylink-p{margin-top:12px!important}
+</style>
+
+<div class="sheet">
+  <div class="runhead">
+    <span>An Apology for the Conduct of Mrs Delacourt</span>
+    <div class="toggles">
+      <button class="tg" id="longsBtn" aria-pressed="false" title="Print with the long s"><span class="dot"></span>Long ſ</button>
+      <button class="tg" id="devBtn" aria-pressed="false"><span class="dot"></span>Designer's view</button>
+    </div>
+  </div>
+  <div class="inner">
+    <header class="titlepage">
+      <div class="eyebrow">Fortune's Ladder · A Venture</div>
+      <h1>A Ball in Hanover Square</h1>
+      <p class="sub">Being an Evening at Lady Bellaston's, to which our Heroine was not invited, in five Beats</p>
+      <p class="prospectus"><b>A playable proof of concept,</b> and a companion to <i>The Heath by Moonlight</i>. You play in the second person; whenever Fortune’s Wheel lands on Triumph or Catastrophe, the Story tab retells it as a third-person picaresque, after Smollett or after Sterne. One Venture from a picaresque roguelike set in London, 1719–1745, built on the same engine: choices gated by skills, possessions and reputation; risky ones sent to Fortune's Wheel with the odds shown first; consequences that land at once, or arrive later as rumours. Turn on the designer's view to see the machinery.</p>
+      <div class="fleuron" aria-hidden="true">❧ ❧ ❧</div>
+    </header>
+
+    <div class="layout">
+      <main>
+        <div class="tabs" role="tablist" aria-label="Views">
+          <button class="tab" role="tab" id="tabPlay" aria-selected="true" aria-controls="playPane" type="button">The Venture</button>
+          <button class="tab" role="tab" id="tabStory" aria-selected="false" aria-controls="storyPane" tabindex="-1" type="button">The Story<span class="new" id="storyNew" hidden aria-label="new passage"> ❧</span></button>
+        </div>
+        <div id="playPane" role="tabpanel" aria-labelledby="tabPlay">
+          <div class="chap">
+            <div class="no">Chap. IX.</div>
+            <div class="in" id="chapIn">In which our Heroine goes to a Ball to which she was not invited.</div>
+          </div>
+          <div id="story"></div>
+        </div>
+        <div id="storyPane" role="tabpanel" aria-labelledby="tabStory" hidden>
+          <div class="storyhead">
+            <div class="eyebrow">The Story</div>
+            <div class="tt">The History of Miss Kitty Glover, otherwise the Honourable Mrs Delacourt</div>
+            <div class="by">Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe</div>
+            <div class="voices" role="group" aria-label="Narrative voice">
+              <button type="button" id="vSm" aria-pressed="true">after Smollett</button>
+              <button type="button" id="vSt" aria-pressed="false">after Sterne</button>
+            </div>
+          </div>
+          <div id="storyBody"></div>
+        </div>
+        <div id="live" class="sr" aria-live="polite"></div>
+      </main>
+      <div class="ledgerwrap">
+        <details class="ledger" id="ledgerBox" open>
+          <summary><span>The Ledger</span><span id="ledSum"></span></summary>
+          <div class="lg" id="ledger"></div>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="gloss" hidden role="note"></div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const story=$('#story'), ledger=$('#ledger');
+
+/* ---------- glossary ---------- */
+const CANT={
+  mantua:'A loose gown, open at the front over a petticoat. Its maker is a mantua-maker, and is generally owed money.',
+  chair:'A sedan chair, carried by two chairmen, who charge by the distance and the weather.',
+  lustring:'A glossy silk, much worn for evening.',
+  rout:'A large evening party, at which there is too little room and nothing to do but be seen.',
+  toast:'A lady whose health is drunk by the gentlemen; a reigning beauty.',
+  hartshorn:'Smelling salts. The spirit was once got from the antlers of the hart.',
+  cit:'A citizen of the City; a tradesman, or his wife, with money and no manners.',
+  perruquier:'A wig-maker.'
+};
+const c=(t,shown)=>`<span class="cant" tabindex="0" role="button" data-t="${t}">${shown||t}</span>`;
+
+/* ---------- the Story: preface and close, in two voices ---------- */
+const PREFACE={
+ sm:'In the December of the year 1724, Miss Catherine Glover, a clergyman’s daughter of Wiltshire, who had quitted her father’s parish upon an occasion that does her more credit in the telling than it did at the time, was established in a lodging over a perruquier’s in Tavistock Street, under the name and dignity of the Honourable Mrs Delacourt, a widow of Dublin.',
+ st:'Of Miss Kitty Glover’s leaving Wiltshire I shall tell you nothing in this chapter, — nor in the next, — and very possibly not at all; for there are clouds, madam, which it is the whole art of a biographer to leave hanging. It is enough that by the December of 1724 she had become the Honourable Mrs Delacourt, and lodged over a perruquier’s.'};
+const CLOSE={
+ sm:'She came home to Tavistock Street at three in the morning, and sat up till four reckoning what the evening had cost her; which, as is usual with evenings, was a good deal more than she had allowed for, and in a different coin.',
+ st:'And so she went home. — Whether she had gained by the evening, or lost, the reader shall judge for himself; I have tried, and cannot.'};
+
+/* ---------- state ---------- */
+const SEG=[['T','Triumph'],['S','Success'],['C','Success at a cost'],['R','Reversal'],['X','Catastrophe']];
+function fresh(){return{
+  purse:516, debts:7560, composure:5, luck:1, exposure:3, notoriety:0, celebrity:1,
+  attrs:{Address:4,Wit:4,Nerve:3,Constitution:2,Countenance:4,Learning:3},
+  hum:{Sanguine:1,Choleric:1,Melancholic:2,Phlegmatic:1},
+  tags:['Wit (the Town)'],
+  items:['A gown of rose lustring, not paid for','Your mother’s garnets, paste in two places','A letter of introduction to Lady Bellaston, forged in a good hand','A borrowed fan'],
+  hooks:['Betty Slyfield, Lady Bellaston’s maid, who owes you a kindness'],
+  flags:{}, log:[], rumours:[], spoils:0, story:[], storyAdded:false
+};}
+let S, START, fx, prevLedger={};
+const LIM={composure:[0,8],exposure:[0,10],luck:[0,3],celebrity:[0,10],notoriety:[0,10]};
+const NAME={purse:'Purse',debts:'Debts',composure:'Composure',luck:'Luck',exposure:'Exposure',notoriety:'Notoriety',celebrity:'Celebrity'};
+const UPGOOD={purse:1,composure:1,luck:1,celebrity:1,debts:-1,exposure:-1,notoriety:-1};
+
+function money(p){const n=p<0;p=Math.abs(p);const L=Math.floor(p/240),s=Math.floor(p%240/12),d=p%12;const a=[];if(L)a.push('£'+L);if(s)a.push(s+'s');if(d)a.push(d+'d');return (n?'−':'')+(a.join(' ')||'nothing');}
+function sgn(n){return n>0?'+'+n:'−'+Math.abs(n);}
+function adj(path,d,why){
+  if(!d)return; const [a,b]=path.split('.');
+  if(b){S[a][b]=Math.max(0,Math.min(5,S[a][b]+d));}
+  else{let v=S[a]+d;if(LIM[a])v=Math.max(LIM[a][0],Math.min(LIM[a][1],v));S[a]=v;}
+  const nm=b||NAME[a]; const isM=(a==='purse'||a==='debts');
+  const tone=b?(a==='hum'?'neu':(d>0?'good':'bad')):((UPGOOD[a]||0)*d>0?'good':'bad');
+  fx.push({t:`${nm} ${isM?(d>0?'+':'−')+money(Math.abs(d)):sgn(d)}`,tone});
+  S.log.push(`${nm} ${isM?(d>0?'+':'−')+money(Math.abs(d)):sgn(d)} — ${why}`);
+}
+function loot(p,why){adj('purse',p,why);S.spoils+=p;S.flags.won=1;}
+function tag(t,why){if(!S.tags.includes(t)){S.tags.push(t);fx.push({t:'Tag: '+t,tone:'neu'});S.log.push(`Tag gained: ${t} — ${why}`);}}
+function item(t,why){S.items.push(t);fx.push({t:'Gained: '+t.split(',')[0],tone:'good'});S.log.push(`Item gained: ${t} — ${why}`);}
+function lose(t,why){const i=S.items.indexOf(t);if(i>-1){S.items.splice(i,1);fx.push({t:'Lost: '+t.split(',')[0],tone:'bad'});S.log.push(`Item lost: ${t} — ${why}`);}}
+function hook(t,why){S.hooks.push(t);fx.push({t:'New hook',tone:'neu'});S.log.push(`Hook: ${t} — ${why}`);}
+function unhook(prefix,why){const i=S.hooks.findIndex(h=>h.startsWith(prefix));if(i>-1){S.log.push(`Hook spent: ${S.hooks[i]} — ${why}`);S.hooks.splice(i,1);fx.push({t:'Hook spent',tone:'bad'});}}
+function rumour(r){if(S.rumours.some(x=>x.id===r.id))return;S.rumours.push(r);fx.push({t:'A rumour is abroad',tone:'bad'});S.log.push(`Rumour queued (week ${r.week}): ${r.from} — ${r.effect}`);}
+function addStory(p){
+  if(!S.story.length)S.story.push({...PREFACE,fresh:true});
+  S.story.push({...p,fresh:true});S.storyAdded=true;
+  fx.push({t:'❧ The Story is enlarged',tone:'neu'});S.log.push('Story passage written');
+  markUnread();renderStory();
+}
+const LETTER='A letter of introduction to Lady Bellaston, forged in a good hand';
+const toCrisis=s=>(s.flags.suspicious||s.flags.letterKept)?'steward':'pounce';
+
+/* ---------- beats ---------- */
+const B={};
+
+B.door={num:'I',phase:'The Approach',title:'The Door in Hanover Square',sid:'ball.01.door',
+ dev:'requires venture=ball ∧ hour=evening · Persona: the Hon. Mrs Delacourt (Exposure 3/10)\nComposure starts at Nerve + 2 = 5 · Story passages on T and X',
+ text:s=>`<p>It is the second week of December, 1724. Jack Sheppard has been hanged a month, and now dances nightly at Drury Lane in the person of Harlequin.<sup class="fn">*</sup> The Town, which watched him die, is delighted to find him so well.</p>
+ <p>You were born Catherine Glover, the daughter of a Wiltshire curate. You left your father’s parish under a cloud that was, in your view, almost entirely the fault of a dancing-master. In London you have become the Honourable Mrs Delacourt, widow of a colonel of dragoons who fell, gallantly and very conveniently, at a siege no one can now remember. Your ${c('mantua')} is rose ${c('lustring')}, and owed for. Your garnets were your mother’s, and are paste in two places.</p>
+ <p>Tonight Lady Bellaston gives a ball in Hanover Square. You have not been asked. Four ${c('chair','chairs')} wait in line before your own, and the porter at the door has a list, and the face of a man who has never once been wrong about a list.</p>`,
+ notes:['* Harlequin Sheppard, a pantomime on the life of the lately hanged Jack Sheppard, opened at Drury Lane at the end of November 1724, a fortnight after his execution.'],
+ ask:'How will you get past the door?',
+ opts:[
+  {label:'Hand the porter your letter of introduction, and wait as if it were the most natural thing in the world.',
+   gate:s=>({ok:s.items.includes(LETTER),need:'the forged letter'}),
+   check:{attr:'Address',diff:4},
+   dev:'Wheel · Address 4 vs 4.\nT: announced; Composure +1 · Story\nS: announced\nC: announced, but the letter is kept (rumour: Exposure +2)\nR: kept waiting, letter kept; Composure −2; suspected\nX: the steward doubts the hand; Exposure +2 now; Composure −3; suspected · Story\nA kept letter or suspicion leads to the steward’s crisis in Beat IV.',
+   story:{
+    T:{sm:'She presented at the door a letter of her own composing, in so fair a hand and so warm a recommendation of herself, that Lady Bellaston, who could not read it without her glass and would not be seen to use one, swore she remembered the writer perfectly; though no such person as Lady Clonmore had ever drawn breath.',
+       st:'Now Lady Clonmore, you must understand, had never existed; — which was her great merit as a correspondent; for a lady who does not exist can never contradict you. Lady Bellaston remembered her perfectly.'},
+    X:{sm:'But the steward, a dry Scotch fellow who had served a Writer to the Signet, held the paper to a candle and pronounced it too well written for a countess; so that our heroine owed her admission entirely to the Muscovite envoy, whose suite, being twenty strong and none of them sober, bore her up the stairs as a spring tide lifts a wherry.',
+       st:'The steward held it to the candle. — Too good a hand, said he, for a countess. — And here I must leave her upon the stair a moment, while I consider whether there is any sharper reproach in the world than to be found out by one’s own excellence.'}},
+   out:{
+    T:s=>{s.flags.announced=1;adj('composure',1,'a smooth entrance');
+      return `<p>The porter reads it. The steward reads it. Lady Bellaston, who is short-sighted and vain of it, holds it at arm’s length on the landing and declares that she remembers dear Lady Clonmore perfectly. There is no Lady Clonmore. You are announced, and you sail in.</p>`},
+    S:s=>{s.flags.announced=1;
+      return `<p>The porter reads it twice, hands it back with a bow, and calls your name up the stair as though he had always expected it.</p>`},
+    C:s=>{s.flags.announced=1;s.flags.letterKept=1;lose(LETTER,'kept by the steward');
+      rumour({id:'letter',week:43,from:'Lady Bellaston’s steward',text:'The steward has compared Mrs Delacourt’s letter with her ladyship’s correspondence, and finds that Lady Clonmore does not exist.',effect:'Exposure +2 (Mrs Delacourt)'});
+      return `<p>You are announced. The letter, however, goes upstairs with the steward, and does not come down again.</p>`},
+    R:s=>{s.flags.suspicious=1;s.flags.letterKept=1;lose(LETTER,'kept by the steward');adj('composure',-2,'twenty minutes in the hall');
+      return `<p>You are kept twenty minutes in the hall among the footmen while the letter goes up and down the stairs. At last a party of officers arrives, and in the confusion you go up among the regimentals, unannounced and very much remembered.</p>`},
+    X:s=>{s.flags.suspicious=1;s.flags.letterKept=1;lose(LETTER,'confiscated');adj('exposure',2,'a forgery doubted at the door');adj('composure',-3,'a forgery doubted at the door');
+      return `<p>The steward holds your letter to a candle and observes that it is written in a very good hand: rather too good, he thinks, for a countess. You are saved only by the arrival of the Muscovite envoy and twenty of his suite, among whom you are carried up the stairs like a leaf on a flood.</p>`}
+   }, next:'room'},
+  {label:'Go round to the area steps, where Betty Slyfield has promised to let you in through the kitchens.',
+   gate:s=>({ok:s.hooks.some(h=>h.startsWith('Betty Slyfield')),need:'Hook: Betty Slyfield'}),
+   cost:'5s, and the favour Betty owes',
+   dev:'Costed · certain. Purse −5s; spends the Betty hook. Enters unannounced: nobody knows your name. Composure +1.',
+   do:s=>{adj('purse',-60,'a crown for Betty');unhook('Betty Slyfield','favour called in');s.flags.unannounced=1;s.flags.backstairs=1;adj('composure',1,'a quiet way in');
+     return `<p>Betty meets you at the area steps, takes you through the kitchens, where a French cook is weeping into a syllabub, and up the back stairs into the card room by the servants’ door. You are in. You have not been announced, which means that nobody knows your name. This is a protection and a difficulty in about equal parts.</p>`},
+   next:'room'},
+  {label:'Take the arm of a gentleman alighting from the next chair, and go in as one of his party.',
+   check:{attr:'Wit',diff:4,bonus:s=>s.attrs.Countenance>=4?[1,'a face that invites gallantry']:[0,'']},
+   dev:'Wheel · Wit 4 + 1 (Countenance) vs 4.\nT: the gentleman is Captain O’Rourke (crossover hook); announced; Composure +1 · Story\nS: an elderly beau takes you in\nC: the beau thinks you owe him (hook)\nR: his wife arrives; Composure −2; unannounced\nX: you arrive on the arm of a known rake; Fast tag · Story',
+   story:{
+    T:{sm:'The arm she seized belonged to a tall Irish gentleman in a laced coat, who, perceiving her design in an instant, carried her past the porter with the air of a husband of ten years’ standing, and whispered upon the stair that he was Captain O’Rourke, and as great a cheat as herself.',
+       st:'— Captain O’Rourke, madam, at your service, and at your mercy. — It was the first true thing either of them had said all evening; and they both knew it; and both, I think, were a little frightened by it.'},
+    X:{sm:'Of all the gentlemen alighting in Hanover Square she must needs fasten upon young Mr Rakewell, notorious for keeping an actress in Bow Street; and they were announced together, to the elevation of more fans at once than had stirred since the old Queen’s funeral.',
+       st:'Of all the arms in Hanover Square, — and there were, I compute, upwards of three hundred, — she took the one arm in it that every lady present had resolved never to be seen upon.'}},
+   out:{
+    T:s=>{s.flags.announced=1;s.flags.orourke=1;adj('composure',1,'a fellow artist');
+      hook('Captain O’Rourke, a fellow impostor, who knows your trade as you know his','met at Lady Bellaston’s door');
+      return `<p>The gentleman alighting from the next chair is a soldierly Irishman in a magnificent coat. He takes in your situation at a glance, offers his arm, and murmurs as you pass the porter, “Captain O’Rourke, madam: at your service, and at your mercy.” Two artists have recognised each other across a crowded step.</p>`},
+    S:s=>{s.flags.announced=1;
+      return `<p>Sir Jasper Wilding, who is seventy and has not been asked to take a lady in since the old Queen died, is enchanted to be of service.</p>`},
+    C:s=>{s.flags.announced=1;hook('Sir Jasper Wilding, seventy, who believes you owe him a dance, and rather more','taken in on his arm');
+      return `<p>Sir Jasper Wilding takes you in, and pats your hand on the stair in a manner which suggests that he regards the transaction as a loan.</p>`},
+    R:s=>{s.flags.unannounced=1;adj('composure',-2,'a wife alights');
+      return `<p>You have his arm and are halfway up the steps when his wife alights from the chair behind. In the disagreement that follows you go up alone, unannounced, and very fast.</p>`},
+    X:s=>{s.flags.announced=1;tag('Fast (the Quality)','arrived on a rake’s arm');adj('composure',-1,'an unfortunate escort');
+      return `<p>The arm you take belongs to young Mr Rakewell, whom every person in the room knows to keep an actress in Bow Street. You are announced together. Several fans go up at once.</p>`}
+   }, next:'room'},
+  {label:'Send up your card as Mrs Delacourt, and wait to be asked in.',
+   gate:s=>({ok:s.celebrity>=4,need:`Celebrity 4 · you have ${s.celebrity}`}),
+   dev:'Locked: shown so the player sees what a name in the Town would buy.'}
+ ]};
+
+B.room={num:'II',phase:'The Complication',title:'A Lady from Dublin',sid:'ball.02.dublin',
+ dev:'requires inside ∧ ¬withdrawn · reads flags: announced, unannounced, suspicious',
+ text:s=>`<p>The ballroom is as hot as a glasshouse and smells of wax, orange-water and ambition. ${s.flags.unannounced?'Nobody knows who you are, which is restful.':'Your name has gone into the room ahead of you, and been weighed.'} You have taken two turns of the room, been looked over by three dowagers and found wanting by two of them, when Lady Bellaston bears down upon you with a stout woman in purple.</p>
+ <p>${s.flags.unannounced?'“My dear, I am sure we have met, but I am so stupid about names.” “Delacourt,” you tell her. “Mrs Delacourt, of Dublin.” “Then here is Mrs O’Hara, who is lately from Dublin and knows everyone!”':'“Mrs Delacourt! Here is Mrs O’Hara, who is lately from Dublin and knows everyone. You will have so much to say to each other.”'}</p>
+ <p>Mrs O’Hara has the face of a magistrate and the accent of a peat fire. She says that she knew a great many Delacourts, and wonders which of them was the Colonel.</p>`,
+ notes:['† Pope’s translation of the Iliad was completed in 1720 and made him rich. His Odyssey was still in the press.'],
+ ask:'How do you answer Mrs O’Hara?',
+ opts:[
+  {label:'Supply the Colonel with a family, a regiment and a county, fluently and at once.',
+   check:{attr:'Wit',diff:5,bonus:s=>s.flags.suspicious?[-1,'already suspected']:[0,'']},
+   dev:'Wheel · Wit 4 vs 5 (−1 if already suspected).\nT: Mrs O’Hara “remembers” the Colonel; Exposure −1 · Story\nS: you pass muster\nC: Mrs O’Hara will write to Dublin (Exposure +3, week 45)\nR: unconvinced; Composure −2; suspected\nX: a street pulled down in 1690; Exposure +2 now; Composure −2; suspected · Story',
+   story:{
+    T:{sm:'She furnished the late Colonel upon the instant with a Kildare family, a Papist branch, a regiment of dragoons and a fever at a siege; and Mrs O’Hara, who would have died upon the rack rather than own she had never heard of them, declared that she remembered him very well, and that he had been a fine figure of a man.',
+       st:'Thus was a man who never lived furnished, in the space of one minute, with a family, a fever and a figure; — which is more, madam, than most of us contrive in a lifetime.'},
+    X:{sm:'But in the heat of invention she lodged the Delacourts in a street of Dublin which Mrs O’Hara, with the joy of a terrier at a rat-hole, proved to have been pulled down in the year of the Boyne.',
+       st:'— Pulled down, said Mrs O’Hara, in the year of the Boyne. — There is no answer to a date. I have searched the whole of rhetoric for one, and there is none.'}},
+   out:{
+    T:s=>{s.flags.colonel=1;adj('exposure',-1,'a witness to the Colonel');
+      return `<p>“The Kildare Delacourts. The Papist branch, poor creatures; one does not speak of them.” Mrs O’Hara, who would rather die than admit she has never heard of them, says that she remembers the Colonel very well, and that he was a fine figure of a man. In the space of a minute the late Colonel has acquired a figure, a regiment and a witness.</p>`},
+    S:s=>`<p>Kildare; dragoons; a fever at the siege; a modest estate, sadly encumbered. Mrs O’Hara nods. It is the sort of story she has heard a hundred times, and therefore believes.</p>`,
+    C:s=>{rumour({id:'dublin',week:45,from:'A sister in Dublin',text:'Mrs O’Hara has written to her sister in Dublin, who knows everyone that Mrs O’Hara does not, asking after a Colonel Delacourt of dragoons.',effect:'Exposure +3 (Mrs Delacourt)'});
+      return `<p>Mrs O’Hara nods slowly, and says she will write to her sister in Dublin, who will be so interested.</p>`},
+    R:s=>{s.flags.suspicious=1;adj('composure',-2,'a cold eye');
+      return `<p>Mrs O’Hara hears you out, says “Indeed,” in a tone that closes the subject like a lid, and goes away to talk to Lady Bellaston behind her fan.</p>`},
+    X:s=>{s.flags.suspicious=1;adj('exposure',2,'a slip about Dublin');adj('composure',-2,'a slip about Dublin');
+      return `<p>In your fluency you place the Delacourt town house in a street which, Mrs O’Hara observes with deep satisfaction, was pulled down in the year of the Boyne.</p>`}
+   }, next:'glanville'},
+  {label:'Turn the talk to Mr Pope’s Iliad, which Mrs O’Hara has plainly not read.',
+   gate:s=>({ok:s.attrs.Learning>=3,need:`Learning 3 · you have ${s.attrs.Learning}`}),
+   cost:'a name for learning, which few gentlemen forgive',
+   dev:'Gated (Learning ≥ 3) · costed · certain. Mrs O’Hara retreats. Gains the Learned tag: −1 to the dance with Lord Glanville, +1 at the card table.',
+   do:s=>{s.flags.learned=1;tag('Learned (the Quality)','discoursed upon Homer');
+     return `<p>Does Mrs O’Hara not find that Mr Pope has made Achilles rather too much of a gentleman?<sup class="fn">†</sup> Mrs O’Hara finds that she is wanted at the card tables. Lady Bellaston is delighted, and tells everyone that you are prodigiously learned. Two gentlemen who had been edging closer edge away again.</p>`},
+   next:'glanville'},
+  {label:'Feel suddenly faint, and allow yourself to be caught.',
+   cost:'Composure, and a little dignity',
+   dev:'Costed · certain. Composure −1. Meets Lord Glanville early: +1 to the dance in Beat III, and unlocks the supper option in Beat IV.',
+   do:s=>{adj('composure',-1,'a faint, performed');s.flags.metLord=1;s.flags.fainted=1;
+     return `<p>You sway, murmur, and are caught with great presence of mind by a thin elderly gentleman with a star on his coat and a cough, who calls for ${c('hartshorn')}. Mrs O’Hara is borne away on the tide of solicitude. The gentleman is Lord Glanville. He has forty thousand pounds, a house in St James’s Square and, it is said, not long to live.</p>`},
+   next:'glanville'},
+  {label:'Plead a headache, and call for your chair.',withdraw:1,
+   dev:'Withdraw · certain. Ends the Venture early. Chair −2s; Melancholic +1.',
+   do:s=>{s.flags.withdrew=1;s.flags.paidChair=1;adj('purse',-24,'chairmen');adj('hum.Melancholic',1,'a ball abandoned');
+     return `<p>You press a hand to your brow and are sorry, so very sorry. On the stair you pass a dozen girls with mothers, going up. Not one of them has wit, and all of them have been asked.</p>`},
+   next:'reckon'}
+ ]};
+
+B.glanville={num:'III',phase:'The Turn',title:'Lord Glanville',sid:'ball.03.glanville',
+ dev:'requires inside · reads flags: metLord, learned · the Venture’s prize',
+ text:s=>`${s.flags.metLord?'<p>Lord Glanville has not left your side since the hartshorn. He has told you about his late wife, his gout and the iniquity of the Excise, and you have listened to all three as though they were Scripture.</p>':'<p>Across the room, Lady Bellaston is pointing out Lord Glanville to anyone who will listen: a widower of sixty, thin as a heron, with forty thousand pounds, a house in St James’s Square, and a cough that the Town discusses with more interest than his politics.</p>'}
+ <p>Every mother in the room has a daughter, and every daughter has a plan. Miss Pinchbeck, the ${c('toast')} of the season, has twenty thousand pounds and a mother like a frigate. You have no mother here, and a plan of your own.</p>`,
+ notes:['‡ Quadrille, a four-handed descendant of ombre, was displacing ombre in fashionable drawing rooms through the 1720s. Ladies played it for high stakes.'],
+ ask:'How will you go about him?',
+ opts:[
+  {label:'Contrive to be his partner in the next dance, and let him do the talking.',
+   check:{attr:'Address',diff:5,bonus:s=>{let b=0,w=[];if(s.attrs.Countenance>=4){b++;w.push('Countenance 4');}if(s.flags.metLord){b++;w.push('already acquainted');}if(s.flags.learned){b--;w.push('thought learned');}return [b,w.join(', ')];}},
+   dev:'Wheel · Address 4 vs 5 (+1 Countenance, +1 if acquainted, −1 if Learned).\nT: he will call tomorrow; Celebrity +1; Hook · Story\nS: he will call tomorrow; Hook\nC: he asks your direction, and you give Hanover Square\nR: he forgets you for Miss Pinchbeck; Composure −1\nX: he tears your gown; Absurd tag; Composure −2 · Story',
+   story:{
+    T:{sm:'Lord Glanville, a nobleman of sixty with forty thousand pounds and a cough upon which half the Town had laid wagers, danced with her, talked of himself through the whole of the minuet, and at the close begged leave to wait upon her the next day; at which Miss Pinchbeck’s mother shut her fan with a report like a pistol.',
+       st:'He talked of his gout. He talked of the Excise. He talked of his late wife, at some length, and with more tenderness than I believe he ever showed her living; — and at the end of it all he asked whether he might call. She said yes. She would have said yes to the Excise.'},
+    X:{sm:'In the turn of the dance his lordship set his foot upon her train, and the lustring parted from waist to hem with a sound like a sigh, which every person in the room heard and none forgot.',
+       st:'Rrrrrip. — I have endeavoured to set down that sound with the exactness it deserves, and find the alphabet unequal to it.'}},
+   out:{
+    T:s=>{s.flags.metLord=1;s.flags.lordCall=1;adj('celebrity',1,'seen with Lord Glanville');
+      hook('Lord Glanville, £40,000, who means to call on Mrs Delacourt tomorrow','a minuet in Hanover Square');
+      return `<p>He talks for the whole of the dance, chiefly about himself, and at the end asks whether he may wait on you tomorrow. You say that he may. Miss Pinchbeck’s mother, watching from the wall, folds her fan like a closing gun-port.</p>`},
+    S:s=>{s.flags.metLord=1;s.flags.lordCall=1;
+      hook('Lord Glanville, £40,000, who means to call on Mrs Delacourt tomorrow','a minuet in Hanover Square');
+      return `<p>He dances stiffly and talks well enough, and at the close asks leave to call. You lodge, at present, over a ${c('perruquier')}’s in Tavistock Street.</p>`},
+    C:s=>{s.flags.metLord=1;s.flags.lordCall=1;s.flags.needAddress=1;
+      hook('Lord Glanville, who will call tomorrow at an address in Hanover Square that you do not have','a careful man');
+      return `<p>He asks to call, and, being a careful man, asks for your direction. You name a house in Hanover Square without blinking. By eleven tomorrow you must therefore possess one.</p>`},
+    R:s=>{adj('composure',-1,'passed over');adj('hum.Melancholic',1,'passed over');
+      return `<p>He dances well, coughs badly, and by the second figure has forgotten you entirely for Miss Pinchbeck, who has twenty thousand pounds and is not, so far as anyone can tell, anything else whatever.</p>`},
+    X:s=>{s.flags.torn=1;lose('A gown of rose lustring, not paid for','torn in the dance');S.items.push('A torn gown of rose lustring, still owed for');adj('composure',-2,'a torn gown');tag('Absurd (the Quality)','a torn gown');
+      return `<p>In the turn of the dance he treads on your train. Rose lustring tears like a sigh. The room turns to look, and you walk out of the figure with a yard of silk over your arm and the mantua-maker’s bill entirely intact.</p>`}
+   }, next:toCrisis},
+  {label:'Sit down to quadrille at his table, win his money, and make him laugh at losing it.',
+   check:{attr:'Wit',diff:4,bonus:s=>s.flags.learned?[1,'thought learned']:[0,'']},
+   dev:'Wheel · Wit 4 vs 4 (+1 if Learned).\nT: win £21; Celebrity +1; Hook · Story\nS: win £10 10s; Hook\nC: win £5 5s; he sulks\nR: lose £2\nX: lose £15 you do not have; the rest becomes a debt of honour · Story',
+   story:{
+    T:{sm:'She sat down to quadrille at his lordship’s table and won twenty guineas of him in an hour, making him laugh thrice in the doing of it, which his physician had expressly forbid.',
+       st:'Twenty guineas, — and three laughs, which his physician had forbidden; and I am not sure, upon reflection, which of the two he valued more, or which cost him dearer.'},
+    X:{sm:'But the cards ran against her with a malice peculiar to houses where the servants are paid out of the card-money, and she rose from the table fifteen pounds in debt to a peer of the realm, with nothing to offer him but her note of hand.',
+       st:'Fifteen pounds. — Let the reader who has never lost fifteen pounds he did not possess, at a table he was not invited to, to a man he meant to marry, throw the first card.'}},
+   out:{
+    T:s=>{s.flags.metLord=1;s.flags.cards=1;loot(5040,'twenty guineas at quadrille');adj('celebrity',1,'the talk of the card room');
+      hook('Lord Glanville, who has never been beaten so prettily, and wishes to be beaten again','quadrille');
+      return `<p>You take twenty guineas off him in an hour, and make him laugh three times, which his physician has forbidden. He says that he has never been beaten so prettily.<sup class="fn">‡</sup></p>`},
+    S:s=>{s.flags.metLord=1;s.flags.cards=1;loot(2520,'ten guineas at quadrille');
+      hook('Lord Glanville, who has never been beaten so prettily','quadrille');
+      return `<p>Ten guineas, and a peer who looks at you across the cards as though you were a hand he has not yet worked out.<sup class="fn">‡</sup></p>`},
+    C:s=>{s.flags.cards=1;loot(1260,'five guineas at quadrille');
+      return `<p>You win five guineas. Lord Glanville, it emerges, does not like to lose, and still less to a woman, and goes off to sulk beside Miss Pinchbeck.<sup class="fn">‡</sup></p>`},
+    R:s=>{s.flags.cards=1;adj('purse',-480,'lost at quadrille');
+      return `<p>The cards run against you, as cards will in a house where the servants are paid out of the card money. You lose two pounds and keep your smile.<sup class="fn">‡</sup></p>`},
+    X:s=>{s.flags.cards=1;const owed=3600;const paid=Math.min(s.purse,owed);adj('purse',-paid,'lost at quadrille');adj('debts',owed-paid,'a debt of honour to Lord Glanville');tag('In debt of honour (the Quality)','lost at quadrille');
+      return `<p>You lose fifteen pounds you do not have, and must give your note of hand for the balance to a peer of the realm. It is the first time you have owed money to a man who could, if he chose, simply forget about it. He does not look like a man who forgets.<sup class="fn">‡</sup></p>`}
+   }, next:toCrisis},
+  {label:'Let it be understood, without a word said, that the widow might be kind.',
+   gate:s=>({ok:s.attrs.Countenance>=4,need:`Countenance 4 · you have ${s.attrs.Countenance}`}),
+   cost:'your character as a respectable widow',
+   dev:'Gated (Countenance ≥ 4) · costed · certain. Opens the courtesan’s ladder: an offer of keeping (Hook), the Fast tag, Celebrity +1. A milestone, so the Story is written. Settlement terms to be negotiated in a later Venture.',
+   story:{M:{sm:'Before supper his lordship had made her, by the mouth of a little old Frenchman who was his secretary, a proposal which was not a proposal of marriage: a house in Marylebone, a chariot, and three hundred a year at pleasure; and she, who had been bred to the catechism, perceived that she had now begun upon a different book.',
+       st:'— At pleasure, said she. — It is the shortest phrase in the language, madam, and the most expensive; and I have known it outlast a marriage.'}},
+   do:s=>{s.flags.metLord=1;s.flags.offer=1;tag('Fast (the Quality)','an understanding with Lord Glanville');adj('celebrity',1,'noticed by a peer');
+     hook('Lord Glanville proposes a house in Marylebone, a chariot, and £300 a year “at pleasure”','an understanding reached by fan');
+     return `<p>It is done with the fan and the eyes and nothing else at all. By supper Lord Glanville has made, through a very small and very old Frenchman who is his secretary, a proposal that is not a proposal of marriage. A house in Marylebone. A chariot. Three hundred a year, at pleasure. “At pleasure,” you observe to the Frenchman, “is a very short phrase.” He bows, and says that it may be lengthened by a lawyer.</p>`},
+   next:toCrisis},
+  {label:'Ask Lady Bellaston to present you to the Princess of Wales.',
+   gate:s=>({ok:s.celebrity>=5,need:`Celebrity 5 · you have ${s.celebrity}`}),
+   dev:'Locked: a Book III door.'}
+ ]};
+
+B.pounce={num:'IV',phase:'The Crisis',title:'A Voice from Wiltshire',sid:'ball.04.pounce',
+ dev:'requires ¬suspicious ∧ ¬letterKept · threatens the Origin Secret (Kitty Glover, the curate’s daughter)\nPress on, or withdraw.',
+ text:s=>`<p>It is past one, and the candles are guttering, when you hear it: a high, precise, clerical voice that you have not heard since you were seventeen, saying grace over a boiled fowl at your father’s table.</p>
+ <p>The Reverend Dr Pounce, once Rural Dean of your father’s deanery, now chaplain to a bishop and fatter by a stone, is at the punch-bowl. He has seen you. He is looking at you with the expression of a man trying to remember where he left a sermon.</p>
+ <p>Kitty Glover left Wiltshire under a cloud. Mrs Delacourt has never been to Wiltshire in her life.</p>`,
+ ask:'Press on, or withdraw?',
+ opts:[
+  {label:'Press on: go straight up to him, and ask after the Bishop’s gout as a woman who has never seen him before.',
+   check:{attr:'Nerve',diff:5,bonus:s=>s.attrs.Address>=4?[1,'Address 4']:[0,'']},
+   dev:'Press on · Wheel · Nerve 3 + 1 (Address) vs 5.\nT: he decides he has not seen you; Composure +1 · Story\nS: he mentions a likeness (Exposure +1, week 44)\nC: he mentions it to Lady Bellaston (Exposure +2)\nR: he knows you, and will call (Hook on the Secret; Exposure +2)\nX: he says your name aloud; Exposure +3 now and +3 later; Melancholic +1 · Story',
+   story:{
+    T:{sm:'Here she was spied by Dr Pounce, a fat divine who had dined at her father’s table a hundred times; but she walked up to him with so fine an assurance, and asked so tenderly after the Bishop’s gout, that the Doctor concluded, like a prudent churchman, that he had seen nothing at all.',
+       st:'Dr Pounce looked at her. She looked at Dr Pounce. — And here, madam, a whole sermon passed between them without a word spoken; at the end of which the Doctor decided he had never seen her in his life; which was the best sermon he ever preached.'},
+    X:{sm:'“Kitty Glover!” cried the Doctor, in the voice he kept for the back of a cathedral; and the name went round Lady Bellaston’s rooms faster than the negus.',
+       st:'— Kitty Glover! — Two words. I have known whole Acts of Parliament do less.'}},
+   out:{
+    T:s=>{adj('composure',1,'nerve held');
+      return `<p>Dr Pounce looks at you for a long moment, and decides, as men of his cloth so often do, that it is wiser not to have seen something. He tells you that the Bishop’s gout is much improved, and that you remind him of no one at all.</p>`},
+    S:s=>{rumour({id:'pounce',week:44,from:'The Reverend Dr Pounce',text:'Dr Pounce has remarked at a dinner in Soho that Mrs Delacourt is the image of a curate’s girl he once knew in Wiltshire.',effect:'Exposure +1 (Mrs Delacourt)'});
+      return `<p>He answers civilly, but he keeps looking at you as if you were a text he could not place.</p>`},
+    C:s=>{rumour({id:'pounce',week:43,from:'Lady Bellaston’s drawing room',text:'Dr Pounce has told Lady Bellaston of a very striking likeness, and Lady Bellaston adores a likeness.',effect:'Exposure +2 (Mrs Delacourt)'});
+      return `<p>He is civil to your face. Five minutes later you see him bend to Lady Bellaston’s ear.</p>`},
+    R:s=>{hook('Dr Pounce, who knows that Mrs Delacourt is Kitty Glover, and would like to discuss it privately','recognised at the punch-bowl');
+      rumour({id:'pounce',week:43,from:'The Reverend Dr Pounce',text:'Dr Pounce has written to Wiltshire to ask after the curate’s daughter.',effect:'Exposure +2 (Mrs Delacourt)'});
+      return `<p>“Kitty Glover,” he says, very quietly, and smiles. “I shall not say a word, my dear. But I think I shall call.”</p>`},
+    X:s=>{adj('exposure',3,'named aloud');adj('hum.Melancholic',1,'named aloud');
+      rumour({id:'pounce',week:42,from:'Every drawing room in Mayfair',text:'Mrs Delacourt is said to be a Wiltshire curate’s daughter, and worse.',effect:'Exposure +3 (Mrs Delacourt) · the Secret is out'});
+      return `<p>“Why, it is Kitty Glover!” cries Dr Pounce, delighted, in the voice he uses for the back of a cathedral. “The curate’s girl! Does your poor father know you are in town?”</p>`}
+   }, next:'reckon'},
+  {label:'Press on: take him aside, and remind him in a low voice of the churchwardens’ accounts at Tisbury.',
+   check:{attr:'Wit',diff:4},
+   dev:'Press on · Wheel · Wit 4 vs 4. Blackmail.\nT: silence; Ruthless tag; Hook · Story\nS: silence; Ruthless tag\nC: Ruthless; Choleric +1; Exposure +1 later\nR: he calls your bluff; Exposure +3 later; Composure −2\nX: he threatens the Bishop’s court; Exposure +2 now; Notoriety +1 · Story',
+   story:{
+    T:{sm:'She drew the Doctor aside, and in a low voice put him in mind of certain irregularities in the churchwardens’ accounts at Tisbury; upon which the good man discovered that he had never set eyes on her before, and thanked her heartily for the reminder.',
+       st:'What she whispered I shall not set down; there are churchwardens yet living. It is enough that the Doctor turned the colour of the punch, and found that he was wanted elsewhere.'},
+    X:{sm:'But the Doctor, so far from being frighted, spoke to her very quietly of the consistory court, and of the Bridewell, and of what is done there to young women who forget themselves; and she went in to supper with no appetite at all.',
+       st:'— The Bridewell, said the Doctor gently. — It is remarkable, madam, how gently a clergyman can say the Bridewell.'}},
+   out:{
+    T:s=>{tag('Ruthless (the Church)','blackmailed a chaplain');hook('Dr Pounce, who fears you exactly as much as you fear him','the Tisbury accounts');
+      return `<p>Dr Pounce discovers, all at once, that he has never seen you before in his life, and is grateful to you for the reminder.</p>`},
+    S:s=>{tag('Ruthless (the Church)','blackmailed a chaplain');
+      return `<p>He goes the colour of the punch, and finds that he is wanted elsewhere.</p>`},
+    C:s=>{tag('Ruthless (the Church)','blackmailed a chaplain');adj('hum.Choleric',1,'a hard bargain');
+      rumour({id:'pounce',week:44,from:'The Reverend Dr Pounce',text:'Dr Pounce has written a careful letter to your father in Wiltshire.',effect:'Exposure +1 (Mrs Delacourt)'});
+      return `<p>He agrees to know nothing. His eyes promise that he will find a way to know it later.</p>`},
+    R:s=>{adj('composure',-2,'a bluff called');
+      rumour({id:'pounce',week:43,from:'Lady Bellaston’s drawing room',text:'Dr Pounce says that a lady at the ball tried to frighten him with old parish gossip, and names her.',effect:'Exposure +3 (Mrs Delacourt)'});
+      return `<p>“My dear young woman,” says Dr Pounce, loudly enough for two dowagers to hear, “the Tisbury accounts were audited by the Archdeacon.”</p>`},
+    X:s=>{adj('exposure',2,'a threat answered');adj('notoriety',1,'a threat answered');
+      rumour({id:'pounce',week:42,from:'The Bishop’s registry',text:'Dr Pounce speaks of the consistory court, and of a curate’s daughter who forgets herself.',effect:'Exposure +3 (Mrs Delacourt) · Notoriety +1'});
+      return `<p>He hears you out, and then speaks quietly of the consistory court, of the Bridewell, and of what is done there to young women who forget themselves.</p>`}
+   }, next:'reckon'},
+  {label:'Take Lord Glanville’s arm, and ask to be taken in to supper now.',
+   gate:s=>({ok:!!s.flags.metLord,need:'Lord Glanville’s acquaintance'}),
+   dev:'Gated (met Lord Glanville) · certain. A peer’s partner cannot be approached. Exposure +1 later.',
+   do:s=>{s.flags.supper=1;rumour({id:'pounce',week:44,from:'The Reverend Dr Pounce',text:'Dr Pounce wonders aloud who Lord Glanville’s new friend may be.',effect:'Exposure +1 (Mrs Delacourt)'});
+     return `<p>No country clergyman, however fat, approaches a peer at supper. Dr Pounce watches you go in with his mouth a little open, like a man who has just heard his own text preached better.</p>`},
+   next:'reckon'},
+  {label:'Withdraw: drop your fan, plead the heat, and call for your chair.',withdraw:1,
+   dev:'Withdraw · certain. Chair −2s. Exposure +2 arrives later.',
+   do:s=>{s.flags.paidChair=1;adj('purse',-24,'chairmen');
+     rumour({id:'pounce',week:43,from:'The Reverend Dr Pounce',text:'Dr Pounce has mentioned a striking likeness, and a lady who left in a hurry.',effect:'Exposure +2 (Mrs Delacourt)'});
+     return `<p>You drop your fan, and while three gentlemen dive for it, you leave. The fan was borrowed. That is tomorrow’s difficulty.</p>`},
+   next:'reckon'}
+ ]};
+
+B.steward={num:'IV',phase:'The Crisis',title:'The Steward’s Errand',sid:'ball.04b.steward',
+ dev:'requires suspicious ∨ letterKept · replaces the Wiltshire crisis\nPress on, or withdraw.',
+ text:s=>`<p>At half past twelve a steward in black comes through the card room with a folded paper in his hand. You know it at once, because you wrote it.</p>
+ <p>He gives it to Lady Bellaston. Lady Bellaston puts up her glass, reads it again, and looks slowly across the room at you. It is the look of a hostess who has found a mouse in the syllabub and is deciding whether to scream.</p>`,
+ ask:'Press on, or withdraw?',
+ opts:[
+  {label:'Press on: cross the room to Lady Bellaston before she can speak, and confess the whole thing as an excellent joke.',
+   check:{attr:'Nerve',diff:5,bonus:s=>s.attrs.Wit>=4?[1,'Wit 4']:[0,'']},
+   dev:'Press on · Wheel · Nerve 3 + 1 (Wit) vs 5.\nT: Lady Bellaston adopts the joke and the joker; patroness Hook; Celebrity +2 · Story\nS: she keeps the secret, for a favour (Hook)\nC: she tells two friends (Exposure +2 later)\nR: she asks you to leave (Exposure +3 later); Composure −2\nX: she screams; Exposure +3 now; Notoriety +1 · Story',
+   story:{
+    T:{sm:'Seeing her letter delivered up, she crossed the room before her hostess could open her mouth, and confessed the whole as a frolic, so prettily that Lady Bellaston resolved the joke should be her own; and by two in the morning was telling it with improvements, and had taken her up as the cleverest woman in London.',
+       st:'Confess everything, — said a small voice within her, — it is the one lie they will never expect. And so she did; and Lady Bellaston laughed, and kept her; which is the whole history of Lady Bellaston’s friendships, and of most others.'},
+    X:{sm:'Lady Bellaston screamed. It was not a loud scream; but in Hanover Square a small scream will carry as far as a cannon at Woolwich.',
+       st:'Lady Bellaston screamed. * * * * * * * * — I leave the reader these asterisks, to scream into on her behalf.'}},
+   out:{
+    T:s=>{s.flags.confessed=1;adj('celebrity',2,'the joke of the season');
+      hook('Lady Bellaston, your patroness, who enjoys a fraud provided it is hers','a confession in the card room');
+      return `<p>Lady Bellaston hears you out, and decides that the joke is better if she is in on it. By two o’clock she is telling it herself, with improvements, and has taken you up as the cleverest woman in London.</p>`},
+    S:s=>{s.flags.confessed=1;hook('Lady Bellaston, who knows, and will one day want a favour','a confession in the card room');
+      return `<p>Lady Bellaston is amused, and folds the letter into her stays. “We shall say no more about it, my dear. For the present.”</p>`},
+    C:s=>{rumour({id:'steward',week:43,from:'Lady Bellaston’s drawing room',text:'Lady Bellaston has told two particular friends about the widow with the forged letter, in strictest confidence.',effect:'Exposure +2 (Mrs Delacourt)'});
+      return `<p>Lady Bellaston laughs, and forgives you, and tells two particular friends before the night is out.</p>`},
+    R:s=>{adj('composure',-2,'shown the door');
+      rumour({id:'steward',week:42,from:'Lady Bellaston’s drawing room',text:'A woman calling herself Mrs Delacourt was asked to leave Lady Bellaston’s ball.',effect:'Exposure +3 (Mrs Delacourt)'});
+      return `<p>Lady Bellaston does not find it a joke. She asks, quite pleasantly, whether your chair has been called. It has now.</p>`},
+    X:s=>{adj('exposure',3,'a scene');adj('notoriety',1,'a scene');
+      rumour({id:'steward',week:42,from:'Every drawing room in Mayfair',text:'An impostor was unmasked at Lady Bellaston’s, and her ladyship screamed.',effect:'Exposure +3 (Mrs Delacourt) · Notoriety +1'});
+      return `<p>Lady Bellaston screams. It is not a loud scream, but it is a scream, and in Hanover Square that is enough.</p>`}
+   }, next:'reckon'},
+  {label:'Have Betty Slyfield mislay the letter, and put a genuine one from her ladyship’s escritoire in its place.',
+   gate:s=>({ok:s.hooks.some(h=>h.startsWith('Betty Slyfield')),need:'Hook: Betty Slyfield'}),
+   cost:'10s, and the favour Betty owes',
+   dev:'Costed · certain. Purse −10s; spends the Betty hook. The evidence vanishes. No Exposure.',
+   do:s=>{adj('purse',-120,'half a sovereign for Betty');unhook('Betty Slyfield','favour called in');
+     return `<p>Betty has the letter off the salver before the steward turns round. The paper Lady Bellaston reads the third time is a note from her own dressmaker, which upsets her far more, and drives every other thought from her head.</p>`},
+   next:'reckon'},
+  {label:'Press on: declare the letter a malicious forgery by a jealous rival, and look meaningfully at Mrs O’Hara.',
+   check:{attr:'Wit',diff:4},
+   dev:'Press on · Wheel · Wit 4 vs 4. Shifts the blame.\nT/S: the room believes it; Ruthless tag (T · Story)\nC: half believe it (Exposure +1 later); Ruthless\nR: nobody believes it (Exposure +3 later)\nX: Mrs O’Hara slaps you; Exposure +2 now; Notoriety +1 · Story',
+   story:{
+    T:{sm:'She declared the letter a forgery got up by a jealous rival, and looked so meaningly at Mrs O’Hara, that before supper the whole room was persuaded that lady had forged a letter to ruin a poor widow; and Mrs O’Hara went home in tears, which was the only injustice of the evening that nobody regretted.',
+       st:'Poor Mrs O’Hara! — I own I pity her; — I pitied her for very nearly a page, which is more than anyone in the room did.'},
+    X:{sm:'Whereupon Mrs O’Hara crossed the card-room and boxed her ears, with a ring upon the hand, before four tables of quadrille, who all agreed afterwards that they had never seen anything so delightful.',
+       st:'— Slap. — There are some sounds even I cannot improve upon.'}},
+   out:{
+    T:s=>{tag('Ruthless (the Quality)','blamed Mrs O’Hara');adj('celebrity',1,'a scandal survived');
+      return `<p>It is beautifully done. By supper the whole room knows that Mrs O’Hara forged a letter to ruin a poor widow, and Mrs O’Hara has gone home in tears.</p>`},
+    S:s=>{tag('Ruthless (the Quality)','blamed Mrs O’Hara');
+      return `<p>Lady Bellaston, who never liked Mrs O’Hara, is happy to believe it.</p>`},
+    C:s=>{tag('Ruthless (the Quality)','blamed Mrs O’Hara');
+      rumour({id:'steward',week:44,from:'Lady Bellaston’s drawing room',text:'Some say Mrs O’Hara forged a letter; others say the widow did.',effect:'Exposure +1 (Mrs Delacourt)'});
+      return `<p>Half the room believes it. The other half is waiting to see which half was right.</p>`},
+    R:s=>{rumour({id:'steward',week:42,from:'Lady Bellaston’s drawing room',text:'The widow with the forged letter tried to blame Mrs O’Hara, and nobody believed her.',effect:'Exposure +3 (Mrs Delacourt)'});
+      return `<p>Nobody believes it, least of all Mrs O’Hara, who has the advantage of knowing it to be untrue.</p>`},
+    X:s=>{adj('exposure',2,'a slap in the card room');adj('notoriety',1,'a slap in the card room');
+      return `<p>Mrs O’Hara crosses the card room and slaps you, with a ring on the hand, in front of four tables of quadrille. Nobody has ever seen anything so delightful.</p>`}
+   }, next:'reckon'},
+  {label:'Withdraw: slip out through the card room and down the back stairs, losing a shoe on the way.',withdraw:1,
+   dev:'Withdraw · certain. Loses a shoe. Exposure +3 arrives later.',
+   do:s=>{s.flags.shoe=1;S.items.push('One silver-buckled shoe');
+     rumour({id:'steward',week:43,from:'Lady Bellaston’s drawing room',text:'A lady fled the ball and left a silver-buckled shoe upon the back stairs. Lady Bellaston means to find its owner.',effect:'Exposure +3 (Mrs Delacourt)'});
+     return `<p>You are down the back stairs and out through the kitchens before the steward has finished bowing. One shoe comes with you. The other stays on the stair, where Lady Bellaston’s second footman finds it, and takes it up to her ladyship on a cushion.</p>`},
+   next:'reckon'}
+ ]};
+
+/* ---------- rendering ---------- */
+function odds(m){let w=[10+5*m,30+5*m,25,25-5*m,10-5*m].map(x=>Math.max(3,x));const t=w.reduce((a,b)=>a+b,0);return w.map(x=>x/t);}
+function checkMargin(o){const ch=o.check;const [b,why]=ch.bonus?ch.bonus(S):[0,''];const comp=S.composure<=0?-2:0;
+  const m=Math.max(-3,Math.min(4,S.attrs[ch.attr]+b-ch.diff+comp));return {m,b,why,comp};}
+function stripHTML(p){const cols=['--w-t','--w-s','--w-c','--w-r','--w-x'];return `<span class="strip" aria-hidden="true">${p.map((x,i)=>`<i style="width:${(x*100).toFixed(1)}%;background:var(${cols[i]})"></i>`).join('')}</span>`;}
+
+function optEl(o){
+  const b=document.createElement('button');b.className='opt';b.type='button';
+  const g=o.gate?o.gate(S):{ok:true};
+  const locked=!g.ok||(!o.do&&!o.check);
+  const badges=[];
+  if(o.gate)badges.push(`<span class="badge ${g.ok?'ok':'no'}">${g.ok?'✓':'✗'} Requires ${g.need}</span>`);
+  if(o.cost)badges.push(`<span class="badge cost">Costs ${o.cost}</span>`);
+  if(o.check){const {m,b:bn,why,comp}=checkMargin(o);const p=odds(m);
+    badges.push(`<span class="badge">Wheel · ${o.check.attr} ${S.attrs[o.check.attr]}${bn?(bn>0?' + ':' − ')+Math.abs(bn):''} vs ${o.check.diff}${comp?' · Composure spent':''}</span>${stripHTML(p)}`);
+    o._why=why;}
+  if(!o.check&&!locked)badges.push(`<span class="badge">Certain</span>`);
+  if(o.withdraw)badges.push(`<span class="badge">Withdraw</span>`);
+  b.innerHTML=`<span class="hand" aria-hidden="true">☞</span><span class="lbl">${o.label}</span><span class="badges">${badges.join('')}</span><span class="dev">${o.dev||''}${o.check&&o._why?'\nmodifier: '+o._why:''}</span>`;
+  if(locked){b.disabled=true;b.classList.add('locked');b.setAttribute('aria-disabled','true');}
+  else b.addEventListener('click',()=>choose(o,b));
+  return b;
+}
+
+let beatCount=0;
+function renderBeat(id){
+  const bt=B[id];beatCount++;
+  const sec=document.createElement('section');sec.className='beat';
+  sec.innerHTML=`<div class="dev devhead">storylet ${bt.sid} · beat ${beatCount} of 5\n${bt.dev}</div>
+   <h2><span class="phase">${bt.phase}</span><span class="num">${bt.num}.</span> ${bt.title}</h2>
+   <div class="prose">${bt.text(S)}</div>
+   <p class="ask">${bt.ask}</p>
+   <div class="choices" role="group" aria-label="${bt.ask}"></div>
+   <div class="out"></div>
+   ${bt.notes?`<div class="notes prose">${bt.notes.map(n=>`<p>${n}</p>`).join('')}</div>`:''}`;
+  const box=sec.querySelector('.choices');
+  bt.opts.forEach(o=>box.appendChild(optEl(o)));
+  story.appendChild(sec);applyLongS(sec);
+  return sec;
+}
+
+function choose(o,btn){
+  const box=btn.parentElement, sec=box.parentElement, out=sec.querySelector('.out');
+  box.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+  box.classList.add('done');btn.classList.add('chosen');
+  fx=[];
+  const finish=(html)=>{
+    const r=document.createElement('div');r.className='result';
+    r.innerHTML=`<div class="prose">${html}</div><div class="chips">${fx.map(f=>`<span class="chip ${f.tone}">${f.t}</span>`).join('')}</div>`;
+    if(S.storyAdded){const b=document.createElement('button');b.className='btn storylink';b.type='button';b.textContent='Read it in the Story ❧';b.onclick=()=>switchTab('story');r.appendChild(b);S.storyAdded=false;}
+    out.appendChild(r);applyLongS(r);renderLedger();
+    const nx=typeof o.next==='function'?o.next(S):o.next;
+    setTimeout(()=>{ if(nx==='reckon')renderReckon(); else renderBeat(nx);
+      r.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});},60);
+  };
+  if(o.check){const {m}=checkMargin(o);spin(out,m,o).then(k=>{const h=o.out[k](S);if(o.story&&o.story[k])addStory(o.story[k]);finish(h);});}
+  else{const h=o.do(S);if(o.story&&o.story.M)addStory(o.story.M);finish(h);}
+}
+
+function spin(out,m,o){
+  return new Promise(res=>{
+    const p=odds(m), cols=['--w-t','--w-s','--w-c','--w-r','--w-x'];
+    const cx=100,cy=108,r=86;const pt=a=>{const t=a*Math.PI/180;return [cx+r*Math.sin(t),cy-r*Math.cos(t)];};
+    let a=0;const arcs=[],mids=[];
+    p.forEach((x,i)=>{const a0=a,a1=a+x*360;const [x0,y0]=pt(a0),[x1,y1]=pt(a1);
+      arcs.push(`<path d="M${cx} ${cy}L${x0.toFixed(2)} ${y0.toFixed(2)}A${r} ${r} 0 ${a1-a0>180?1:0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}Z" fill="var(${cols[i]})" stroke="var(--leaf)" stroke-width="1.5"/>`);
+      mids.push([a0,a1]);a=a1;});
+    const wb=document.createElement('div');wb.className='wheelbox';
+    wb.innerHTML=`<svg class="wheel" viewBox="0 0 200 200" role="img" aria-label="Fortune's Wheel"><g class="rot">${arcs.join('')}</g>
+      <circle cx="${cx}" cy="${cy}" r="10" fill="var(--leaf)" stroke="var(--ink)" stroke-width="1.5"/>
+      <path d="M${cx-9} 4 L${cx+9} 4 L${cx} 26 Z" fill="var(--ink)"/></svg>
+      <ol class="legend">${SEG.map((s,i)=>`<li data-i="${i}"><span class="sw" style="background:var(${cols[i]})"></span><span>${s[1]}</span><span class="pc">${Math.round(p[i]*100)}%</span></li>`).join('')}</ol>
+      <div class="dev" style="flex-basis:100%">margin m = ${o.check.attr} ${S.attrs[o.check.attr]} ${(()=>{const c=checkMargin(o);return (c.b?(c.b>0?'+ ':'− ')+Math.abs(c.b)+' ':'')+(c.comp?'− 2 (Composure 0) ':'');})()}− diff ${o.check.diff} = ${m}\nweights T,S,C,R,X = 10+5m, 30+5m, 25, 25−5m, 10−5m (floor 3), normalised</div>
+      <div class="wheelctl"></div>`;
+    out.appendChild(wb);
+    const g=wb.querySelector('.rot'), ctl=wb.querySelector('.wheelctl');
+    let x=Math.random(),idx=0,acc=0;for(let i=0;i<5;i++){acc+=p[i];if(x<acc||i===4){idx=i;break;}}
+    const land=i=>{const [a0,a1]=mids[i];return a0+(a1-a0)*(0.3+Math.random()*0.4);};
+    let theta=land(idx), R=360*5-theta;
+    const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{g.style.transform=`rotate(${R}deg)`;}));
+    const shown=i=>{wb.querySelectorAll('.legend li').forEach(li=>li.classList.toggle('hit',+li.dataset.i===i));
+      $('#live').textContent='The Wheel stops on '+SEG[i][1]+'.';};
+    setTimeout(()=>{
+      shown(idx);
+      const accept=()=>{ctl.innerHTML=`<span class="verdict">${SEG[idx][1]}.</span>`;res(SEG[idx][0]);};
+      if(idx>0&&S.luck>0){
+        ctl.innerHTML=`<span class="verdict">${SEG[idx][1]}.</span><button class="btn primary" type="button">Spend Luck · nudge to ${SEG[idx-1][1]}</button><button class="btn" type="button">Accept the Wheel</button><span class="dev" style="flex-basis:100%">Luck ${S.luck}: moves the result one segment up. Earned through narrative irony; rare.</span>`;
+        const [nb,ab]=ctl.querySelectorAll('button');
+        nb.onclick=()=>{fx=fx||[];adj('luck',-1,'a nudge to the Wheel');renderLedger();
+          const t2=land(idx-1);R=R+(theta-t2);theta=t2;g.style.transform=`rotate(${R}deg)`;idx--;
+          ctl.innerHTML='';setTimeout(()=>{shown(idx);accept();},reduce?0:900);};
+        ab.onclick=accept;
+      } else accept();
+    },reduce?50:2400);
+  });
+}
+
+function renderLedger(){
+  const h=S.hum,a=S.attrs;
+  const vals={purse:money(S.purse),debts:money(S.debts),composure:S.composure,luck:S.luck,exposure:S.exposure,notoriety:S.notoriety,celebrity:S.celebrity,
+    ...Object.fromEntries(Object.entries(h).map(([k,v])=>['h'+k,v])),tags:S.tags.join('|'),items:S.items.join('|'),hooks:S.hooks.join('|')};
+  const f=k=>prevLedger[k]!==undefined&&prevLedger[k]!==vals[k]?' flash':'';
+  const meter=(k,v,max,cls='')=>`<div class="meter ${cls}${f(cls==='exp'?'exposure':'h'+k)}"><span>${k}</span><span class="bar"><b style="width:${v/max*100}%"></b></span><em>${v}/${max}</em></div>`;
+  const list=(arr,none)=>arr.length?arr.map(x=>`<li>${x}</li>`).join(''):`<li class="none">${none}</li>`;
+  ledger.innerHTML=`
+   <div class="who"><div class="nm">Catherine Glover</div><div class="as">passing as <i>the Hon. Mrs Delacourt</i>, widow of a colonel of dragoons</div><div class="orig">A curate’s daughter · Book II</div></div>
+   <h3>Purse &amp; debts</h3>
+   <dl class="kv"><dt>Purse</dt><dd class="${f('purse').trim()}">${vals.purse}</dd><dt>Debts</dt><dd class="${f('debts').trim()}">${vals.debts}</dd></dl>
+   <h3>Composure</h3>
+   <div class="pips${f('composure')}" aria-label="Composure ${S.composure} of 8">${Array.from({length:8},(_,i)=>`<i class="${i<S.composure?'on':''}"></i>`).join('')}</div>
+   <h3>Attributes</h3>
+   <div class="attrs">${Object.entries(a).map(([k,v])=>`<div><span>${k.slice(0,4)}.</span><b>${v}</b></div>`).join('')}</div>
+   <h3>Humours</h3>
+   ${Object.entries(h).map(([k,v])=>meter(k,v,5)).join('')}
+   <h3>Standing</h3>
+   ${meter('Exposure',S.exposure,10,'exp')}
+   <dl class="kv"><dt>Notoriety</dt><dd class="${f('notoriety').trim()}">${S.notoriety}</dd><dt>Celebrity</dt><dd class="${f('celebrity').trim()}">${S.celebrity}</dd><dt>Luck</dt><dd class="${f('luck').trim()}">${S.luck}</dd></dl>
+   <h3>Tags</h3><ul class="lst${f('tags')}">${list(S.tags,'none')}</ul>
+   <h3>Possessions</h3><ul class="lst${f('items')}">${list(S.items,'nothing')}</ul>
+   <h3>Hooks</h3><ul class="lst${f('hooks')}">${list(S.hooks,'none')}</ul>`;
+  $('#ledSum').textContent=`${vals.purse} · Composure ${S.composure}/8`;
+  prevLedger=vals;
+}
+
+function chapterTitle(){
+  const s=S.flags,p=['In which our Heroine goes to a Ball to which she was not invited'];
+  if(s.withdrew){p.push('finds the Room too warm');p.push('goes home to Tavistock Street before the Dancing');return p;}
+  if(s.backstairs)p.push('enters by way of the Kitchens');
+  if(s.orourke)p.push('meets a Fellow Artist upon the Step');
+  if(s.colonel)p.push('furnishes a dead Colonel with a Family');
+  if(s.learned)p.push('discourses upon Homer');
+  if(s.fainted)p.push('faints to some Purpose');
+  if(s.lordCall&&!s.cards)p.push('captivates a Peer');
+  if(s.cards&&s.won)p.push('wins at Quadrille');
+  if(s.cards&&!s.won)p.push('loses at Quadrille');
+  if(s.offer)p.push('receives a Proposal that is not a Proposal');
+  if(s.torn)p.push('tears her Gown');
+  if(s.confessed)p.push('confesses everything, to great Applause');
+  if(s.supper)p.push('goes in to Supper upon a Lord’s Arm');
+  if(s.shoe)p.push('leaves a Shoe upon the Stair');
+  p.push(S.rumours.some(r=>/Exposure/.test(r.effect))||S.exposure>START.exposure?'is much talked of in the Morning':'is home before the Watch calls three');
+  return p;
+}
+
+function renderReckon(){
+  fx=[];
+  const s=S.flags;
+  const lines=[];
+  if(!s.paidChair)adj('purse',-24,'chairmen');
+  if(s.withdrew)lines.push('<p>Your chair sets you down in Tavistock Street before midnight, over the perruquier’s. You take off the gown that is not paid for, and hang it with great care, as one hangs a flag between campaigns.</p>');
+  else{
+    lines.push(`<p>The chairmen set you down in Tavistock Street at three, and charge you for Hanover Square and a fog. Above the perruquier’s, by one candle, you take off the garnets and count what the night has cost and earned.${S.spoils>0?` The quadrille money comes to ${money(S.spoils)}.`:''}</p>`);
+    if(s.needAddress||s.lordCall)lines.push(`<p>Lord Glanville means to call tomorrow. By eleven in the morning, therefore, you must possess ${s.needAddress?'a house in Hanover Square, ':'a parlour fit to be seen, '}a footman, and a convincing aunt.</p>`);
+    if(s.offer)lines.push('<p>You have three hundred a year in prospect, at pleasure. You sit a long while over the words “at pleasure”, and think of settlements, and lawyers, and deeds.</p>');
+    if(s.orourke)lines.push('<p>Somewhere in Covent Garden, Captain O’Rourke is no doubt counting his own evening. You suspect you will meet again, and that one of you will regret it.</p>');
+    if(s.torn)lines.push('<p>The gown lies over a chair, torn from waist to hem. The mantua-maker in Pall Mall will want paying for it all the same.</p>');
+  }
+  if(S.story.length){S.story.push({...CLOSE,fresh:true});markUnread();}
+  if(S.story.length)lines.push('<p class="storylink-p"><button class="btn storylink" type="button">Read the chapter in the Story ❧</button></p>');
+
+  const ct=chapterTitle();const head=ct.length>1?ct.slice(0,-1).join('; ')+'; and '+ct.at(-1)+'.':ct[0]+'.';
+  const ci=$('#chapIn');ci.textContent=head;ci.classList.add('fresh');applyLongS(ci.parentElement);
+
+  const rows=[['Purse','purse',1],['Debts','debts',1],['Composure','composure'],['Luck','luck'],['Exposure (Mrs Delacourt)','exposure'],['Notoriety','notoriety'],['Celebrity','celebrity']]
+   .concat(Object.keys(S.hum).map(k=>[k,'hum.'+k]));
+  const get=(o,p)=>p.split('.').reduce((x,k)=>x[k],o);
+  const UP={purse:1,composure:1,luck:1,celebrity:1,debts:-1,exposure:-1,notoriety:-1};
+  const tr=rows.map(([n,p,m])=>{const a=get(START,p),b=get(S,p);if(a===b&&p.startsWith('hum'))return '';
+    const d=b-a;const tone=p.startsWith('hum')?'':((UP[p]||0)*d>0?'good':d?'bad':'');
+    return `<tr><td>${n}</td><td class="n">${m?money(a):a}</td><td class="n">${m?money(b):b}</td><td class="d ${tone}">${d?(m?(d>0?'+':'−')+money(Math.abs(d)):sgn(d)):'—'}</td></tr>`;}).join('');
+  const diff=(x,y)=>x.filter(i=>!y.includes(i));
+  const li=a=>a.length?a.map(x=>`<li>${x}</li>`).join(''):'<li class="none">nothing</li>';
+  const spent=diff(START.hooks,S.hooks);
+
+  const sec=document.createElement('section');sec.className='beat';
+  sec.innerHTML=`<div class="dev devhead">storylet ball.05.reckoning · closes the Venture\nApplies chair hire · writes the chapter heading · commits rumours to the post queue</div>
+   <h2><span class="phase">The Reckoning</span><span class="num">V.</span> The Chair Home</h2>
+   <div class="prose">${lines.join('')}</div>
+   <h3 class="sec">The Account</h3>
+   <div class="tablewrap"><table class="account"><thead><tr><th></th><th style="text-align:right">Before</th><th style="text-align:right">After</th><th style="text-align:right">Change</th></tr></thead><tbody>${tr}</tbody></table></div>
+   <div class="gained">
+     <div><h4>Tags gained</h4><ul class="lst">${li(diff(S.tags,START.tags))}</ul></div>
+     <div><h4>Possessions</h4><ul class="lst">${li(diff(S.items,START.items).map(x=>'+ '+x).concat(diff(START.items,S.items).map(x=>'− '+x)))}</ul></div>
+     <div><h4>Hooks</h4><ul class="lst">${li(diff(S.hooks,START.hooks).map(x=>'+ '+x).concat(spent.map(x=>'− '+x+' (spent)')))}</ul></div>
+   </div>
+   <div class="dev" style="margin-top:12px">ledger of causes\n${S.log.map(l=>'· '+l).join('\n')}</div>
+   <h3 class="sec">Rumours abroad</h3>
+   <p class="ask" style="margin-top:4px">${S.rumours.length?'Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.':'Nothing is in the post. So far as the Town knows, the Hon. Mrs Delacourt has always been exactly who she says.'}</p>
+   <div class="letters">${S.rumours.map(r=>`<div class="letter"><span class="seal" aria-hidden="true">${r.from.replace(/^(The |Mr |Mrs |Lady |A |Sir |Every )/,'')[0]}</span><div class="wk">To be delivered · Week ${r.week}</div><div class="fr">${r.from}</div><div class="prose">${r.text}</div><div class="dev" style="margin-top:6px">on delivery: ${r.effect}</div></div>`).join('')}</div>
+   <div class="next"><p>Upkeep follows: the mantua-maker in Pall Mall, the chairmen, the rent over the perruquier’s${s.needAddress?', and a house in Hanover Square by eleven':''}. Then the Town talks.</p><button class="btn primary" type="button" id="again">Go to the ball again</button></div>
+   <div class="notes prose"><p>Hanover Square, laid out after 1714 and named in compliment to the new royal house, was among the most fashionable addresses in the new West End.</p></div>
+   <div class="finis">Finis Chap. IX.</div>`;
+  story.appendChild(sec);applyLongS(sec);renderLedger();
+  sec.querySelector('#again').onclick=start;
+  const sl=sec.querySelector('.storylink');if(sl)sl.onclick=()=>switchTab('story');renderStory();
+}
+
+
+/* ---------- the Story tab ---------- */
+let voice='sm';
+function renderStory(){
+  const pane=$('#storyBody');
+  if(!S.story.length){pane.innerHTML='<p class="empty">Nothing novel-worthy has happened yet. The Story is written only when Fortune’s Wheel lands on Triumph or Catastrophe, or when a milestone is passed.</p>';return;}
+  const ch=$('#chapIn').textContent;
+  pane.innerHTML=`<div class="chap"><div class="no">Chap. IX.</div><div class="in">${ch}</div></div><div class="prose storyprose">${S.story.map((p,i)=>`<p class="${i===0?'first':''}${p.fresh?' fresh':''}">${p[voice]}</p>`).join('')}</div>`;
+  applyLongS(pane);
+}
+function markUnread(){if($('#storyPane').hidden)$('#storyNew').hidden=false;}
+function switchTab(t){
+  const st=t==='story';
+  $('#playPane').hidden=st;$('#storyPane').hidden=!st;
+  $('#tabPlay').setAttribute('aria-selected',!st);$('#tabStory').setAttribute('aria-selected',st);
+  $('#tabPlay').tabIndex=st?-1:0;$('#tabStory').tabIndex=st?0:-1;
+  if(st){$('#storyNew').hidden=true;renderStory();setTimeout(()=>S.story.forEach(p=>p.fresh=false),100);}
+  const top=$('.tabs').getBoundingClientRect().top;if(top<0)$('.tabs').scrollIntoView({block:'start'});
+}
+function setVoice(v){voice=v;$('#vSm').setAttribute('aria-pressed',v==='sm');$('#vSt').setAttribute('aria-pressed',v==='st');
+  try{localStorage.setItem('ball-voice',v)}catch(e){} if(S)renderStory();}
+$('#tabPlay').onclick=()=>switchTab('play');$('#tabStory').onclick=()=>switchTab('story');
+$('.tabs').addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const st=$('#storyPane').hidden;switchTab(st?'story':'play');(st?$('#tabStory'):$('#tabPlay')).focus();}});
+$('#vSm').onclick=()=>setVoice('sm');$('#vSt').onclick=()=>setVoice('st');
+try{if(localStorage.getItem('ball-voice')==='st')voice='st';}catch(e){}
+setVoice(voice);
+
+/* ---------- long s ---------- */
+let longS=false;
+function applyLongS(root){
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest('.prose,.chap')&&!n.parentElement.closest('.dev')?1:3});
+  let n;while((n=w.nextNode())){n.nodeValue=longS?n.nodeValue.replace(/s(?=[ac-eg-jl-zA-Z])/g,'ſ'):n.nodeValue.replace(/ſ/g,'s');}
+}
+
+/* ---------- glossary popover ---------- */
+const gl=$('#gloss');
+document.addEventListener('click',e=>{const t=e.target.closest('.cant');if(t){showGloss(t);e.stopPropagation();}else if(!e.target.closest('#gloss'))gl.hidden=true;});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')gl.hidden=true;if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('cant')){e.preventDefault();showGloss(e.target);}});
+function showGloss(t){const k=t.dataset.t;gl.innerHTML=`<div class="gh">The Editor’s dictionary of the Town</div><div class="gt">${k}</div><div>${CANT[k]||''}</div>`;
+  gl.hidden=false;const r=t.getBoundingClientRect();const W=Math.min(272,innerWidth-32);gl.style.maxWidth=W+'px';
+  let x=r.left+scrollX;x=Math.max(16+scrollX,Math.min(x,scrollX+innerWidth-W-16));gl.style.left=x+'px';gl.style.top=(r.bottom+scrollY+6)+'px';}
+
+/* ---------- toggles ---------- */
+const store={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const devBtn=$('#devBtn'),lsBtn=$('#longsBtn');
+function setDev(on){document.body.classList.toggle('devon',on);devBtn.setAttribute('aria-pressed',on);store.set('ball-dev',on?'1':'0');}
+function setLS(on){longS=on;lsBtn.setAttribute('aria-pressed',on);applyLongS(document.querySelector('main'));store.set('ball-ls',on?'1':'0');}
+devBtn.onclick=()=>setDev(!document.body.classList.contains('devon'));
+lsBtn.onclick=()=>setLS(!longS);
+
+/* ledger open on wide screens */
+const mq=matchMedia('(min-width: 861px)');const lb=$('#ledgerBox');const syncL=()=>{if(mq.matches)lb.open=true;};mq.addEventListener('change',syncL);
+if(!mq.matches)lb.open=false;
+
+function start(){
+  S=fresh();START=JSON.parse(JSON.stringify(S));prevLedger={};beatCount=0;fx=[];
+  story.innerHTML=`<div class="prose opening" id="opening"></div>`;
+  const ci=$('#chapIn');ci.textContent='In which our Heroine goes to a Ball to which she was not invited.';ci.classList.remove('fresh');
+  renderLedger();$('#storyNew').hidden=true;switchTab('play');renderStory();
+  const sec=renderBeat('door');
+  // move the opening prose to carry the drop cap, unruled
+  sec.style.borderTop='0';sec.style.marginTop='0';sec.style.paddingTop='0';
+  sec.querySelector('.prose').classList.add('opening');
+  $('#opening').remove();
+  applyLongS(document.querySelector('.chap'));
+  if(document.querySelector('.beat')!==sec)return;
+  if(story.getBoundingClientRect().top<0)window.scrollTo({top:0});
+}
+setDev(store.get('ball-dev')==='1');
+start();
+if(store.get('ball-ls')==='1')setLS(true);
+})();
+</script>
+
+</body></html>
