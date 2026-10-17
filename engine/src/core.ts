@@ -95,7 +95,7 @@ export class Run {
   start() {
     const h = this.v.start;
     this.S = {
-      purse: this.amount(h.purse), debts: this.amount(h.debts), composure: h.composure, luck: h.luck,
+      purse: this.amount(h.purse), debts: this.amount(h.debts), composure: h.composure ?? h.attrs.Nerve + 1, luck: h.luck,
       exposure: h.exposure, notoriety: h.notoriety, celebrity: h.celebrity,
       attrs: { ...h.attrs }, hum: { ...h.hum }, conditions: [...(h.conditions ?? [])], tags: [...h.tags], items: [...h.items], hooks: [...h.hooks],
       flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false,
@@ -252,9 +252,13 @@ export class Run {
     let html: string, story: Passage | undefined;
     if (o.check) {
       if (!seg) throw new Error('A Wheel check needs a segment');
+      const m = this.margin(o).m;
       const out = o.outcomes![seg];
       this.apply(out.effects); html = this.prose(out.text);
       story = o.story?.[seg];
+      // Ruling D6: a Catastrophe at odds where Success or better was more likely than not
+      // (margin −1 or above) earns a point of Luck.
+      if (seg === 'X' && m >= -1 && this.v.rules?.luck !== false) this.adj('luck', 1, 'Fortune owes you one');
     } else {
       this.apply(o.do!.effects); html = this.prose(o.do!.text);
       story = o.story?.M;

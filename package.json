@@ -5,8 +5,9 @@
   "scripts": {
     "build": "node tools/run.mjs build build",
     "check": "node tools/run.mjs build check",
-    "verify": "node tools/run.mjs verify",
-    "typecheck": "tsc --noEmit"
+    "test": "node tools/run.mjs test",
+    "typecheck": "tsc --noEmit",
+    "verify-conversion": "node tools/run.mjs verify"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,7 @@
   "homepage": "https://github.com/bovrilgesellschaft/fortunes-ladder#readme",
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.5",
     "acorn": "^8.19.0",
     "ajv": "^8.20.0",

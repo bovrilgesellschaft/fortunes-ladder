@@ -27,14 +27,13 @@ who:
 start:
   purse: £2 3s
   debts: £31 10s
-  composure: 5
   luck: 1
   exposure: 3
   notoriety: 0
   celebrity: 1
   attrs: { Address: 4, Wit: 4, Nerve: 3, Constitution: 2, Countenance: 4, Learning: 3 }
   hum: { Sanguine: 1, Choleric: 1, Melancholic: 2, Phlegmatic: 1 }
-  tags: ["Wit (the Town)"]
+  tags: ["a Wit (the Town)"]
   items:
     - A gown of rose lustring, not paid for
     - Your mother’s garnets, paste in two places
@@ -120,7 +119,7 @@ beats:
     sid: ball.01.door
     dev: |-
       requires venture=ball ∧ hour=evening · Persona: the Hon. Mrs Delacourt (Exposure 3/10)
-      Composure starts at Nerve + 2 = 5 · Story passages on T and X
+      Composure starts at Nerve + 1 = 4 · Story passages on T and X
     text: |-
       It is the second week of December, 1724. Jack Sheppard has been hanged a month, and now dances nightly at Drury Lane in the person of Harlequin.{fn *} The Town, which watched him die, is delighted to find him so well.
 
@@ -163,7 +162,7 @@ beats:
               - { lose: "A letter of introduction to Lady Bellaston, forged in a good hand", why: kept by the steward }
               - rumour:
                   id: letter
-                  week: 43
+                  delay: 2
                   from: Lady Bellaston’s steward
                   text: The steward has compared Mrs Delacourt’s letter with her ladyship’s correspondence, and finds that Lady Clonmore does not exist.
                   effect: Exposure +2 (Mrs Delacourt)
@@ -182,13 +181,13 @@ beats:
               - { lose: "A letter of introduction to Lady Bellaston, forged in a good hand", why: confiscated }
               - { adj: exposure, by: 2, why: a forgery doubted at the door }
               - { adj: composure, by: -3, why: a forgery doubted at the door }
-            text: "The steward holds your letter to a candle and observes that it is written in a very good hand: rather too good, he thinks, for a countess. You are saved only by the arrival of the Muscovite envoy and twenty of his suite, among whom you are carried up the stairs like a leaf on a flood."
+            text: "The steward holds your letter to a candle and observes that it is written in a very good hand: rather too good, he thinks, for a countess. You are saved only by the arrival of a foreign envoy and twenty of his suite, among whom you are carried up the stairs like a leaf on a flood."
         story:
           T:
             sm: She presented at the door a letter of her own composing, in so fair a hand and so warm a recommendation of herself, that Lady Bellaston, who could not read it without her glass and would not be seen to use one, swore she remembered the writer perfectly; though no such person as Lady Clonmore had ever drawn breath.
             st: Now Lady Clonmore, you must understand, had never existed; — which was her great merit as a correspondent; for a lady who does not exist can never contradict you. Lady Bellaston remembered her perfectly.
           X:
-            sm: But the steward, a dry Scotch fellow who had served a Writer to the Signet, held the paper to a candle and pronounced it too well written for a countess; so that our heroine owed her admission entirely to the Muscovite envoy, whose suite, being twenty strong and none of them sober, bore her up the stairs as a spring tide lifts a wherry.
+            sm: But the steward, a dry Scotch fellow who had served a Writer to the Signet, held the paper to a candle and pronounced it too well written for a countess; so that our heroine owed her admission entirely to a foreign envoy, whose suite, being twenty strong and none of them sober, bore her up the stairs as a spring tide lifts a wherry.
             st: The steward held it to the candle. — Too good a hand, said he, for a countess. — And here I must leave her upon the stair a moment, while I consider whether there is any sharper reproach in the world than to be found out by one’s own excellence.
         next: room
       - label: Go round to the area steps, where Betty Slyfield has promised to let you in through the kitchens.
@@ -286,7 +285,7 @@ beats:
           Wheel · Wit 4 vs 5 (−1 if already suspected).
           T: Mrs O’Hara “remembers” the Colonel; Exposure −1 · Story
           S: you pass muster
-          C: Mrs O’Hara will write to Dublin (Exposure +3, week 45)
+          C: Mrs O’Hara will write to Dublin (Exposure +3, in three weeks)
           R: unconvinced; Composure −2; suspected
           X: a street pulled down in 1690; Exposure +2 now; Composure −2; suspected · Story
         outcomes:
@@ -301,7 +300,7 @@ beats:
             effects:
               - rumour:
                   id: dublin
-                  week: 45
+                  delay: 3
                   from: A sister in Dublin
                   text: Mrs O’Hara has written to her sister in Dublin, who knows everyone that Mrs O’Hara does not, asking after a Colonel Delacourt of dragoons.
                   effect: Exposure +3 (Mrs Delacourt)
@@ -345,7 +344,7 @@ beats:
             - { adj: composure, by: -1, why: "a faint, performed" }
             - { set: metLord }
             - { set: fainted }
-          text: You sway, murmur, and are caught with great presence of mind by a thin elderly gentleman with a star on his coat and a cough, who calls for [[hartshorn]]. Mrs O’Hara is borne away on the tide of solicitude. The gentleman is Lord Glanville. He has forty thousand pounds, a house in St James’s Square and, it is said, not long to live.
+          text: You sway, murmur, and are caught with great presence of mind by a thin elderly gentleman with a cough, who calls for [[hartshorn]]. Mrs O’Hara is borne away on the tide of solicitude. The gentleman is Lord Glanville. He has forty thousand pounds, a house in St James’s Square and, it is said, not long to live.
         next: glanville
       - label: Plead a headache, and call for your chair.
         withdraw: true
@@ -476,7 +475,6 @@ beats:
               - { calc: flags._paid, to: "min(purse, 3600)" }
               - { adj: purse, by: "= -flags._paid", why: lost at quadrille }
               - { adj: debts, by: "= 3600 - flags._paid", why: a debt of honour to Lord Glanville }
-              - { tag: In debt of honour (the Quality), why: lost at quadrille }
             text: You lose fifteen pounds you do not have, and must give your note of hand for the balance to a peer of the realm. It is the first time you have owed money to a man who could, if he chose, simply forget about it. He does not look like a man who forgets.{fn ‡}
         story:
           T:
@@ -539,7 +537,7 @@ beats:
         dev: |-
           Press on · Wheel · Nerve 3 + 1 (Address) vs 5.
           T: he decides he has not seen you; Composure +1 · Story
-          S: he mentions a likeness (Exposure +1, week 44)
+          S: he mentions a likeness (Exposure +1, in three weeks)
           C: he mentions it to Lady Bellaston (Exposure +2)
           R: he knows you, and will call (Hook on the Secret; Exposure +2)
           X: he says your name aloud; Exposure +3 now and +3 later; Melancholic +1 · Story
@@ -552,7 +550,7 @@ beats:
             effects:
               - rumour:
                   id: pounce
-                  week: 44
+                  delay: 3
                   from: The Reverend Dr Pounce
                   text: Dr Pounce has remarked at a dinner in Soho that Mrs Delacourt is the image of a curate’s girl he once knew in Wiltshire.
                   effect: Exposure +1 (Mrs Delacourt)
@@ -561,7 +559,7 @@ beats:
             effects:
               - rumour:
                   id: pounce
-                  week: 43
+                  delay: 2
                   from: Lady Bellaston’s drawing room
                   text: Dr Pounce has told Lady Bellaston of a very striking likeness, and Lady Bellaston adores a likeness.
                   effect: Exposure +2 (Mrs Delacourt)
@@ -571,7 +569,7 @@ beats:
               - { hook: "Dr Pounce, who knows that Mrs Delacourt is Kitty Glover, and would like to discuss it privately", why: recognised at the punch-bowl }
               - rumour:
                   id: pounce
-                  week: 43
+                  delay: 2
                   from: The Reverend Dr Pounce
                   text: Dr Pounce has written to Wiltshire to ask after the curate’s daughter.
                   effect: Exposure +2 (Mrs Delacourt)
@@ -582,7 +580,7 @@ beats:
               - { adj: hum.Melancholic, by: 1, why: named aloud }
               - rumour:
                   id: pounce
-                  week: 42
+                  delay: 1
                   from: Every drawing room in Mayfair
                   text: Mrs Delacourt is said to be a Wiltshire curate’s daughter, and worse.
                   effect: Exposure +3 (Mrs Delacourt) · the Secret is out
@@ -622,7 +620,7 @@ beats:
               - { adj: hum.Choleric, by: 1, why: a hard bargain }
               - rumour:
                   id: pounce
-                  week: 44
+                  delay: 3
                   from: The Reverend Dr Pounce
                   text: Dr Pounce has written a careful letter to your father in Wiltshire.
                   effect: Exposure +1 (Mrs Delacourt)
@@ -632,7 +630,7 @@ beats:
               - { adj: composure, by: -2, why: a bluff called }
               - rumour:
                   id: pounce
-                  week: 43
+                  delay: 2
                   from: Lady Bellaston’s drawing room
                   text: Dr Pounce says that a lady at the ball tried to frighten him with old parish gossip, and names her.
                   effect: Exposure +3 (Mrs Delacourt)
@@ -643,7 +641,7 @@ beats:
               - { adj: notoriety, by: 1, why: a threat answered }
               - rumour:
                   id: pounce
-                  week: 42
+                  delay: 1
                   from: The Bishop’s registry
                   text: Dr Pounce speaks of the consistory court, and of a curate’s daughter who forgets herself.
                   effect: Exposure +3 (Mrs Delacourt) · Notoriety +1
@@ -666,7 +664,7 @@ beats:
             - { set: supper }
             - rumour:
                 id: pounce
-                week: 44
+                delay: 3
                 from: The Reverend Dr Pounce
                 text: Dr Pounce wonders aloud who Lord Glanville’s new friend may be.
                 effect: Exposure +1 (Mrs Delacourt)
@@ -681,7 +679,7 @@ beats:
             - { adj: purse, by: -2s, why: chairmen }
             - rumour:
                 id: pounce
-                week: 43
+                delay: 2
                 from: The Reverend Dr Pounce
                 text: Dr Pounce has mentioned a striking likeness, and a lady who left in a hurry.
                 effect: Exposure +2 (Mrs Delacourt)
@@ -730,7 +728,7 @@ beats:
             effects:
               - rumour:
                   id: steward
-                  week: 43
+                  delay: 2
                   from: Lady Bellaston’s drawing room
                   text: Lady Bellaston has told two particular friends about the widow with the forged letter, in strictest confidence.
                   effect: Exposure +2 (Mrs Delacourt)
@@ -740,7 +738,7 @@ beats:
               - { adj: composure, by: -2, why: shown the door }
               - rumour:
                   id: steward
-                  week: 42
+                  delay: 1
                   from: Lady Bellaston’s drawing room
                   text: A woman calling herself Mrs Delacourt was asked to leave Lady Bellaston’s ball.
                   effect: Exposure +3 (Mrs Delacourt)
@@ -751,7 +749,7 @@ beats:
               - { adj: notoriety, by: 1, why: a scene }
               - rumour:
                   id: steward
-                  week: 42
+                  delay: 1
                   from: Every drawing room in Mayfair
                   text: An impostor was unmasked at Lady Bellaston’s, and her ladyship screamed.
                   effect: Exposure +3 (Mrs Delacourt) · Notoriety +1
@@ -772,7 +770,7 @@ beats:
         dev: Costed · certain. Purse −10s; spends the Betty hook. The evidence vanishes. No Exposure.
         do:
           effects:
-            - { adj: purse, by: -10s, why: half a sovereign for Betty }
+            - { adj: purse, by: -10s, why: ten shillings for Betty }
             - { unhook: Betty Slyfield, why: favour called in }
           text: Betty has the letter off the salver before the steward turns round. The paper Lady Bellaston reads the third time is a note from her own dressmaker, which upsets her far more, and drives every other thought from her head.
         next: reckon
@@ -801,7 +799,7 @@ beats:
               - { tag: Ruthless (the Quality), why: blamed Mrs O’Hara }
               - rumour:
                   id: steward
-                  week: 44
+                  delay: 3
                   from: Lady Bellaston’s drawing room
                   text: Some say Mrs O’Hara forged a letter; others say the widow did.
                   effect: Exposure +1 (Mrs Delacourt)
@@ -810,7 +808,7 @@ beats:
             effects:
               - rumour:
                   id: steward
-                  week: 42
+                  delay: 1
                   from: Lady Bellaston’s drawing room
                   text: The widow with the forged letter tried to blame Mrs O’Hara, and nobody believed her.
                   effect: Exposure +3 (Mrs Delacourt)
@@ -837,7 +835,7 @@ beats:
             - { item: One silver-buckled shoe, quiet: true }
             - rumour:
                 id: steward
-                week: 43
+                delay: 2
                 from: Lady Bellaston’s drawing room
                 text: A lady fled the ball and left a silver-buckled shoe upon the back stairs. Lady Bellaston means to find its owner.
                 effect: Exposure +3 (Mrs Delacourt)

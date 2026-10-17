@@ -101,7 +101,8 @@ export interface ChapterRules {
 export interface HeroStart {
   purse: Amount;
   debts: Amount;
-  composure: number;
+  /** Defaults to Nerve + 1 (ruling D2). */
+  composure?: number;
   luck: number;
   exposure: number;
   notoriety: number;
@@ -124,6 +125,8 @@ export interface Venture {
   week: number;
   year: number;
   loot_flag: string;
+  /** Engine rules a Venture can switch off, e.g. for a faithful copy of older content. */
+  rules?: { luck?: boolean };
   persona: string;
   who: { name: string; as: string; origin: string };
   start: HeroStart;

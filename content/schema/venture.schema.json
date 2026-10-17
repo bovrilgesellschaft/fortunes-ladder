@@ -5,218 +5,1021 @@
   "description": "One Venture in five beats: Approach, Complication, Turn, Crisis, Reckoning. See content/README.md.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "title", "runhead", "sub", "prospectus", "year", "week", "loot_flag", "persona", "who", "start", "first", "chapter", "beats", "reckoning"],
+  "required": [
+    "id",
+    "title",
+    "runhead",
+    "sub",
+    "prospectus",
+    "year",
+    "week",
+    "loot_flag",
+    "persona",
+    "who",
+    "start",
+    "first",
+    "chapter",
+    "beats",
+    "reckoning"
+  ],
   "properties": {
-    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$", "description": "Short id, also the file name." },
-    "title": { "type": "string" },
-    "runhead": { "type": "string", "description": "The running head: the title of the hero's memoir." },
-    "sub": { "type": "string", "description": "Subtitle under the title, in the 'Being…' form." },
-    "prospectus": { "type": "string" },
-    "year": { "type": "integer", "minimum": 1719, "maximum": 1745 },
-    "week": { "type": "integer", "minimum": 1, "maximum": 52, "description": "Calendar week of the Venture, counted from 1 January." },
-    "loot_flag": { "type": "string", "description": "Flag set whenever a 'loot' effect is applied." },
-    "persona": { "type": "string", "description": "The Persona's short name, as shown beside Exposure." },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Short id, also the file name."
+    },
+    "title": {
+      "type": "string"
+    },
+    "runhead": {
+      "type": "string",
+      "description": "The running head: the title of the hero's memoir."
+    },
+    "sub": {
+      "type": "string",
+      "description": "Subtitle under the title, in the 'Being…' form."
+    },
+    "prospectus": {
+      "type": "string"
+    },
+    "year": {
+      "type": "integer",
+      "minimum": 1719,
+      "maximum": 1745
+    },
+    "week": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 52,
+      "description": "Calendar week of the Venture, counted from 1 January."
+    },
+    "loot_flag": {
+      "type": "string",
+      "description": "Flag set whenever a 'loot' effect is applied."
+    },
+    "persona": {
+      "type": "string",
+      "description": "The Persona's short name, as shown beside Exposure."
+    },
     "who": {
-      "type": "object", "additionalProperties": false, "required": ["name", "as", "origin"],
-      "properties": { "name": { "type": "string" }, "as": { "type": "string" }, "origin": { "type": "string" } }
-    },
-    "start": { "$ref": "#/definitions/start" },
-    "first": { "type": "string", "description": "Id of the first beat." },
-    "chapter": { "$ref": "#/definitions/chapter" },
-    "story": { "$ref": "#/definitions/story" },
-    "beats": { "type": "array", "minItems": 1, "items": { "$ref": "#/definitions/beat" } },
-    "reckoning": { "$ref": "#/definitions/reckoning" }
-  },
-  "definitions": {
-    "expr": { "type": "string", "description": "A condition or sum, e.g. flags.will and spoils > 0. See content/README.md." },
-    "amount": {
-      "description": "A number, a sum of money (\"2s 6d\", \"£24\", \"20 guineas\"), or an expression after '=' (\"= -floor(spoils / 2)\").",
-      "oneOf": [{ "type": "number" }, { "type": "string" }]
-    },
-    "text": { "type": "string", "description": "Prose. Blank lines separate paragraphs. [[term]] marks a glossary word; {fn *} a footnote marker; {if …}…{else}…{end} a condition; {expr} a value." },
-    "passage": {
-      "type": "object", "additionalProperties": false, "required": ["sm", "st"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "as",
+        "origin"
+      ],
       "properties": {
-        "sm": { "type": "string", "description": "The Story, after Smollett." },
-        "st": { "type": "string", "description": "The Story, after Sterne." }
+        "name": {
+          "type": "string"
+        },
+        "as": {
+          "type": "string"
+        },
+        "origin": {
+          "type": "string"
+        }
       }
     },
     "start": {
-      "type": "object", "additionalProperties": false,
-      "required": ["purse", "debts", "composure", "luck", "exposure", "notoriety", "celebrity", "attrs", "hum", "tags", "items", "hooks"],
+      "$ref": "#/definitions/start"
+    },
+    "first": {
+      "type": "string",
+      "description": "Id of the first beat."
+    },
+    "chapter": {
+      "$ref": "#/definitions/chapter"
+    },
+    "story": {
+      "$ref": "#/definitions/story"
+    },
+    "beats": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/beat"
+      }
+    },
+    "reckoning": {
+      "$ref": "#/definitions/reckoning"
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "purse": { "$ref": "#/definitions/amount" },
-        "debts": { "$ref": "#/definitions/amount" },
-        "composure": { "type": "integer", "minimum": 0, "maximum": 8 },
-        "luck": { "type": "integer", "minimum": 0, "maximum": 3 },
-        "exposure": { "type": "integer", "minimum": 0, "maximum": 10 },
-        "notoriety": { "type": "integer", "minimum": 0, "maximum": 10 },
-        "celebrity": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "luck": {
+          "type": "boolean",
+          "description": "false switches off Luck earned on a Catastrophe against the odds."
+        }
+      }
+    }
+  },
+  "definitions": {
+    "expr": {
+      "type": "string",
+      "description": "A condition or sum, e.g. flags.will and spoils > 0. See content/README.md."
+    },
+    "amount": {
+      "description": "A number, a sum of money (\"2s 6d\", \"£24\", \"20 guineas\"), or an expression after '=' (\"= -floor(spoils / 2)\").",
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "text": {
+      "type": "string",
+      "description": "Prose. Blank lines separate paragraphs. [[term]] marks a glossary word; {fn *} a footnote marker; {if …}…{else}…{end} a condition; {expr} a value."
+    },
+    "passage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sm",
+        "st"
+      ],
+      "properties": {
+        "sm": {
+          "type": "string",
+          "description": "The Story, after Smollett."
+        },
+        "st": {
+          "type": "string",
+          "description": "The Story, after Sterne."
+        }
+      }
+    },
+    "start": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "purse",
+        "debts",
+        "luck",
+        "exposure",
+        "notoriety",
+        "celebrity",
+        "attrs",
+        "hum",
+        "tags",
+        "items",
+        "hooks"
+      ],
+      "properties": {
+        "purse": {
+          "$ref": "#/definitions/amount"
+        },
+        "debts": {
+          "$ref": "#/definitions/amount"
+        },
+        "composure": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8,
+          "description": "Leave out: Composure starts at Nerve + 1 (ruling D2)."
+        },
+        "luck": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "exposure": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "notoriety": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "celebrity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
         "attrs": {
-          "type": "object", "additionalProperties": false,
-          "required": ["Address", "Wit", "Nerve", "Constitution", "Countenance", "Learning"],
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "Address",
+            "Wit",
+            "Nerve",
+            "Constitution",
+            "Countenance",
+            "Learning"
+          ],
           "properties": {
-            "Address": { "$ref": "#/definitions/score5" }, "Wit": { "$ref": "#/definitions/score5" },
-            "Nerve": { "$ref": "#/definitions/score5" }, "Constitution": { "$ref": "#/definitions/score5" },
-            "Countenance": { "$ref": "#/definitions/score5" }, "Learning": { "$ref": "#/definitions/score5" }
+            "Address": {
+              "$ref": "#/definitions/score5"
+            },
+            "Wit": {
+              "$ref": "#/definitions/score5"
+            },
+            "Nerve": {
+              "$ref": "#/definitions/score5"
+            },
+            "Constitution": {
+              "$ref": "#/definitions/score5"
+            },
+            "Countenance": {
+              "$ref": "#/definitions/score5"
+            },
+            "Learning": {
+              "$ref": "#/definitions/score5"
+            }
           }
         },
         "hum": {
-          "type": "object", "additionalProperties": false,
-          "required": ["Sanguine", "Choleric", "Melancholic", "Phlegmatic"],
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "Sanguine",
+            "Choleric",
+            "Melancholic",
+            "Phlegmatic"
+          ],
           "properties": {
-            "Sanguine": { "$ref": "#/definitions/score5" }, "Choleric": { "$ref": "#/definitions/score5" },
-            "Melancholic": { "$ref": "#/definitions/score5" }, "Phlegmatic": { "$ref": "#/definitions/score5" }
+            "Sanguine": {
+              "$ref": "#/definitions/score5"
+            },
+            "Choleric": {
+              "$ref": "#/definitions/score5"
+            },
+            "Melancholic": {
+              "$ref": "#/definitions/score5"
+            },
+            "Phlegmatic": {
+              "$ref": "#/definitions/score5"
+            }
           }
         },
-        "conditions": { "type": "array", "items": { "type": "string" } },
-        "tags": { "type": "array", "items": { "type": "string" } },
-        "items": { "type": "array", "items": { "type": "string" } },
-        "hooks": { "type": "array", "items": { "type": "string" } }
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hooks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
-    "score5": { "type": "integer", "minimum": 0, "maximum": 5 },
+    "score5": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    },
     "chapter": {
-      "type": "object", "additionalProperties": false, "required": ["no", "opening", "parts", "last"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "no",
+        "opening",
+        "parts",
+        "last"
+      ],
       "properties": {
-        "no": { "type": "string" },
-        "opening": { "type": "string" },
+        "no": {
+          "type": "string"
+        },
+        "opening": {
+          "type": "string"
+        },
         "special": {
-          "type": "object", "additionalProperties": false, "required": ["when", "parts"],
-          "properties": { "when": { "$ref": "#/definitions/expr" }, "parts": { "type": "array", "items": { "type": "string" } } }
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "when",
+            "parts"
+          ],
+          "properties": {
+            "when": {
+              "$ref": "#/definitions/expr"
+            },
+            "parts": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         },
         "parts": {
           "type": "array",
-          "items": { "type": "object", "additionalProperties": false, "required": ["when", "text"], "properties": { "when": { "$ref": "#/definitions/expr" }, "text": { "type": "string" } } }
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "when",
+              "text"
+            ],
+            "properties": {
+              "when": {
+                "$ref": "#/definitions/expr"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
         },
         "last": {
-          "type": "object", "additionalProperties": false, "required": ["when", "text", "else"],
-          "properties": { "when": { "$ref": "#/definitions/expr" }, "text": { "type": "string" }, "else": { "type": "string" } }
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "when",
+            "text",
+            "else"
+          ],
+          "properties": {
+            "when": {
+              "$ref": "#/definitions/expr"
+            },
+            "text": {
+              "type": "string"
+            },
+            "else": {
+              "type": "string"
+            }
+          }
         }
       }
     },
     "story": {
-      "type": "object", "additionalProperties": false, "required": ["title", "byline", "preface", "close"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "byline",
+        "preface",
+        "close"
+      ],
       "properties": {
-        "title": { "type": "string" }, "byline": { "type": "string" },
-        "preface": { "$ref": "#/definitions/passage" }, "close": { "$ref": "#/definitions/passage" }
+        "title": {
+          "type": "string"
+        },
+        "byline": {
+          "type": "string"
+        },
+        "preface": {
+          "$ref": "#/definitions/passage"
+        },
+        "close": {
+          "$ref": "#/definitions/passage"
+        }
       }
     },
     "outcome": {
-      "type": "object", "additionalProperties": false, "required": ["text"],
-      "properties": { "effects": { "$ref": "#/definitions/effects" }, "text": { "$ref": "#/definitions/text" } }
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "effects": {
+          "$ref": "#/definitions/effects"
+        },
+        "text": {
+          "$ref": "#/definitions/text"
+        }
+      }
     },
-    "effects": { "type": "array", "items": { "$ref": "#/definitions/effect" } },
+    "effects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/effect"
+      }
+    },
     "effect": {
       "description": "One change to the hero's state.",
       "oneOf": [
-        { "type": "object", "additionalProperties": false, "required": ["adj", "by"], "properties": { "adj": { "type": "string", "enum": ["purse", "debts", "composure", "luck", "exposure", "notoriety", "celebrity", "hum.Sanguine", "hum.Choleric", "hum.Melancholic", "hum.Phlegmatic"] }, "by": { "$ref": "#/definitions/amount" }, "why": { "type": "string" } } },
-        { "type": "object", "additionalProperties": false, "required": ["loot"], "properties": { "loot": { "$ref": "#/definitions/amount" }, "why": { "type": "string" } } },
-        { "type": "object", "additionalProperties": false, "required": ["set"], "properties": { "set": { "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] } } },
-        { "type": "object", "additionalProperties": false, "required": ["unset"], "properties": { "unset": { "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] } } },
-        { "type": "object", "additionalProperties": false, "required": ["calc", "to"], "properties": { "calc": { "type": "string" }, "to": { "$ref": "#/definitions/expr" } } },
-        { "type": "object", "additionalProperties": false, "required": ["tag"], "properties": { "tag": { "type": "string" }, "why": { "type": "string" } } },
-        { "type": "object", "additionalProperties": false, "required": ["condition"], "properties": { "condition": { "type": "string" }, "why": { "type": "string" } } },
-        { "type": "object", "additionalProperties": false, "required": ["item"], "properties": { "item": { "type": "string" }, "why": { "type": "string" }, "quiet": { "type": "boolean" } } },
-        { "type": "object", "additionalProperties": false, "required": ["lose"], "properties": { "lose": { "type": "string" }, "why": { "type": "string" } } },
-        { "type": "object", "additionalProperties": false, "required": ["lose_matching"], "properties": { "lose_matching": { "type": "string" }, "why": { "type": "string" } } },
-        { "type": "object", "additionalProperties": false, "required": ["hook"], "properties": { "hook": { "type": "string" }, "why": { "type": "string" } } },
-        { "type": "object", "additionalProperties": false, "required": ["unhook"], "properties": { "unhook": { "type": "string" }, "why": { "type": "string" } } },
-        { "type": "object", "additionalProperties": false, "required": ["rumour"], "properties": { "rumour": { "$ref": "#/definitions/rumour" } } },
-        { "type": "object", "additionalProperties": false, "required": ["when", "then"], "properties": { "when": { "$ref": "#/definitions/expr" }, "then": { "$ref": "#/definitions/effects" }, "else": { "$ref": "#/definitions/effects" } } }
-      ]
-    },
-    "rumour": {
-      "type": "object", "additionalProperties": false, "required": ["id", "from", "text", "effect"],
-      "properties": {
-        "id": { "type": "string" },
-        "delay": { "type": "integer", "minimum": 1, "maximum": 3, "description": "Weeks after the Venture (ruling: 1–3)." },
-        "week": { "type": "integer", "minimum": 1, "maximum": 52, "description": "An absolute week. Only for faithful copies of older content; use delay." },
-        "from": { "type": "string" }, "text": { "type": "string" }, "effect": { "type": "string" }
-      }
-    },
-    "option": {
-      "type": "object", "additionalProperties": false, "required": ["label"],
-      "properties": {
-        "label": { "type": "string" },
-        "gate": {
-          "type": "object", "additionalProperties": false, "required": ["when", "need"],
-          "properties": { "when": { "$ref": "#/definitions/expr" }, "need": { "type": "string" } }
-        },
-        "cost": { "type": "string" },
-        "withdraw": { "type": "boolean" },
-        "check": {
-          "type": "object", "additionalProperties": false, "required": ["attr", "diff"],
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "adj",
+            "by"
+          ],
           "properties": {
-            "attr": { "type": "string", "enum": ["Address", "Wit", "Nerve", "Constitution", "Countenance", "Learning"] },
-            "diff": { "type": "integer", "minimum": 1, "maximum": 8 },
-            "bonus": {
-              "type": "array",
-              "items": { "type": "object", "additionalProperties": false, "required": ["by", "why"], "properties": { "when": { "$ref": "#/definitions/expr" }, "by": { "type": "integer" }, "why": { "type": "string" } } }
+            "adj": {
+              "type": "string",
+              "enum": [
+                "purse",
+                "debts",
+                "composure",
+                "luck",
+                "exposure",
+                "notoriety",
+                "celebrity",
+                "hum.Sanguine",
+                "hum.Choleric",
+                "hum.Melancholic",
+                "hum.Phlegmatic"
+              ]
+            },
+            "by": {
+              "$ref": "#/definitions/amount"
+            },
+            "why": {
+              "type": "string"
             }
           }
         },
-        "dev": { "type": "string" },
-        "do": { "$ref": "#/definitions/outcome" },
-        "outcomes": {
-          "type": "object", "additionalProperties": false, "required": ["T", "S", "C", "R", "X"],
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "loot"
+          ],
           "properties": {
-            "T": { "$ref": "#/definitions/outcome" }, "S": { "$ref": "#/definitions/outcome" }, "C": { "$ref": "#/definitions/outcome" },
-            "R": { "$ref": "#/definitions/outcome" }, "X": { "$ref": "#/definitions/outcome" }
+            "loot": {
+              "$ref": "#/definitions/amount"
+            },
+            "why": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "set"
+          ],
+          "properties": {
+            "set": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unset"
+          ],
+          "properties": {
+            "unset": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "calc",
+            "to"
+          ],
+          "properties": {
+            "calc": {
+              "type": "string"
+            },
+            "to": {
+              "$ref": "#/definitions/expr"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "tag"
+          ],
+          "properties": {
+            "tag": {
+              "type": "string"
+            },
+            "why": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "condition"
+          ],
+          "properties": {
+            "condition": {
+              "type": "string"
+            },
+            "why": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "item"
+          ],
+          "properties": {
+            "item": {
+              "type": "string"
+            },
+            "why": {
+              "type": "string"
+            },
+            "quiet": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lose"
+          ],
+          "properties": {
+            "lose": {
+              "type": "string"
+            },
+            "why": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lose_matching"
+          ],
+          "properties": {
+            "lose_matching": {
+              "type": "string"
+            },
+            "why": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hook"
+          ],
+          "properties": {
+            "hook": {
+              "type": "string"
+            },
+            "why": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unhook"
+          ],
+          "properties": {
+            "unhook": {
+              "type": "string"
+            },
+            "why": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rumour"
+          ],
+          "properties": {
+            "rumour": {
+              "$ref": "#/definitions/rumour"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "when",
+            "then"
+          ],
+          "properties": {
+            "when": {
+              "$ref": "#/definitions/expr"
+            },
+            "then": {
+              "$ref": "#/definitions/effects"
+            },
+            "else": {
+              "$ref": "#/definitions/effects"
+            }
+          }
+        }
+      ]
+    },
+    "rumour": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "from",
+        "text",
+        "effect"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "delay": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3,
+          "description": "Weeks after the Venture (ruling: 1–3)."
+        },
+        "week": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 52,
+          "description": "An absolute week. Only for faithful copies of older content; use delay."
+        },
+        "from": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "effect": {
+          "type": "string"
+        }
+      }
+    },
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label"
+      ],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "gate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "when",
+            "need"
+          ],
+          "properties": {
+            "when": {
+              "$ref": "#/definitions/expr"
+            },
+            "need": {
+              "type": "string"
+            }
+          }
+        },
+        "cost": {
+          "type": "string"
+        },
+        "withdraw": {
+          "type": "boolean"
+        },
+        "check": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attr",
+            "diff"
+          ],
+          "properties": {
+            "attr": {
+              "type": "string",
+              "enum": [
+                "Address",
+                "Wit",
+                "Nerve",
+                "Constitution",
+                "Countenance",
+                "Learning"
+              ]
+            },
+            "diff": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 8
+            },
+            "bonus": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "by",
+                  "why"
+                ],
+                "properties": {
+                  "when": {
+                    "$ref": "#/definitions/expr"
+                  },
+                  "by": {
+                    "type": "integer"
+                  },
+                  "why": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "dev": {
+          "type": "string"
+        },
+        "do": {
+          "$ref": "#/definitions/outcome"
+        },
+        "outcomes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "T",
+            "S",
+            "C",
+            "R",
+            "X"
+          ],
+          "properties": {
+            "T": {
+              "$ref": "#/definitions/outcome"
+            },
+            "S": {
+              "$ref": "#/definitions/outcome"
+            },
+            "C": {
+              "$ref": "#/definitions/outcome"
+            },
+            "R": {
+              "$ref": "#/definitions/outcome"
+            },
+            "X": {
+              "$ref": "#/definitions/outcome"
+            }
           }
         },
         "story": {
-          "type": "object", "additionalProperties": false,
+          "type": "object",
+          "additionalProperties": false,
           "properties": {
-            "T": { "$ref": "#/definitions/passage" }, "S": { "$ref": "#/definitions/passage" }, "C": { "$ref": "#/definitions/passage" },
-            "R": { "$ref": "#/definitions/passage" }, "X": { "$ref": "#/definitions/passage" }, "M": { "$ref": "#/definitions/passage" }
+            "T": {
+              "$ref": "#/definitions/passage"
+            },
+            "S": {
+              "$ref": "#/definitions/passage"
+            },
+            "C": {
+              "$ref": "#/definitions/passage"
+            },
+            "R": {
+              "$ref": "#/definitions/passage"
+            },
+            "X": {
+              "$ref": "#/definitions/passage"
+            },
+            "M": {
+              "$ref": "#/definitions/passage"
+            }
           }
         },
         "next": {
           "oneOf": [
-            { "type": "string" },
-            { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["go"], "properties": { "when": { "$ref": "#/definitions/expr" }, "go": { "type": "string" } } } }
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "go"
+                ],
+                "properties": {
+                  "when": {
+                    "$ref": "#/definitions/expr"
+                  },
+                  "go": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           ]
         }
       }
     },
     "beat": {
-      "type": "object", "additionalProperties": false, "required": ["id", "num", "phase", "title", "sid", "text", "ask", "options"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "num",
+        "phase",
+        "title",
+        "sid",
+        "text",
+        "ask",
+        "options"
+      ],
       "properties": {
-        "id": { "type": "string" },
-        "num": { "type": "string" },
-        "phase": { "type": "string", "enum": ["The Approach", "The Complication", "The Turn", "The Crisis"] },
-        "title": { "type": "string" },
-        "sid": { "type": "string" },
-        "dev": { "type": "string" },
-        "text": { "$ref": "#/definitions/text" },
-        "notes": { "type": "array", "items": { "type": "string" } },
-        "ask": { "type": "string" },
-        "options": { "type": "array", "minItems": 2, "maxItems": 4, "items": { "$ref": "#/definitions/option" } }
+        "id": {
+          "type": "string"
+        },
+        "num": {
+          "type": "string"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "The Approach",
+            "The Complication",
+            "The Turn",
+            "The Crisis"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "sid": {
+          "type": "string"
+        },
+        "dev": {
+          "type": "string"
+        },
+        "text": {
+          "$ref": "#/definitions/text"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ask": {
+          "type": "string"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 4,
+          "items": {
+            "$ref": "#/definitions/option"
+          }
+        }
       }
     },
     "reckoning": {
-      "type": "object", "additionalProperties": false, "required": ["num", "phase", "title", "sid", "steps", "post", "upkeep", "again", "finis"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "num",
+        "phase",
+        "title",
+        "sid",
+        "steps",
+        "post",
+        "upkeep",
+        "again",
+        "finis"
+      ],
       "properties": {
-        "num": { "type": "string" }, "phase": { "type": "string" }, "title": { "type": "string" }, "sid": { "type": "string" },
-        "dev": { "type": "string" },
+        "num": {
+          "type": "string"
+        },
+        "phase": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "sid": {
+          "type": "string"
+        },
+        "dev": {
+          "type": "string"
+        },
         "steps": {
           "type": "array",
           "items": {
             "oneOf": [
-              { "type": "object", "additionalProperties": false, "required": ["do"], "properties": { "when": { "$ref": "#/definitions/expr" }, "do": { "$ref": "#/definitions/effects" } } },
-              { "type": "object", "additionalProperties": false, "required": ["say"], "properties": { "when": { "$ref": "#/definitions/expr" }, "say": { "$ref": "#/definitions/text" } } }
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "do"
+                ],
+                "properties": {
+                  "when": {
+                    "$ref": "#/definitions/expr"
+                  },
+                  "do": {
+                    "$ref": "#/definitions/effects"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "say"
+                ],
+                "properties": {
+                  "when": {
+                    "$ref": "#/definitions/expr"
+                  },
+                  "say": {
+                    "$ref": "#/definitions/text"
+                  }
+                }
+              }
             ]
           }
         },
         "post": {
-          "type": "object", "additionalProperties": false, "required": ["some", "none"],
-          "properties": { "some": { "type": "string" }, "none": { "type": "string" } }
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "some",
+            "none"
+          ],
+          "properties": {
+            "some": {
+              "type": "string"
+            },
+            "none": {
+              "type": "string"
+            }
+          }
         },
-        "upkeep": { "type": "string" },
-        "again": { "type": "string" },
-        "notes": { "type": "array", "items": { "type": "string" } },
-        "finis": { "type": "string" }
+        "upkeep": {
+          "type": "string"
+        },
+        "again": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "finis": {
+          "type": "string"
+        }
       }
     }
   }
