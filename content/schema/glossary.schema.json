@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "glossary.schema.json",
+  "title": "The Editor's dictionaries",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object", "additionalProperties": false, "required": ["dictionary", "definition"],
+    "properties": {
+      "dictionary": { "type": "string", "enum": ["cant", "town"], "description": "cant = the canting dictionary (the Underworld); town = the dictionary of the Town (the Quality)." },
+      "definition": { "type": "string", "description": "A single plain definition, in the Editor's voice." }
+    }
+  }
+}

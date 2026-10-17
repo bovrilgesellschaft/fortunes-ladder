@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=schema/glossary.schema.json
+#
+# The Editor's two dictionaries (ruling K5): the canting dictionary for the Underworld,
+# and the dictionary of the Town for the Quality. In prose, a term is marked [[term]],
+# or [[term|shown form]] when the text uses another form of the word ([[lope|loped]]).
+# Add a term here before a Venture uses it, so no word is glossed two ways.
+
+bit:          { dictionary: cant, definition: "Money." }
+cull:         { dictionary: cant, definition: "A man; commonly, a dupe. A rum cull is a rich one." }
+darbies:      { dictionary: cant, definition: "Fetters." }
+glim:         { dictionary: cant, definition: "A light; a dark lantern." }
+lope:         { dictionary: cant, definition: "To leap, or run away." }
+nubbing-cheat: { dictionary: cant, definition: "The gallows." }
+pad:          { dictionary: cant, definition: "The highway. A gentleman of the high pad is a highwayman." }
+prancer:      { dictionary: cant, definition: "A horse." }
+rum:          { dictionary: cant, definition: "Fine, good, valuable." }
+
+chair:        { dictionary: town, definition: "A sedan chair, carried by two chairmen, who charge by the distance and the weather." }
+cit:          { dictionary: town, definition: "A citizen of the City; a tradesman, or his wife, with money and no manners." }
+hartshorn:    { dictionary: town, definition: "Smelling salts. The spirit was once got from the antlers of the hart." }
+lustring:     { dictionary: town, definition: "A glossy silk, much worn for evening." }
+mantua:       { dictionary: town, definition: "A loose gown, open at the front over a petticoat. Its maker is a mantua-maker, and is generally owed money." }
+perruquier:   { dictionary: town, definition: "A wig-maker." }
+rout:         { dictionary: town, definition: "A large evening party, at which there is too little room and nothing to do but be seen." }
+toast:        { dictionary: town, definition: "A lady whose health is drunk by the gentlemen; a reigning beauty." }

@@ -1,0 +1,845 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# A Ball in Hanover Square — Kitty Glover, as the Hon. Mrs Delacourt, Book II, December 1724.
+# How to write a Venture: see content/README.md.
+
+id: ball
+title: A Ball in Hanover Square
+runhead: An Apology for the Conduct of Mrs Delacourt
+sub: Being an Evening at Lady Bellaston's, to which our Heroine was not invited, in five Beats
+prospectus: >-
+  <b>A playable proof of concept,</b> and a companion to <i>The Heath by Moonlight</i>.
+  You play in the second person; whenever Fortune’s Wheel lands on Triumph or Catastrophe,
+  the Story tab retells it as a third-person picaresque, after Smollett or after Sterne.
+  One Venture from a picaresque roguelike set in London, 1719–1745, built on the same engine:
+  choices gated by skills, possessions and reputation; risky ones sent to Fortune's Wheel with
+  the odds shown first; consequences that land at once, or arrive later as rumours.
+  Turn on the designer's view to see the machinery.
+year: 1724
+week: 50
+loot_flag: won
+persona: Mrs Delacourt
+who:
+  name: Catherine Glover
+  as: passing as <i>the Hon. Mrs Delacourt</i>, widow of a colonel of dragoons
+  origin: A curate’s daughter · Book II
+
+start:
+  purse: £2 3s
+  debts: £31 10s
+  composure: 5
+  luck: 1
+  exposure: 3
+  notoriety: 0
+  celebrity: 1
+  attrs: { Address: 4, Wit: 4, Nerve: 3, Constitution: 2, Countenance: 4, Learning: 3 }
+  hum: { Sanguine: 1, Choleric: 1, Melancholic: 2, Phlegmatic: 1 }
+  tags: ["Wit (the Town)"]
+  items:
+    - A gown of rose lustring, not paid for
+    - Your mother’s garnets, paste in two places
+    - A letter of introduction to Lady Bellaston, forged in a good hand
+    - A borrowed fan
+  hooks:
+    - Betty Slyfield, Lady Bellaston’s maid, who owes you a kindness
+
+first: door
+
+chapter:
+  no: Chap. IX.
+  opening: In which our Heroine goes to a Ball to which she was not invited
+  special:
+    when: flags.withdrew
+    parts:
+      - finds the Room too warm
+      - goes home to Tavistock Street before the Dancing
+  parts:
+    - { when: flags.backstairs, text: enters by way of the Kitchens }
+    - { when: flags.orourke, text: meets a Fellow Artist upon the Step }
+    - { when: flags.colonel, text: furnishes a dead Colonel with a Family }
+    - { when: flags.learned, text: discourses upon Homer }
+    - { when: flags.fainted, text: faints to some Purpose }
+    - { when: flags.lordCall and not flags.cards, text: captivates a Peer }
+    - { when: flags.cards and flags.won, text: wins at Quadrille }
+    - { when: flags.cards and not flags.won, text: loses at Quadrille }
+    - { when: flags.offer, text: receives a Proposal that is not a Proposal }
+    - { when: flags.torn, text: tears her Gown }
+    - { when: flags.confessed, text: "confesses everything, to great Applause" }
+    - { when: flags.supper, text: goes in to Supper upon a Lord’s Arm }
+    - { when: flags.shoe, text: leaves a Shoe upon the Stair }
+  last:
+    when: rumour_says("Exposure") or exposure > start.exposure
+    text: is much talked of in the Morning
+    else: is home before the Watch calls three
+
+story:
+  title: The History of Miss Kitty Glover, otherwise the Honourable Mrs Delacourt
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface:
+    sm: In the December of the year 1724, Miss Catherine Glover, a clergyman’s daughter of Wiltshire, who had quitted her father’s parish upon an occasion that does her more credit in the telling than it did at the time, was established in a lodging over a perruquier’s in Tavistock Street, under the name and dignity of the Honourable Mrs Delacourt, a widow of Dublin.
+    st: Of Miss Kitty Glover’s leaving Wiltshire I shall tell you nothing in this chapter, — nor in the next, — and very possibly not at all; for there are clouds, madam, which it is the whole art of a biographer to leave hanging. It is enough that by the December of 1724 she had become the Honourable Mrs Delacourt, and lodged over a perruquier’s.
+  close:
+    sm: She came home to Tavistock Street at three in the morning, and sat up till four reckoning what the evening had cost her; which, as is usual with evenings, was a good deal more than she had allowed for, and in a different coin.
+    st: And so she went home. — Whether she had gained by the evening, or lost, the reader shall judge for himself; I have tried, and cannot.
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: The Chair Home
+  sid: ball.05.reckoning
+  dev: Applies chair hire · writes the chapter heading · commits rumours to the post queue
+  steps:
+    - when: not flags.paidChair
+      do: [{ adj: purse, by: -2s, why: chairmen }]
+    - when: flags.withdrew
+      say: Your chair sets you down in Tavistock Street before midnight, over the perruquier’s. You take off the gown that is not paid for, and hang it with great care, as one hangs a flag between campaigns.
+    - when: not flags.withdrew
+      say: The chairmen set you down in Tavistock Street at three, and charge you for Hanover Square and a fog. Above the perruquier’s, by one candle, you take off the garnets and count what the night has cost and earned.{if spoils > 0} The quadrille money comes to {money(spoils)}.{end}
+    - when: not flags.withdrew and (flags.needAddress or flags.lordCall)
+      say: Lord Glanville means to call tomorrow. By eleven in the morning, therefore, you must possess {if flags.needAddress}a house in Hanover Square, {else}a parlour fit to be seen, {end}a footman, and a convincing aunt.
+    - when: not flags.withdrew and flags.offer
+      say: You have three hundred a year in prospect, at pleasure. You sit a long while over the words “at pleasure”, and think of settlements, and lawyers, and deeds.
+    - when: not flags.withdrew and flags.orourke
+      say: Somewhere in Covent Garden, Captain O’Rourke is no doubt counting his own evening. You suspect you will meet again, and that one of you will regret it.
+    - when: not flags.withdrew and flags.torn
+      say: The gown lies over a chair, torn from waist to hem. The mantua-maker in Pall Mall will want paying for it all the same.
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
+    none: Nothing is in the post. So far as the Town knows, the Hon. Mrs Delacourt has always been exactly who she says.
+  upkeep: "Upkeep follows: the mantua-maker in Pall Mall, the chairmen, the rent over the perruquier’s{if flags.needAddress}, and a house in Hanover Square by eleven{end}. Then the Town talks."
+  again: Go to the ball again
+  notes:
+    - Hanover Square, laid out after 1714 and named in compliment to the new royal house, was among the most fashionable addresses in the new West End.
+  finis: Finis Chap. IX.
+
+beats:
+  - id: door
+    num: I
+    phase: The Approach
+    title: The Door in Hanover Square
+    sid: ball.01.door
+    dev: |-
+      requires venture=ball ∧ hour=evening · Persona: the Hon. Mrs Delacourt (Exposure 3/10)
+      Composure starts at Nerve + 2 = 5 · Story passages on T and X
+    text: |-
+      It is the second week of December, 1724. Jack Sheppard has been hanged a month, and now dances nightly at Drury Lane in the person of Harlequin.{fn *} The Town, which watched him die, is delighted to find him so well.
+
+      You were born Catherine Glover, the daughter of a Wiltshire curate. You left your father’s parish under a cloud that was, in your view, almost entirely the fault of a dancing-master. In London you have become the Honourable Mrs Delacourt, widow of a colonel of dragoons who fell, gallantly and very conveniently, at a siege no one can now remember. Your [[mantua]] is rose [[lustring]], and owed for. Your garnets were your mother’s, and are paste in two places.
+
+      Tonight Lady Bellaston gives a ball in Hanover Square. You have not been asked. Four [[chair|chairs]] wait in line before your own, and the porter at the door has a list, and the face of a man who has never once been wrong about a list.
+    notes:
+      - "* Harlequin Sheppard, a pantomime on the life of the lately hanged Jack Sheppard, opened at Drury Lane at the end of November 1724, a fortnight after his execution."
+    ask: How will you get past the door?
+    options:
+      - label: Hand the porter your letter of introduction, and wait as if it were the most natural thing in the world.
+        gate:
+          when: has_item("A letter of introduction to Lady Bellaston, forged in a good hand")
+          need: the forged letter
+        check:
+          attr: Address
+          diff: 4
+        dev: |-
+          Wheel · Address 4 vs 4.
+          T: announced; Composure +1 · Story
+          S: announced
+          C: announced, but the letter is kept (rumour: Exposure +2)
+          R: kept waiting, letter kept; Composure −2; suspected
+          X: the steward doubts the hand; Exposure +2 now; Composure −3; suspected · Story
+          A kept letter or suspicion leads to the steward’s crisis in Beat IV.
+        outcomes:
+          T:
+            effects:
+              - { set: announced }
+              - { adj: composure, by: 1, why: a smooth entrance }
+            text: The porter reads it. The steward reads it. Lady Bellaston, who is short-sighted and vain of it, holds it at arm’s length on the landing and declares that she remembers dear Lady Clonmore perfectly. There is no Lady Clonmore. You are announced, and you sail in.
+          S:
+            effects:
+              - { set: announced }
+            text: The porter reads it twice, hands it back with a bow, and calls your name up the stair as though he had always expected it.
+          C:
+            effects:
+              - { set: announced }
+              - { set: letterKept }
+              - { lose: "A letter of introduction to Lady Bellaston, forged in a good hand", why: kept by the steward }
+              - rumour:
+                  id: letter
+                  week: 43
+                  from: Lady Bellaston’s steward
+                  text: The steward has compared Mrs Delacourt’s letter with her ladyship’s correspondence, and finds that Lady Clonmore does not exist.
+                  effect: Exposure +2 (Mrs Delacourt)
+            text: You are announced. The letter, however, goes upstairs with the steward, and does not come down again.
+          R:
+            effects:
+              - { set: suspicious }
+              - { set: letterKept }
+              - { lose: "A letter of introduction to Lady Bellaston, forged in a good hand", why: kept by the steward }
+              - { adj: composure, by: -2, why: twenty minutes in the hall }
+            text: You are kept twenty minutes in the hall among the footmen while the letter goes up and down the stairs. At last a party of officers arrives, and in the confusion you go up among the regimentals, unannounced and very much remembered.
+          X:
+            effects:
+              - { set: suspicious }
+              - { set: letterKept }
+              - { lose: "A letter of introduction to Lady Bellaston, forged in a good hand", why: confiscated }
+              - { adj: exposure, by: 2, why: a forgery doubted at the door }
+              - { adj: composure, by: -3, why: a forgery doubted at the door }
+            text: "The steward holds your letter to a candle and observes that it is written in a very good hand: rather too good, he thinks, for a countess. You are saved only by the arrival of the Muscovite envoy and twenty of his suite, among whom you are carried up the stairs like a leaf on a flood."
+        story:
+          T:
+            sm: She presented at the door a letter of her own composing, in so fair a hand and so warm a recommendation of herself, that Lady Bellaston, who could not read it without her glass and would not be seen to use one, swore she remembered the writer perfectly; though no such person as Lady Clonmore had ever drawn breath.
+            st: Now Lady Clonmore, you must understand, had never existed; — which was her great merit as a correspondent; for a lady who does not exist can never contradict you. Lady Bellaston remembered her perfectly.
+          X:
+            sm: But the steward, a dry Scotch fellow who had served a Writer to the Signet, held the paper to a candle and pronounced it too well written for a countess; so that our heroine owed her admission entirely to the Muscovite envoy, whose suite, being twenty strong and none of them sober, bore her up the stairs as a spring tide lifts a wherry.
+            st: The steward held it to the candle. — Too good a hand, said he, for a countess. — And here I must leave her upon the stair a moment, while I consider whether there is any sharper reproach in the world than to be found out by one’s own excellence.
+        next: room
+      - label: Go round to the area steps, where Betty Slyfield has promised to let you in through the kitchens.
+        gate:
+          when: has_hook("Betty Slyfield")
+          need: "Hook: Betty Slyfield"
+        cost: 5s, and the favour Betty owes
+        dev: "Costed · certain. Purse −5s; spends the Betty hook. Enters unannounced: nobody knows your name. Composure +1."
+        do:
+          effects:
+            - { adj: purse, by: -5s, why: a crown for Betty }
+            - { unhook: Betty Slyfield, why: favour called in }
+            - { set: unannounced }
+            - { set: backstairs }
+            - { adj: composure, by: 1, why: a quiet way in }
+          text: Betty meets you at the area steps, takes you through the kitchens, where a French cook is weeping into a syllabub, and up the back stairs into the card room by the servants’ door. You are in. You have not been announced, which means that nobody knows your name. This is a protection and a difficulty in about equal parts.
+        next: room
+      - label: Take the arm of a gentleman alighting from the next chair, and go in as one of his party.
+        check:
+          attr: Wit
+          diff: 4
+          bonus:
+            - { when: attrs.Countenance >= 4, by: 1, why: a face that invites gallantry }
+        dev: |-
+          Wheel · Wit 4 + 1 (Countenance) vs 4.
+          T: the gentleman is Captain O’Rourke (crossover hook); announced; Composure +1 · Story
+          S: an elderly beau takes you in
+          C: the beau thinks you owe him (hook)
+          R: his wife arrives; Composure −2; unannounced
+          X: you arrive on the arm of a known rake; Fast tag · Story
+        outcomes:
+          T:
+            effects:
+              - { set: announced }
+              - { set: orourke }
+              - { adj: composure, by: 1, why: a fellow artist }
+              - { hook: "Captain O’Rourke, a fellow impostor, who knows your trade as you know his", why: met at Lady Bellaston’s door }
+            text: "The gentleman alighting from the next chair is a soldierly Irishman in a magnificent coat. He takes in your situation at a glance, offers his arm, and murmurs as you pass the porter, “Captain O’Rourke, madam: at your service, and at your mercy.” Two artists have recognised each other across a crowded step."
+          S:
+            effects:
+              - { set: announced }
+            text: Sir Jasper Wilding, who is seventy and has not been asked to take a lady in since the old Queen died, is enchanted to be of service.
+          C:
+            effects:
+              - { set: announced }
+              - { hook: "Sir Jasper Wilding, seventy, who believes you owe him a dance, and rather more", why: taken in on his arm }
+            text: Sir Jasper Wilding takes you in, and pats your hand on the stair in a manner which suggests that he regards the transaction as a loan.
+          R:
+            effects:
+              - { set: unannounced }
+              - { adj: composure, by: -2, why: a wife alights }
+            text: You have his arm and are halfway up the steps when his wife alights from the chair behind. In the disagreement that follows you go up alone, unannounced, and very fast.
+          X:
+            effects:
+              - { set: announced }
+              - { tag: Fast (the Quality), why: arrived on a rake’s arm }
+              - { adj: composure, by: -1, why: an unfortunate escort }
+            text: The arm you take belongs to young Mr Rakewell, whom every person in the room knows to keep an actress in Bow Street. You are announced together. Several fans go up at once.
+        story:
+          T:
+            sm: The arm she seized belonged to a tall Irish gentleman in a laced coat, who, perceiving her design in an instant, carried her past the porter with the air of a husband of ten years’ standing, and whispered upon the stair that he was Captain O’Rourke, and as great a cheat as herself.
+            st: — Captain O’Rourke, madam, at your service, and at your mercy. — It was the first true thing either of them had said all evening; and they both knew it; and both, I think, were a little frightened by it.
+          X:
+            sm: Of all the gentlemen alighting in Hanover Square she must needs fasten upon young Mr Rakewell, notorious for keeping an actress in Bow Street; and they were announced together, to the elevation of more fans at once than had stirred since the old Queen’s funeral.
+            st: Of all the arms in Hanover Square, — and there were, I compute, upwards of three hundred, — she took the one arm in it that every lady present had resolved never to be seen upon.
+        next: room
+      - label: Send up your card as Mrs Delacourt, and wait to be asked in.
+        gate:
+          when: celebrity >= 4
+          need: Celebrity 4 · you have {celebrity}
+        dev: "Locked: shown so the player sees what a name in the Town would buy."
+  - id: room
+    num: II
+    phase: The Complication
+    title: A Lady from Dublin
+    sid: ball.02.dublin
+    dev: "requires inside ∧ ¬withdrawn · reads flags: announced, unannounced, suspicious"
+    text: |-
+      The ballroom is as hot as a glasshouse and smells of wax, orange-water and ambition. {if flags.unannounced}Nobody knows who you are, which is restful.{else}Your name has gone into the room ahead of you, and been weighed.{end} You have taken two turns of the room, been looked over by three dowagers and found wanting by two of them, when Lady Bellaston bears down upon you with a stout woman in purple.
+
+      {if flags.unannounced}“My dear, I am sure we have met, but I am so stupid about names.” “Delacourt,” you tell her. “Mrs Delacourt, of Dublin.” “Then here is Mrs O’Hara, who is lately from Dublin and knows everyone!”{else}“Mrs Delacourt! Here is Mrs O’Hara, who is lately from Dublin and knows everyone. You will have so much to say to each other.”{end}
+
+      Mrs O’Hara has the face of a magistrate and the accent of a peat fire. She says that she knew a great many Delacourts, and wonders which of them was the Colonel.
+    notes:
+      - † Pope’s translation of the Iliad was completed in 1720 and made him rich. His Odyssey was still in the press.
+    ask: How do you answer Mrs O’Hara?
+    options:
+      - label: Supply the Colonel with a family, a regiment and a county, fluently and at once.
+        check:
+          attr: Wit
+          diff: 5
+          bonus:
+            - { when: flags.suspicious, by: -1, why: already suspected }
+        dev: |-
+          Wheel · Wit 4 vs 5 (−1 if already suspected).
+          T: Mrs O’Hara “remembers” the Colonel; Exposure −1 · Story
+          S: you pass muster
+          C: Mrs O’Hara will write to Dublin (Exposure +3, week 45)
+          R: unconvinced; Composure −2; suspected
+          X: a street pulled down in 1690; Exposure +2 now; Composure −2; suspected · Story
+        outcomes:
+          T:
+            effects:
+              - { set: colonel }
+              - { adj: exposure, by: -1, why: a witness to the Colonel }
+            text: “The Kildare Delacourts. The Papist branch, poor creatures; one does not speak of them.” Mrs O’Hara, who would rather die than admit she has never heard of them, says that she remembers the Colonel very well, and that he was a fine figure of a man. In the space of a minute the late Colonel has acquired a figure, a regiment and a witness.
+          S:
+            text: Kildare; dragoons; a fever at the siege; a modest estate, sadly encumbered. Mrs O’Hara nods. It is the sort of story she has heard a hundred times, and therefore believes.
+          C:
+            effects:
+              - rumour:
+                  id: dublin
+                  week: 45
+                  from: A sister in Dublin
+                  text: Mrs O’Hara has written to her sister in Dublin, who knows everyone that Mrs O’Hara does not, asking after a Colonel Delacourt of dragoons.
+                  effect: Exposure +3 (Mrs Delacourt)
+            text: Mrs O’Hara nods slowly, and says she will write to her sister in Dublin, who will be so interested.
+          R:
+            effects:
+              - { set: suspicious }
+              - { adj: composure, by: -2, why: a cold eye }
+            text: Mrs O’Hara hears you out, says “Indeed,” in a tone that closes the subject like a lid, and goes away to talk to Lady Bellaston behind her fan.
+          X:
+            effects:
+              - { set: suspicious }
+              - { adj: exposure, by: 2, why: a slip about Dublin }
+              - { adj: composure, by: -2, why: a slip about Dublin }
+            text: In your fluency you place the Delacourt town house in a street which, Mrs O’Hara observes with deep satisfaction, was pulled down in the year of the Boyne.
+        story:
+          T:
+            sm: She furnished the late Colonel upon the instant with a Kildare family, a Papist branch, a regiment of dragoons and a fever at a siege; and Mrs O’Hara, who would have died upon the rack rather than own she had never heard of them, declared that she remembered him very well, and that he had been a fine figure of a man.
+            st: Thus was a man who never lived furnished, in the space of one minute, with a family, a fever and a figure; — which is more, madam, than most of us contrive in a lifetime.
+          X:
+            sm: But in the heat of invention she lodged the Delacourts in a street of Dublin which Mrs O’Hara, with the joy of a terrier at a rat-hole, proved to have been pulled down in the year of the Boyne.
+            st: — Pulled down, said Mrs O’Hara, in the year of the Boyne. — There is no answer to a date. I have searched the whole of rhetoric for one, and there is none.
+        next: glanville
+      - label: Turn the talk to Mr Pope’s Iliad, which Mrs O’Hara has plainly not read.
+        gate:
+          when: attrs.Learning >= 3
+          need: Learning 3 · you have {attrs.Learning}
+        cost: a name for learning, which few gentlemen forgive
+        dev: "Gated (Learning ≥ 3) · costed · certain. Mrs O’Hara retreats. Gains the Learned tag: −1 to the dance with Lord Glanville, +1 at the card table."
+        do:
+          effects:
+            - { set: learned }
+            - { tag: Learned (the Quality), why: discoursed upon Homer }
+          text: Does Mrs O’Hara not find that Mr Pope has made Achilles rather too much of a gentleman?{fn †} Mrs O’Hara finds that she is wanted at the card tables. Lady Bellaston is delighted, and tells everyone that you are prodigiously learned. Two gentlemen who had been edging closer edge away again.
+        next: glanville
+      - label: Feel suddenly faint, and allow yourself to be caught.
+        cost: Composure, and a little dignity
+        dev: "Costed · certain. Composure −1. Meets Lord Glanville early: +1 to the dance in Beat III, and unlocks the supper option in Beat IV."
+        do:
+          effects:
+            - { adj: composure, by: -1, why: "a faint, performed" }
+            - { set: metLord }
+            - { set: fainted }
+          text: You sway, murmur, and are caught with great presence of mind by a thin elderly gentleman with a star on his coat and a cough, who calls for [[hartshorn]]. Mrs O’Hara is borne away on the tide of solicitude. The gentleman is Lord Glanville. He has forty thousand pounds, a house in St James’s Square and, it is said, not long to live.
+        next: glanville
+      - label: Plead a headache, and call for your chair.
+        withdraw: true
+        dev: Withdraw · certain. Ends the Venture early. Chair −2s; Melancholic +1.
+        do:
+          effects:
+            - { set: withdrew }
+            - { set: paidChair }
+            - { adj: purse, by: -2s, why: chairmen }
+            - { adj: hum.Melancholic, by: 1, why: a ball abandoned }
+          text: You press a hand to your brow and are sorry, so very sorry. On the stair you pass a dozen girls with mothers, going up. Not one of them has wit, and all of them have been asked.
+        next: reckon
+  - id: glanville
+    num: III
+    phase: The Turn
+    title: Lord Glanville
+    sid: ball.03.glanville
+    dev: "requires inside · reads flags: metLord, learned · the Venture’s prize"
+    text: |-
+      {if flags.metLord}Lord Glanville has not left your side since the hartshorn. He has told you about his late wife, his gout and the iniquity of the Excise, and you have listened to all three as though they were Scripture.{else}Across the room, Lady Bellaston is pointing out Lord Glanville to anyone who will listen: a widower of sixty, thin as a heron, with forty thousand pounds, a house in St James’s Square, and a cough that the Town discusses with more interest than his politics.{end}
+
+      Every mother in the room has a daughter, and every daughter has a plan. Miss Pinchbeck, the [[toast]] of the season, has twenty thousand pounds and a mother like a frigate. You have no mother here, and a plan of your own.
+    notes:
+      - ‡ Quadrille, a four-handed descendant of ombre, was displacing ombre in fashionable drawing rooms through the 1720s. Ladies played it for high stakes.
+    ask: How will you go about him?
+    options:
+      - label: Contrive to be his partner in the next dance, and let him do the talking.
+        check:
+          attr: Address
+          diff: 5
+          bonus:
+            - { when: attrs.Countenance >= 4, by: 1, why: Countenance 4 }
+            - { when: flags.metLord, by: 1, why: already acquainted }
+            - { when: flags.learned, by: -1, why: thought learned }
+        dev: |-
+          Wheel · Address 4 vs 5 (+1 Countenance, +1 if acquainted, −1 if Learned).
+          T: he will call tomorrow; Celebrity +1; Hook · Story
+          S: he will call tomorrow; Hook
+          C: he asks your direction, and you give Hanover Square
+          R: he forgets you for Miss Pinchbeck; Composure −1
+          X: he tears your gown; Absurd tag; Composure −2 · Story
+        outcomes:
+          T:
+            effects:
+              - { set: metLord }
+              - { set: lordCall }
+              - { adj: celebrity, by: 1, why: seen with Lord Glanville }
+              - { hook: "Lord Glanville, £40,000, who means to call on Mrs Delacourt tomorrow", why: a minuet in Hanover Square }
+            text: He talks for the whole of the dance, chiefly about himself, and at the end asks whether he may wait on you tomorrow. You say that he may. Miss Pinchbeck’s mother, watching from the wall, folds her fan like a closing gun-port.
+          S:
+            effects:
+              - { set: metLord }
+              - { set: lordCall }
+              - { hook: "Lord Glanville, £40,000, who means to call on Mrs Delacourt tomorrow", why: a minuet in Hanover Square }
+            text: He dances stiffly and talks well enough, and at the close asks leave to call. You lodge, at present, over a [[perruquier]]’s in Tavistock Street.
+          C:
+            effects:
+              - { set: metLord }
+              - { set: lordCall }
+              - { set: needAddress }
+              - { hook: "Lord Glanville, who will call tomorrow at an address in Hanover Square that you do not have", why: a careful man }
+            text: He asks to call, and, being a careful man, asks for your direction. You name a house in Hanover Square without blinking. By eleven tomorrow you must therefore possess one.
+          R:
+            effects:
+              - { adj: composure, by: -1, why: passed over }
+              - { adj: hum.Melancholic, by: 1, why: passed over }
+            text: He dances well, coughs badly, and by the second figure has forgotten you entirely for Miss Pinchbeck, who has twenty thousand pounds and is not, so far as anyone can tell, anything else whatever.
+          X:
+            effects:
+              - { set: torn }
+              - { lose: "A gown of rose lustring, not paid for", why: torn in the dance }
+              - { item: "A torn gown of rose lustring, still owed for", quiet: true }
+              - { adj: composure, by: -2, why: a torn gown }
+              - { tag: Absurd (the Quality), why: a torn gown }
+            text: In the turn of the dance he treads on your train. Rose lustring tears like a sigh. The room turns to look, and you walk out of the figure with a yard of silk over your arm and the mantua-maker’s bill entirely intact.
+        story:
+          T:
+            sm: Lord Glanville, a nobleman of sixty with forty thousand pounds and a cough upon which half the Town had laid wagers, danced with her, talked of himself through the whole of the minuet, and at the close begged leave to wait upon her the next day; at which Miss Pinchbeck’s mother shut her fan with a report like a pistol.
+            st: He talked of his gout. He talked of the Excise. He talked of his late wife, at some length, and with more tenderness than I believe he ever showed her living; — and at the end of it all he asked whether he might call. She said yes. She would have said yes to the Excise.
+          X:
+            sm: In the turn of the dance his lordship set his foot upon her train, and the lustring parted from waist to hem with a sound like a sigh, which every person in the room heard and none forgot.
+            st: Rrrrrip. — I have endeavoured to set down that sound with the exactness it deserves, and find the alphabet unequal to it.
+        next:
+          - { when: flags.suspicious or flags.letterKept, go: steward }
+          - { go: pounce }
+      - label: Sit down to quadrille at his table, win his money, and make him laugh at losing it.
+        check:
+          attr: Wit
+          diff: 4
+          bonus:
+            - { when: flags.learned, by: 1, why: thought learned }
+        dev: |-
+          Wheel · Wit 4 vs 4 (+1 if Learned).
+          T: win £21; Celebrity +1; Hook · Story
+          S: win £10 10s; Hook
+          C: win £5 5s; he sulks
+          R: lose £2
+          X: lose £15 you do not have; the rest becomes a debt of honour · Story
+        outcomes:
+          T:
+            effects:
+              - { set: metLord }
+              - { set: cards }
+              - { loot: £21, why: twenty guineas at quadrille }
+              - { adj: celebrity, by: 1, why: the talk of the card room }
+              - { hook: "Lord Glanville, who has never been beaten so prettily, and wishes to be beaten again", why: quadrille }
+            text: You take twenty guineas off him in an hour, and make him laugh three times, which his physician has forbidden. He says that he has never been beaten so prettily.{fn ‡}
+          S:
+            effects:
+              - { set: metLord }
+              - { set: cards }
+              - { loot: £10 10s, why: ten guineas at quadrille }
+              - { hook: "Lord Glanville, who has never been beaten so prettily", why: quadrille }
+            text: Ten guineas, and a peer who looks at you across the cards as though you were a hand he has not yet worked out.{fn ‡}
+          C:
+            effects:
+              - { set: cards }
+              - { loot: £5 5s, why: five guineas at quadrille }
+            text: You win five guineas. Lord Glanville, it emerges, does not like to lose, and still less to a woman, and goes off to sulk beside Miss Pinchbeck.{fn ‡}
+          R:
+            effects:
+              - { set: cards }
+              - { adj: purse, by: -£2, why: lost at quadrille }
+            text: The cards run against you, as cards will in a house where the servants are paid out of the card money. You lose two pounds and keep your smile.{fn ‡}
+          X:
+            effects:
+              - { set: cards }
+              - { calc: flags._paid, to: "min(purse, 3600)" }
+              - { adj: purse, by: "= -flags._paid", why: lost at quadrille }
+              - { adj: debts, by: "= 3600 - flags._paid", why: a debt of honour to Lord Glanville }
+              - { tag: In debt of honour (the Quality), why: lost at quadrille }
+            text: You lose fifteen pounds you do not have, and must give your note of hand for the balance to a peer of the realm. It is the first time you have owed money to a man who could, if he chose, simply forget about it. He does not look like a man who forgets.{fn ‡}
+        story:
+          T:
+            sm: She sat down to quadrille at his lordship’s table and won twenty guineas of him in an hour, making him laugh thrice in the doing of it, which his physician had expressly forbid.
+            st: Twenty guineas, — and three laughs, which his physician had forbidden; and I am not sure, upon reflection, which of the two he valued more, or which cost him dearer.
+          X:
+            sm: But the cards ran against her with a malice peculiar to houses where the servants are paid out of the card-money, and she rose from the table fifteen pounds in debt to a peer of the realm, with nothing to offer him but her note of hand.
+            st: Fifteen pounds. — Let the reader who has never lost fifteen pounds he did not possess, at a table he was not invited to, to a man he meant to marry, throw the first card.
+        next:
+          - { when: flags.suspicious or flags.letterKept, go: steward }
+          - { go: pounce }
+      - label: Let it be understood, without a word said, that the widow might be kind.
+        gate:
+          when: attrs.Countenance >= 4
+          need: Countenance 4 · you have {attrs.Countenance}
+        cost: your character as a respectable widow
+        dev: "Gated (Countenance ≥ 4) · costed · certain. Opens the courtesan’s ladder: an offer of keeping (Hook), the Fast tag, Celebrity +1. A milestone, so the Story is written. Settlement terms to be negotiated in a later Venture."
+        do:
+          effects:
+            - { set: metLord }
+            - { set: offer }
+            - { tag: Fast (the Quality), why: an understanding with Lord Glanville }
+            - { adj: celebrity, by: 1, why: noticed by a peer }
+            - { hook: "Lord Glanville proposes a house in Marylebone, a chariot, and £300 a year “at pleasure”", why: an understanding reached by fan }
+          text: It is done with the fan and the eyes and nothing else at all. By supper Lord Glanville has made, through a very small and very old Frenchman who is his secretary, a proposal that is not a proposal of marriage. A house in Marylebone. A chariot. Three hundred a year, at pleasure. “At pleasure,” you observe to the Frenchman, “is a very short phrase.” He bows, and says that it may be lengthened by a lawyer.
+        story:
+          M:
+            sm: "Before supper his lordship had made her, by the mouth of a little old Frenchman who was his secretary, a proposal which was not a proposal of marriage: a house in Marylebone, a chariot, and three hundred a year at pleasure; and she, who had been bred to the catechism, perceived that she had now begun upon a different book."
+            st: — At pleasure, said she. — It is the shortest phrase in the language, madam, and the most expensive; and I have known it outlast a marriage.
+        next:
+          - { when: flags.suspicious or flags.letterKept, go: steward }
+          - { go: pounce }
+      - label: Ask Lady Bellaston to present you to the Princess of Wales.
+        gate:
+          when: celebrity >= 5
+          need: Celebrity 5 · you have {celebrity}
+        dev: "Locked: a Book III door."
+  - id: pounce
+    num: IV
+    phase: The Crisis
+    title: A Voice from Wiltshire
+    sid: ball.04.pounce
+    dev: |-
+      requires ¬suspicious ∧ ¬letterKept · threatens the Origin Secret (Kitty Glover, the curate’s daughter)
+      Press on, or withdraw.
+    text: |-
+      It is past one, and the candles are guttering, when you hear it: a high, precise, clerical voice that you have not heard since you were seventeen, saying grace over a boiled fowl at your father’s table.
+
+      The Reverend Dr Pounce, once Rural Dean of your father’s deanery, now chaplain to a bishop and fatter by a stone, is at the punch-bowl. He has seen you. He is looking at you with the expression of a man trying to remember where he left a sermon.
+
+      Kitty Glover left Wiltshire under a cloud. Mrs Delacourt has never been to Wiltshire in her life.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: go straight up to him, and ask after the Bishop’s gout as a woman who has never seen him before."
+        check:
+          attr: Nerve
+          diff: 5
+          bonus:
+            - { when: attrs.Address >= 4, by: 1, why: Address 4 }
+        dev: |-
+          Press on · Wheel · Nerve 3 + 1 (Address) vs 5.
+          T: he decides he has not seen you; Composure +1 · Story
+          S: he mentions a likeness (Exposure +1, week 44)
+          C: he mentions it to Lady Bellaston (Exposure +2)
+          R: he knows you, and will call (Hook on the Secret; Exposure +2)
+          X: he says your name aloud; Exposure +3 now and +3 later; Melancholic +1 · Story
+        outcomes:
+          T:
+            effects:
+              - { adj: composure, by: 1, why: nerve held }
+            text: Dr Pounce looks at you for a long moment, and decides, as men of his cloth so often do, that it is wiser not to have seen something. He tells you that the Bishop’s gout is much improved, and that you remind him of no one at all.
+          S:
+            effects:
+              - rumour:
+                  id: pounce
+                  week: 44
+                  from: The Reverend Dr Pounce
+                  text: Dr Pounce has remarked at a dinner in Soho that Mrs Delacourt is the image of a curate’s girl he once knew in Wiltshire.
+                  effect: Exposure +1 (Mrs Delacourt)
+            text: He answers civilly, but he keeps looking at you as if you were a text he could not place.
+          C:
+            effects:
+              - rumour:
+                  id: pounce
+                  week: 43
+                  from: Lady Bellaston’s drawing room
+                  text: Dr Pounce has told Lady Bellaston of a very striking likeness, and Lady Bellaston adores a likeness.
+                  effect: Exposure +2 (Mrs Delacourt)
+            text: He is civil to your face. Five minutes later you see him bend to Lady Bellaston’s ear.
+          R:
+            effects:
+              - { hook: "Dr Pounce, who knows that Mrs Delacourt is Kitty Glover, and would like to discuss it privately", why: recognised at the punch-bowl }
+              - rumour:
+                  id: pounce
+                  week: 43
+                  from: The Reverend Dr Pounce
+                  text: Dr Pounce has written to Wiltshire to ask after the curate’s daughter.
+                  effect: Exposure +2 (Mrs Delacourt)
+            text: “Kitty Glover,” he says, very quietly, and smiles. “I shall not say a word, my dear. But I think I shall call.”
+          X:
+            effects:
+              - { adj: exposure, by: 3, why: named aloud }
+              - { adj: hum.Melancholic, by: 1, why: named aloud }
+              - rumour:
+                  id: pounce
+                  week: 42
+                  from: Every drawing room in Mayfair
+                  text: Mrs Delacourt is said to be a Wiltshire curate’s daughter, and worse.
+                  effect: Exposure +3 (Mrs Delacourt) · the Secret is out
+            text: “Why, it is Kitty Glover!” cries Dr Pounce, delighted, in the voice he uses for the back of a cathedral. “The curate’s girl! Does your poor father know you are in town?”
+        story:
+          T:
+            sm: Here she was spied by Dr Pounce, a fat divine who had dined at her father’s table a hundred times; but she walked up to him with so fine an assurance, and asked so tenderly after the Bishop’s gout, that the Doctor concluded, like a prudent churchman, that he had seen nothing at all.
+            st: Dr Pounce looked at her. She looked at Dr Pounce. — And here, madam, a whole sermon passed between them without a word spoken; at the end of which the Doctor decided he had never seen her in his life; which was the best sermon he ever preached.
+          X:
+            sm: “Kitty Glover!” cried the Doctor, in the voice he kept for the back of a cathedral; and the name went round Lady Bellaston’s rooms faster than the negus.
+            st: — Kitty Glover! — Two words. I have known whole Acts of Parliament do less.
+        next: reckon
+      - label: "Press on: take him aside, and remind him in a low voice of the churchwardens’ accounts at Tisbury."
+        check:
+          attr: Wit
+          diff: 4
+        dev: |-
+          Press on · Wheel · Wit 4 vs 4. Blackmail.
+          T: silence; Ruthless tag; Hook · Story
+          S: silence; Ruthless tag
+          C: Ruthless; Choleric +1; Exposure +1 later
+          R: he calls your bluff; Exposure +3 later; Composure −2
+          X: he threatens the Bishop’s court; Exposure +2 now; Notoriety +1 · Story
+        outcomes:
+          T:
+            effects:
+              - { tag: Ruthless (the Church), why: blackmailed a chaplain }
+              - { hook: "Dr Pounce, who fears you exactly as much as you fear him", why: the Tisbury accounts }
+            text: Dr Pounce discovers, all at once, that he has never seen you before in his life, and is grateful to you for the reminder.
+          S:
+            effects:
+              - { tag: Ruthless (the Church), why: blackmailed a chaplain }
+            text: He goes the colour of the punch, and finds that he is wanted elsewhere.
+          C:
+            effects:
+              - { tag: Ruthless (the Church), why: blackmailed a chaplain }
+              - { adj: hum.Choleric, by: 1, why: a hard bargain }
+              - rumour:
+                  id: pounce
+                  week: 44
+                  from: The Reverend Dr Pounce
+                  text: Dr Pounce has written a careful letter to your father in Wiltshire.
+                  effect: Exposure +1 (Mrs Delacourt)
+            text: He agrees to know nothing. His eyes promise that he will find a way to know it later.
+          R:
+            effects:
+              - { adj: composure, by: -2, why: a bluff called }
+              - rumour:
+                  id: pounce
+                  week: 43
+                  from: Lady Bellaston’s drawing room
+                  text: Dr Pounce says that a lady at the ball tried to frighten him with old parish gossip, and names her.
+                  effect: Exposure +3 (Mrs Delacourt)
+            text: “My dear young woman,” says Dr Pounce, loudly enough for two dowagers to hear, “the Tisbury accounts were audited by the Archdeacon.”
+          X:
+            effects:
+              - { adj: exposure, by: 2, why: a threat answered }
+              - { adj: notoriety, by: 1, why: a threat answered }
+              - rumour:
+                  id: pounce
+                  week: 42
+                  from: The Bishop’s registry
+                  text: Dr Pounce speaks of the consistory court, and of a curate’s daughter who forgets herself.
+                  effect: Exposure +3 (Mrs Delacourt) · Notoriety +1
+            text: He hears you out, and then speaks quietly of the consistory court, of the Bridewell, and of what is done there to young women who forget themselves.
+        story:
+          T:
+            sm: She drew the Doctor aside, and in a low voice put him in mind of certain irregularities in the churchwardens’ accounts at Tisbury; upon which the good man discovered that he had never set eyes on her before, and thanked her heartily for the reminder.
+            st: What she whispered I shall not set down; there are churchwardens yet living. It is enough that the Doctor turned the colour of the punch, and found that he was wanted elsewhere.
+          X:
+            sm: But the Doctor, so far from being frighted, spoke to her very quietly of the consistory court, and of the Bridewell, and of what is done there to young women who forget themselves; and she went in to supper with no appetite at all.
+            st: — The Bridewell, said the Doctor gently. — It is remarkable, madam, how gently a clergyman can say the Bridewell.
+        next: reckon
+      - label: Take Lord Glanville’s arm, and ask to be taken in to supper now.
+        gate:
+          when: flags.metLord
+          need: Lord Glanville’s acquaintance
+        dev: Gated (met Lord Glanville) · certain. A peer’s partner cannot be approached. Exposure +1 later.
+        do:
+          effects:
+            - { set: supper }
+            - rumour:
+                id: pounce
+                week: 44
+                from: The Reverend Dr Pounce
+                text: Dr Pounce wonders aloud who Lord Glanville’s new friend may be.
+                effect: Exposure +1 (Mrs Delacourt)
+          text: No country clergyman, however fat, approaches a peer at supper. Dr Pounce watches you go in with his mouth a little open, like a man who has just heard his own text preached better.
+        next: reckon
+      - label: "Withdraw: drop your fan, plead the heat, and call for your chair."
+        withdraw: true
+        dev: Withdraw · certain. Chair −2s. Exposure +2 arrives later.
+        do:
+          effects:
+            - { set: paidChair }
+            - { adj: purse, by: -2s, why: chairmen }
+            - rumour:
+                id: pounce
+                week: 43
+                from: The Reverend Dr Pounce
+                text: Dr Pounce has mentioned a striking likeness, and a lady who left in a hurry.
+                effect: Exposure +2 (Mrs Delacourt)
+          text: You drop your fan, and while three gentlemen dive for it, you leave. The fan was borrowed. That is tomorrow’s difficulty.
+        next: reckon
+  - id: steward
+    num: IV
+    phase: The Crisis
+    title: The Steward’s Errand
+    sid: ball.04b.steward
+    dev: |-
+      requires suspicious ∨ letterKept · replaces the Wiltshire crisis
+      Press on, or withdraw.
+    text: |-
+      At half past twelve a steward in black comes through the card room with a folded paper in his hand. You know it at once, because you wrote it.
+
+      He gives it to Lady Bellaston. Lady Bellaston puts up her glass, reads it again, and looks slowly across the room at you. It is the look of a hostess who has found a mouse in the syllabub and is deciding whether to scream.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: cross the room to Lady Bellaston before she can speak, and confess the whole thing as an excellent joke."
+        check:
+          attr: Nerve
+          diff: 5
+          bonus:
+            - { when: attrs.Wit >= 4, by: 1, why: Wit 4 }
+        dev: |-
+          Press on · Wheel · Nerve 3 + 1 (Wit) vs 5.
+          T: Lady Bellaston adopts the joke and the joker; patroness Hook; Celebrity +2 · Story
+          S: she keeps the secret, for a favour (Hook)
+          C: she tells two friends (Exposure +2 later)
+          R: she asks you to leave (Exposure +3 later); Composure −2
+          X: she screams; Exposure +3 now; Notoriety +1 · Story
+        outcomes:
+          T:
+            effects:
+              - { set: confessed }
+              - { adj: celebrity, by: 2, why: the joke of the season }
+              - { hook: "Lady Bellaston, your patroness, who enjoys a fraud provided it is hers", why: a confession in the card room }
+            text: Lady Bellaston hears you out, and decides that the joke is better if she is in on it. By two o’clock she is telling it herself, with improvements, and has taken you up as the cleverest woman in London.
+          S:
+            effects:
+              - { set: confessed }
+              - { hook: "Lady Bellaston, who knows, and will one day want a favour", why: a confession in the card room }
+            text: Lady Bellaston is amused, and folds the letter into her stays. “We shall say no more about it, my dear. For the present.”
+          C:
+            effects:
+              - rumour:
+                  id: steward
+                  week: 43
+                  from: Lady Bellaston’s drawing room
+                  text: Lady Bellaston has told two particular friends about the widow with the forged letter, in strictest confidence.
+                  effect: Exposure +2 (Mrs Delacourt)
+            text: Lady Bellaston laughs, and forgives you, and tells two particular friends before the night is out.
+          R:
+            effects:
+              - { adj: composure, by: -2, why: shown the door }
+              - rumour:
+                  id: steward
+                  week: 42
+                  from: Lady Bellaston’s drawing room
+                  text: A woman calling herself Mrs Delacourt was asked to leave Lady Bellaston’s ball.
+                  effect: Exposure +3 (Mrs Delacourt)
+            text: Lady Bellaston does not find it a joke. She asks, quite pleasantly, whether your chair has been called. It has now.
+          X:
+            effects:
+              - { adj: exposure, by: 3, why: a scene }
+              - { adj: notoriety, by: 1, why: a scene }
+              - rumour:
+                  id: steward
+                  week: 42
+                  from: Every drawing room in Mayfair
+                  text: An impostor was unmasked at Lady Bellaston’s, and her ladyship screamed.
+                  effect: Exposure +3 (Mrs Delacourt) · Notoriety +1
+            text: Lady Bellaston screams. It is not a loud scream, but it is a scream, and in Hanover Square that is enough.
+        story:
+          T:
+            sm: Seeing her letter delivered up, she crossed the room before her hostess could open her mouth, and confessed the whole as a frolic, so prettily that Lady Bellaston resolved the joke should be her own; and by two in the morning was telling it with improvements, and had taken her up as the cleverest woman in London.
+            st: Confess everything, — said a small voice within her, — it is the one lie they will never expect. And so she did; and Lady Bellaston laughed, and kept her; which is the whole history of Lady Bellaston’s friendships, and of most others.
+          X:
+            sm: Lady Bellaston screamed. It was not a loud scream; but in Hanover Square a small scream will carry as far as a cannon at Woolwich.
+            st: Lady Bellaston screamed. * * * * * * * * — I leave the reader these asterisks, to scream into on her behalf.
+        next: reckon
+      - label: Have Betty Slyfield mislay the letter, and put a genuine one from her ladyship’s escritoire in its place.
+        gate:
+          when: has_hook("Betty Slyfield")
+          need: "Hook: Betty Slyfield"
+        cost: 10s, and the favour Betty owes
+        dev: Costed · certain. Purse −10s; spends the Betty hook. The evidence vanishes. No Exposure.
+        do:
+          effects:
+            - { adj: purse, by: -10s, why: half a sovereign for Betty }
+            - { unhook: Betty Slyfield, why: favour called in }
+          text: Betty has the letter off the salver before the steward turns round. The paper Lady Bellaston reads the third time is a note from her own dressmaker, which upsets her far more, and drives every other thought from her head.
+        next: reckon
+      - label: "Press on: declare the letter a malicious forgery by a jealous rival, and look meaningfully at Mrs O’Hara."
+        check:
+          attr: Wit
+          diff: 4
+        dev: |-
+          Press on · Wheel · Wit 4 vs 4. Shifts the blame.
+          T/S: the room believes it; Ruthless tag (T · Story)
+          C: half believe it (Exposure +1 later); Ruthless
+          R: nobody believes it (Exposure +3 later)
+          X: Mrs O’Hara slaps you; Exposure +2 now; Notoriety +1 · Story
+        outcomes:
+          T:
+            effects:
+              - { tag: Ruthless (the Quality), why: blamed Mrs O’Hara }
+              - { adj: celebrity, by: 1, why: a scandal survived }
+            text: It is beautifully done. By supper the whole room knows that Mrs O’Hara forged a letter to ruin a poor widow, and Mrs O’Hara has gone home in tears.
+          S:
+            effects:
+              - { tag: Ruthless (the Quality), why: blamed Mrs O’Hara }
+            text: Lady Bellaston, who never liked Mrs O’Hara, is happy to believe it.
+          C:
+            effects:
+              - { tag: Ruthless (the Quality), why: blamed Mrs O’Hara }
+              - rumour:
+                  id: steward
+                  week: 44
+                  from: Lady Bellaston’s drawing room
+                  text: Some say Mrs O’Hara forged a letter; others say the widow did.
+                  effect: Exposure +1 (Mrs Delacourt)
+            text: Half the room believes it. The other half is waiting to see which half was right.
+          R:
+            effects:
+              - rumour:
+                  id: steward
+                  week: 42
+                  from: Lady Bellaston’s drawing room
+                  text: The widow with the forged letter tried to blame Mrs O’Hara, and nobody believed her.
+                  effect: Exposure +3 (Mrs Delacourt)
+            text: Nobody believes it, least of all Mrs O’Hara, who has the advantage of knowing it to be untrue.
+          X:
+            effects:
+              - { adj: exposure, by: 2, why: a slap in the card room }
+              - { adj: notoriety, by: 1, why: a slap in the card room }
+            text: Mrs O’Hara crosses the card room and slaps you, with a ring on the hand, in front of four tables of quadrille. Nobody has ever seen anything so delightful.
+        story:
+          T:
+            sm: She declared the letter a forgery got up by a jealous rival, and looked so meaningly at Mrs O’Hara, that before supper the whole room was persuaded that lady had forged a letter to ruin a poor widow; and Mrs O’Hara went home in tears, which was the only injustice of the evening that nobody regretted.
+            st: Poor Mrs O’Hara! — I own I pity her; — I pitied her for very nearly a page, which is more than anyone in the room did.
+          X:
+            sm: Whereupon Mrs O’Hara crossed the card-room and boxed her ears, with a ring upon the hand, before four tables of quadrille, who all agreed afterwards that they had never seen anything so delightful.
+            st: — Slap. — There are some sounds even I cannot improve upon.
+        next: reckon
+      - label: "Withdraw: slip out through the card room and down the back stairs, losing a shoe on the way."
+        withdraw: true
+        dev: Withdraw · certain. Loses a shoe. Exposure +3 arrives later.
+        do:
+          effects:
+            - { set: shoe }
+            - { item: One silver-buckled shoe, quiet: true }
+            - rumour:
+                id: steward
+                week: 43
+                from: Lady Bellaston’s drawing room
+                text: A lady fled the ball and left a silver-buckled shoe upon the back stairs. Lady Bellaston means to find its owner.
+                effect: Exposure +3 (Mrs Delacourt)
+          text: You are down the back stairs and out through the kitchens before the steward has finished bowing. One shoe comes with you. The other stays on the stair, where Lady Bellaston’s second footman finds it, and takes it up to her ladyship on a cushion.
+        next: reckon

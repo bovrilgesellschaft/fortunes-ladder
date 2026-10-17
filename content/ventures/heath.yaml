@@ -1,0 +1,766 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# The Heath by Moonlight — Cornelius Byrne, as Captain O'Rourke, Book II, October 1724.
+# How to write a Venture: see content/README.md.
+
+id: heath
+title: The Heath by Moonlight
+runhead: The Life &amp; Adventures of Capt. O'Rourke
+sub: Being a Night upon the Hampstead Road, in five Beats
+prospectus: >-
+  <b>A playable proof of concept.</b> One Venture from a picaresque roguelike set in London,
+  1719–1745. Choices are gated by skills, possessions and reputation; risky ones go to Fortune's
+  Wheel, with the odds shown first; consequences land at once, or arrive weeks later as rumours.
+  Turn on the designer's view to see the machinery under each choice.
+year: 1724
+week: 42
+loot_flag: robbed
+persona: Capt. O’Rourke
+who:
+  name: Cornelius Byrne
+  as: passing as <i>Capt. O’Rourke</i>, late of no regiment
+  origin: Younger son of an Irish squire · Book II
+
+start:
+  purse: £1 7s 6d
+  debts: £24
+  composure: 5
+  luck: 1
+  exposure: 2
+  notoriety: 0
+  celebrity: 1
+  attrs: { Address: 3, Wit: 3, Nerve: 4, Constitution: 3, Countenance: 3, Learning: 1 }
+  hum: { Sanguine: 2, Choleric: 1, Melancholic: 2, Phlegmatic: 0 }
+  tags: ["Rake (Covent Garden)"]
+  items:
+    - A hired grey prancer, from the Bell in Holborn
+    - A brace of pistols, one doubtful
+    - A crape mask
+    - A fine coat, not paid for
+  hooks:
+    - Will Gallow, an old acquaintance of the road
+
+first: approach
+
+chapter:
+  no: Chap. XIV.
+  opening: In which our Hero takes the Air upon Hampstead Heath
+  special:
+    when: flags.withdrew and not flags.robbed and not flags.letters
+    parts:
+      - considers a Coach very carefully
+      - upon Reflection does nothing whatever
+  parts:
+    - { when: flags.danced, text: dances a Minuet with a Lady of Quality }
+    - { when: flags.brisk, text: relieves Sir Gregory Pyke of his Watch }
+    - { when: flags.letters, text: prefers a Gentleman’s Correspondence to his Purse }
+    - { when: flags.cruel, text: behaves very ill to a Young Lady }
+    - { when: flags.chase, text: is pursued across the Furze }
+    - { when: flags.thrown, text: loses a Horse }
+    - { when: flags.glove, text: comes home with a Glove }
+  last:
+    when: rumour_says("Exposure") or exposure > start.exposure
+    text: finds the Moon a poor Accomplice
+    else: gets home before the Dawn
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: The Ride Home
+  sid: heath.05.reckoning
+  dev: Applies shares and surgeon’s fees · writes the chapter heading · commits rumours to the post queue
+  steps:
+    - when: flags.will and spoils > 0
+      do: [{ adj: purse, by: "= -floor(spoils * if(flags.willHalf, 1/2, 1/3))", why: Will Gallow’s share }]
+    - when: flags.robbed
+      do:
+        - rumour:
+            id: wild
+            week: 42
+            from: Mr Wild’s office, in the Old Bailey
+            text: Mr Wild’s people are asking at the Holborn inns after a grey horse and a fine coat. Mr Wild will return Sir Gregory’s property, for a consideration.
+            effect: Notoriety +1 · stolen goods become hard to fence
+    - when: flags.withdrew and not flags.robbed and not flags.letters
+      say: He rides home at three, very cold, with nothing to show for the night but the hire of a horse. The tailor in the Strand sleeps soundly. So, after a time, does the Captain.
+    - when: not (flags.withdrew and not flags.robbed and not flags.letters)
+      say: By four he is back at the Bell, rubbing down the grey himself so the ostler will not see the sweat on her. By five he is in bed{if spoils > 0}, with {money(purse)} under his bolster{end}. By noon the Town is talking, though not yet about him.
+    - when: not (flags.withdrew and not flags.robbed and not flags.letters) and flags.will and spoils > 0
+      say: Will Gallow takes his {if flags.willHalf}half{else}third{end} ({money(floor(spoils * if(flags.willHalf, 1/2, 1/3)))}) at the door of the Bell, and is gone into Holborn like a cat into a cellar.
+    - when: not (flags.withdrew and not flags.robbed and not flags.letters) and flags.letters
+      say: He spends the hour before dawn reading Sir Gregory’s letters by a rushlight, and does not sleep at all.
+    - when: not (flags.withdrew and not flags.robbed and not flags.letters) and flags.glove
+      say: The glove smells of orris root. He puts it, after some thought, in the breast of the coat he has not paid for.
+    - when: not (flags.withdrew and not flags.robbed and not flags.letters) and flags.wounded
+      say: A surgeon in Hart Street dresses the arm for five shillings and no questions, which is to say for ten.
+    - when: flags.wounded
+      do: [{ adj: purse, by: -10s, why: a surgeon in Hart Street }]
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever the Captain does next.
+    none: Nothing is in the post. The night, so far as the Town knows, never happened.
+  upkeep: "Upkeep follows: the tailor’s bill, the hire of the grey, a lodging in Covent Garden. Then the Town talks."
+  again: Ride out again
+  notes:
+    - Mr Wild, “Thief-Taker General”, ran London’s thieves and their prosecution at once, and returned stolen goods to their owners for a fee. He was hanged at Tyburn in May 1725.
+  finis: Finis Chap. XIV.
+
+beats:
+  - id: approach
+    num: I
+    phase: The Approach
+    title: The Hampstead Road
+    sid: heath.01.approach
+    dev: requires venture=heath ∧ hour=night · Composure starts at Nerve + 1 = 5
+    text: |-
+      It is the third week of October, 1724, and the Town talks of nothing but Jack Sheppard, who has lately walked out of the Castle at Newgate as another man might leave a dull assembly.{fn *} Our hero has heard the story eleven times. On each telling he has grown more thoughtful. He owes four-and-twenty pounds to a tailor in the Strand for the coat he stands up in. The coat is very fine. The tailor is very patient, though not, he has been given to understand, indefinitely.
+
+      So it is that Captain O'Rourke, late of no regiment whatever, finds himself past midnight upon the Hampstead road, on a grey [[prancer]] hired from the Bell in Holborn, with a crape mask in his pocket and a brace of pistols, one of which may be relied upon.
+
+      Below him the lamps of London lie spread like a gaming table after the candles are snuffed. The coaches that come up the hill at this hour carry gentlemen home to their villas at Hampstead and Highgate: men with watches, rings, and an aversion to being shot.
+    notes:
+      - "* Sheppard escaped from the Castle, Newgate’s strongest room, on 15 October 1724. He was retaken a fortnight later and hanged at Tyburn on 16 November, before a crowd reckoned at two hundred thousand."
+    ask: How does the Captain go to work?
+    options:
+      - label: Take post alone in the hollow below the Spaniards toll-gate, and wait.
+        dev: Certain. Waiting raises Phlegmatic +1.
+        do:
+          effects:
+            - { adj: hum.Phlegmatic, by: 1, why: waiting in the gorse }
+            - { set: alone }
+          text: He waits. The cold comes up through the gorse and into his boots, and finds there a great deal of room. A fox looks at him with professional interest and goes about its business.
+        next: lamps
+      - label: Stand Will Gallow a bottle at the Spaniards, and take him along as partner.
+        gate:
+          when: has_hook("Will Gallow")
+          need: "Hook: Will Gallow"
+        cost: 2s 6d, and a third of the spoils
+        dev: Costed. Purse −2s 6d now; Will takes ⅓ of spoils at the Reckoning. Composure +1. Unlocks a Will option in Beat II.
+        do:
+          effects:
+            - { adj: purse, by: -2s 6d, why: a bottle for Will Gallow }
+            - { adj: composure, by: 1, why: company on the road }
+            - { set: will }
+          text: Will Gallow is a long, grey, silent man who has been on the [[pad]] since Queen Anne’s time and has never once been taken, which he attributes to never once having been in a hurry. He drinks the bottle, pockets the cork, and nods.
+        next: lamps
+      - label: Steady the nerves in the taproom of the Spaniards first.
+        check:
+          attr: Constitution
+          diff: 3
+        dev: |-
+          Wheel · Constitution vs 3.
+          T: Composure +3, Sanguine +1, a tip about tonight’s coach
+          S: Composure +2, Sanguine +1
+          C: Composure +1, Sanguine +1, seen at the inn (rumour)
+          R: Sanguine +2, −1s, seen at the inn
+          X: Composure −1, Sanguine +2, seen, leaves a pistol behind
+        outcomes:
+          T:
+            effects:
+              - { adj: composure, by: 3, why: "brandy, judiciously" }
+              - { adj: hum.Sanguine, by: 1, why: brandy }
+              - { set: tip }
+            text: Two glasses of brandy, no more. At the next settle a coachman is complaining that Sir Gregory Pyke keeps him out till all hours, and that Sir Gregory’s ward carries her mother’s pearls about with her like a Papist with his beads. The Captain pays, tips the potboy a penny, and rides out a new man.
+          S:
+            effects:
+              - { adj: composure, by: 2, why: brandy }
+              - { adj: hum.Sanguine, by: 1, why: brandy }
+            text: The brandy is French, which is to say smuggled, which is to say excellent. He rides out warm and resolute.
+          C:
+            effects:
+              - { adj: composure, by: 1, why: brandy }
+              - { adj: hum.Sanguine, by: 1, why: brandy }
+              - { set: seenAtInn }
+              - rumour:
+                  id: potboy
+                  week: 42
+                  from: The Spaniards Inn
+                  text: The potboy remembers a very fine coat, and is not discreet in his cups.
+                  effect: Exposure +1 · Notoriety +1
+            text: Warm enough, but the potboy has looked a long while at the coat. It is not a coat that goes unremarked in a Hampstead taproom.
+          R:
+            effects:
+              - { adj: hum.Sanguine, by: 2, why: too much brandy }
+              - { adj: purse, by: -1s, why: the reckoning }
+              - { set: seenAtInn }
+              - rumour:
+                  id: potboy
+                  week: 42
+                  from: The Spaniards Inn
+                  text: The potboy remembers a very fine coat, and a gentleman who sang.
+                  effect: Exposure +1 · Notoriety +1
+            text: One glass becomes four, and four become a song about a grenadier. He leaves a shilling poorer, with the potboy’s full attention.
+          X:
+            effects:
+              - { adj: composure, by: -1, why: drunk }
+              - { adj: hum.Sanguine, by: 2, why: drunk }
+              - { set: seenAtInn }
+              - { set: onePistol }
+              - { lose: "A brace of pistols, one doubtful", why: left on the settle }
+              - { item: "One pistol, the doubtful one", quiet: true }
+              - rumour:
+                  id: potboy
+                  week: 42
+                  from: The Spaniards Inn
+                  text: The potboy has a very good pistol to sell, and a story about where he found it.
+                  effect: Exposure +2 · Notoriety +1
+            text: He is halfway down the hill before he discovers that he has left one pistol on the settle. It is, of course, the reliable one.
+        next: lamps
+      - label: Send word to the gang at the Blue Boar for a proper ambuscade.
+        gate:
+          when: notoriety >= 3
+          need: Notoriety 3 · you have {notoriety}
+        dev: Locked here. Shown so the player sees what reputation would buy.
+  - id: lamps
+    num: II
+    phase: The Complication
+    title: Lamps upon the Hill
+    sid: heath.02.lamps
+    dev: "requires ¬withdrawn · weight 1.0 · reads flags: tip, will, onePistol"
+    text: |-
+      Towards one o’clock a [[glim]] comes swaying up the hill from Hampstead: a coach-and-pair, a postilion, and, riding a length behind, a mounted outrider with a blunderbuss across his saddle-bow.
+
+      {if flags.tip}The arms on the panel are a pike rampant. This is Sir Gregory Pyke, as the coachman promised, and somewhere within are a ward and her mother’s pearls.{else}The arms on the panel are a pike rampant, which means nothing to the Captain except that their owner can afford a painter.{end} The outrider was not in the plan. Outriders seldom are.
+    ask: What is to be done about the outrider?
+    options:
+      - label: Let Will take the outrider while you take the coach.
+        gate:
+          when: flags.will
+          need: "{if flags.will}Will Gallow rides with you{else}Will Gallow riding with you{end}"
+        check:
+          attr: Nerve
+          diff: 4
+          bonus:
+            - { by: 2, why: Will at your side }
+        dev: |-
+          Wheel · Nerve 4 + 2 (Will) vs 4.
+          T/S: outrider disarmed
+          C: disarmed, but Will now wants half
+          R: outrider stays armed; Composure −2
+          X: Will lopes off; outrider armed; Composure −2
+        outcomes:
+          T:
+            text: Will is out of the dark before the outrider has drawn breath. There is a short, practical conversation, and the blunderbuss goes into the furze. The postilion, seeing which way things are going, goes after it.
+          S:
+            text: Will has the outrider’s bridle and the outrider has the good sense to let go of his blunderbuss.
+          C:
+            effects:
+              - { set: willHalf }
+            text: Will disarms the outrider very handsomely, and remarks, as he does so, that this was more work than a third of anything.
+          R:
+            effects:
+              - { adj: composure, by: -2, why: a near thing }
+              - { set: outriderArmed }
+            text: Will’s horse shies. The outrider, a Kentish man of great stolidity, keeps his seat and his blunderbuss, and looks about him for something to discharge it at.
+          X:
+            effects:
+              - { adj: composure, by: -2, why: abandoned }
+              - { set: outriderArmed }
+              - { unset: will }
+              - { set: willGone }
+            text: There is a flash in the dark. When the Captain looks round for Will Gallow, he finds only the place where Will Gallow was. He has [[lope|loped]], as he has always loped, in no hurry at all.
+        next: door
+      - label: Ride out of the dark, fire a shot past the outrider’s ear, and cry “Stand and deliver!”
+        check:
+          attr: Nerve
+          diff: 5
+          bonus:
+            - { when: flags.onePistol, by: -1, why: only the doubtful pistol }
+        dev: |-
+          Wheel · Nerve 4 vs 5 (−1 if only the doubtful pistol).
+          Always spends a charge (flag firedShot).
+          T: outrider and postilion flee
+          S: blunderbuss thrown down
+          C: outrider fires and misses; Choleric +1, Composure −1
+          R: outrider holds; Composure −2
+          X: grazed; Wounded tag, Composure −3
+        outcomes:
+          T:
+            effects:
+              - { set: firedShot }
+            text: The shot passes so close to the outrider’s ear that he will hear it for a week. He and the postilion depart for Highgate by separate routes and at a great pace, leaving the coach alone in the road like a stranded whale.
+          S:
+            effects:
+              - { set: firedShot }
+            text: “Stand and deliver!” It is a phrase that has rarely been bettered. The blunderbuss is laid down in the road with every appearance of relief.
+          C:
+            effects:
+              - { set: firedShot }
+              - { adj: hum.Choleric, by: 1, why: shot at }
+              - { adj: composure, by: -1, why: shot at }
+            text: The outrider fires back, wildly, into a hawthorn. It is the hawthorn’s worst night in years. He then throws down the empty piece and puts up his hands.
+          R:
+            effects:
+              - { set: firedShot }
+              - { set: outriderArmed }
+              - { adj: composure, by: -2, why: a stubborn outrider }
+            text: The outrider does not stand, does not deliver, and does not appear to have heard of either. He sits his horse with the blunderbuss levelled, and waits.
+          X:
+            effects:
+              - { set: firedShot }
+              - { set: outriderArmed }
+              - { set: wounded }
+              - { adj: composure, by: -3, why: a ball in the arm }
+              - { tag: "Wounded (a ball-graze, left arm)", why: the outrider’s blunderbuss }
+            text: Both pieces go off together. The Captain’s ball goes into the night. The outrider’s goes into the Captain, or at least into the sleeve of the coat that is not paid for, taking a strip of the Captain with it.
+        next: door
+      - label: Pay the toll-keeper half a guinea to close his gate and be elsewhere.
+        gate:
+          when: purse >= 126
+          need: half a guinea in hand · you have {money(purse)}
+        cost: 10s 6d, and a witness
+        dev: "Costed · certain. Outrider disarmed. Queues a rumour: the toll-keeper talks (Notoriety +1, week 44)."
+        do:
+          effects:
+            - { adj: purse, by: -10s 6d, why: the toll-keeper’s fee }
+            - { set: tollkeeper }
+            - rumour:
+                id: toll
+                week: 44
+                from: The Spaniards toll-house
+                text: The toll-keeper drinks in Holborn on Sundays, and half a guinea does not buy silence for ever.
+                effect: Notoriety +1, unless paid again
+          text: The gate swings shut; the toll-keeper discovers urgent business at the back of his house. The coach halts. The outrider dismounts to bang on an empty door, and turns to find a pistol a yard from his waistcoat. He is a reasonable man.
+        next: door
+      - label: Let it pass. There will be other coaches, and other nights.
+        withdraw: true
+        dev: Withdraw · certain. Ends the Venture early. Melancholic +1, Phlegmatic +1.
+        do:
+          effects:
+            - { set: withdrew }
+            - { adj: hum.Melancholic, by: 1, why: a lost nerve }
+            - { adj: hum.Phlegmatic, by: 1, why: a lost night }
+          text: The coach goes by in a breath of horse and leather. Inside, someone laughs at something. The Captain sits his prancer in the dark and reflects that prudence is a virtue, and that virtue is its own reward, and that it is a very poor one.
+        next: reckon
+  - id: door
+    num: III
+    phase: The Turn
+    title: At the Coach Door
+    sid: heath.03.coach_door
+    dev: "requires coach_stopped · reads flags: tip, will, firedShot · bonuses from Countenance"
+    text: |-
+      Inside, by the coach lamp, are three persons. Sir Gregory Pyke: stout, crimson, in the full-bottomed wig of a man who was something at the Treasury before the Bubble and is something rather larger since. A young lady in a travelling hood, very pale and very composed{if flags.tip}, with a string of pearls at her throat{end}. And her maid, who screams with great energy and no particular object.
+
+      Sir Gregory says that he knows the Lord Chief Justice. The Captain says that he does not doubt it.
+    notes:
+      - † Claude Duval, a French-born highwayman hanged at Tyburn in 1670, was said to have danced a coranto with a lady on Hounslow Heath, and afterwards taken only a part of her husband’s money. Ladies attended his lying-in-state in some numbers.
+    ask: How does he conduct the business?
+    options:
+      - label: "Rob them briskly: purses, watch and rings, and be gone."
+        check:
+          attr: Nerve
+          diff: 4
+          bonus:
+            - { when: flags.will, by: 1, why: Will covers the coach }
+        dev: |-
+          Wheel · Nerve 4 (+1 Will) vs 4.
+          T: £38 and a gold repeater
+          S: £22 and the repeater
+          C: £14; Composure −1
+          R: £6; Choleric +1, Composure −1
+          X: Sir Gregory’s pocket pistol; £0; Composure −3; leads to the chase
+        outcomes:
+          T:
+            effects:
+              - { set: brisk }
+              - { loot: £38, why: Sir Gregory’s purses }
+              - { item: "Sir Gregory’s gold repeater, to be fenced", why: taken at the coach }
+            text: It is done with a dispatch that would have done credit to the Excise. Two purses, a gold repeater that chimes the quarters, and three rings, one of which Sir Gregory claims is his late wife’s and which the Captain therefore returns. He is not a monster.
+          S:
+            effects:
+              - { set: brisk }
+              - { loot: £22, why: Sir Gregory’s purse }
+              - { item: "Sir Gregory’s gold repeater, to be fenced", why: taken at the coach }
+            text: A purse, the repeater, and Sir Gregory’s opinion of the age. The first two are worth having.
+          C:
+            effects:
+              - { set: brisk }
+              - { loot: £14, why: Sir Gregory’s purse }
+              - { adj: composure, by: -1, why: the maid’s screaming }
+            text: He takes one purse and misses the second, which is sewn into the skirts of Sir Gregory’s coat, as the Captain will learn in a fortnight from the newspapers.
+          R:
+            effects:
+              - { set: brisk }
+              - { loot: £6, why: what could be got }
+              - { adj: hum.Choleric, by: 1, why: Sir Gregory’s manner }
+              - { adj: composure, by: -1, why: the maid’s screaming }
+            text: The maid’s screaming rises to a pitch at which thought is impossible. He comes away with six pounds and a headache, and a strong wish to shoot somebody, preferably the maid.
+          X:
+            effects:
+              - { set: sirPistol }
+              - { adj: composure, by: -3, why: shot at in the coach door }
+            text: Sir Gregory, it transpires, knows not only the Lord Chief Justice but also the use of a pocket pistol. The ball goes through the Captain’s hat. The horses bolt a yard, the outrider shouts, and the business becomes, all at once, a different business.
+        next:
+          - { when: flags.sirPistol or flags.outriderArmed, go: chase }
+          - { go: known }
+      - label: Return the lady’s purse, and beg instead the honour of a dance upon the heath.
+        gate:
+          when: attrs.Address >= 3
+          need: Address 3 · you have {attrs.Address}
+        check:
+          attr: Address
+          diff: 4
+          bonus:
+            - { when: attrs.Countenance >= 3, by: 1, why: a good leg and a fine coat }
+        dev: |-
+          Gated (Address ≥ 3) · Wheel · Address 3 + 1 (Countenance) vs 4.
+          T: £30 from Sir Gregory; Gallant; Celebrity +2; newspaper rumour
+          S: £18; Gallant; Celebrity +1; rumour
+          C: £10; Gallant; she sees your face (harder recognition)
+          R: £6 in pique; Choleric +1; she sees your face
+          X: a fall in the gorse; Composure −2; Absurd tag
+        outcomes:
+          T:
+            effects:
+              - { set: danced }
+              - { loot: £30, why: Sir Gregory pays for the dance }
+              - { tag: Gallant (the Quality), why: a dance upon the heath }
+              - { adj: celebrity, by: 2, why: a story worth repeating }
+              - rumour:
+                  id: post
+                  week: 43
+                  from: The Daily Post
+                  text: "A paragraph: a highwayman of uncommon gallantry, who danced a minuet with a Lady upon Hampstead Heath."
+                  effect: Celebrity +1 · Gallant spreads to every circle
+            text: The lady considers him for a long moment, then gives him her hand. They dance a minuet on the turf by the light of the coach lamps, the postilion humming the air. At the close, Sir Gregory, who has watched it all with the expression of a man passing a stone, hands over thirty pounds “for the lady’s dignity”. It is the best bargain either of them makes that year.{fn †}
+          S:
+            effects:
+              - { set: danced }
+              - { loot: £18, why: Sir Gregory pays for the dance }
+              - { tag: Gallant (the Quality), why: a dance upon the heath }
+              - { adj: celebrity, by: 1, why: a story worth repeating }
+              - rumour:
+                  id: post
+                  week: 43
+                  from: The Daily Post
+                  text: "A paragraph: a gallant gentleman of the road, and a minuet upon the heath."
+                  effect: Celebrity +1 · Gallant spreads to every circle
+            text: They dance. She is light and he is passable. Sir Gregory pays eighteen pounds to have it over with.{fn †}
+          C:
+            effects:
+              - { set: danced }
+              - { set: sawFace }
+              - { loot: £10, why: "Sir Gregory pays, grudgingly" }
+              - { tag: Gallant (the Quality), why: a dance upon the heath }
+            text: They dance. Halfway through the figure the mask slips, and for the space of a bar she looks him full in the face. Sir Gregory pays ten pounds.{fn †}
+          R:
+            effects:
+              - { set: sawFace }
+              - { loot: £6, why: taken in pique }
+              - { adj: hum.Choleric, by: 1, why: refused }
+            text: Sir Gregory says that his ward does not dance with thieves. The lady says nothing, but she lifts her hood a little to look at him better. The Captain takes six pounds in pique and feels much the worse for it.{fn †}
+          X:
+            effects:
+              - { adj: composure, by: -2, why: humiliation }
+              - { adj: hum.Melancholic, by: 1, why: humiliation }
+              - { tag: Absurd (the Quality), why: a fall in the gorse }
+            text: He bows, steps back, and goes full length into the gorse. The maid stops screaming in order to laugh. It is the longest silence of the Captain’s life, and it is not silent.{fn †}
+        next:
+          - { when: flags.sirPistol or flags.outriderArmed, go: chase }
+          - { go: known }
+      - label: Ignore the purses altogether. Take Sir Gregory’s dispatch-case.
+        gate:
+          when: attrs.Learning >= 1
+          need: Learning 1 · you have {attrs.Learning}
+        cost: the purses
+        dev: |-
+          Gated (Learning ≥ 1) · costed: no money taken · certain.
+          Gains item + Hook (a Secret about the South Sea compensation). Composure +1.
+          Rumour: Sir Gregory wants his letters back (Nemesis).
+        do:
+          effects:
+            - { set: letters }
+            - { item: "Sir Gregory’s dispatch-case, with letters", why: taken at the coach }
+            - { adj: composure, by: 1, why: a cool head }
+            - { hook: "Sir Gregory’s letters: a Treasury lord, two South Sea directors, and a sum of money that was never there", why: read by the coach lamp }
+            - rumour:
+                id: sirg
+                week: 42
+                from: Sir Gregory Pyke
+                text: Sir Gregory wants his letters back, and has not gone to a magistrate. This is more alarming than if he had.
+                effect: "Nemesis: Sir Gregory Pyke"
+          text: Sir Gregory goes white, which on so red a man is remarkable. That alone is worth more than his purse. The Captain reads three lines by the coach lamp, closes the case, and bows. He knows nothing of finance, but he knows what a man looks like who has been found out.
+        next:
+          - { when: flags.outriderArmed, go: chase }
+          - { go: known }
+      - label: Note the square and compasses on Sir Gregory’s ring, and claim him as a Brother.
+        gate:
+          when: has_tag("Brother")
+          need: the Brother tag · you are not initiated
+        dev: "Locked: requires initiation at a lodge (see The occult undercurrent)."
+  - id: known
+    num: IV
+    phase: The Crisis
+    title: A Lady with a Memory
+    sid: heath.04.recognised
+    dev: |-
+      requires coach_robbed ∧ ¬outriderArmed ∧ ¬sirPistol · Persona at risk: Capt. O’Rourke (Exposure 2/10)
+      Press on, or withdraw.
+    text: |-
+      He has gathered up the reins when the young lady speaks, quite calmly, through the window. “I believe, sir, that we have met. At Lady Bellaston’s, in September. You told me a very long story about Flanders, and you wore that coat.”
+
+      This is Miss Sophia Harland, Sir Gregory’s ward. She has twelve thousand pounds in the Funds and, it appears, an excellent memory.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: bow, kiss her hand, and beg her to keep a poor soldier’s secret."
+        check:
+          attr: Address
+          diff: 5
+          bonus:
+            - { when: flags.danced and not flags.sawFace, by: 2, why: you have danced }
+            - { when: flags.sawFace, by: -1, why: she has seen your face }
+        dev: |-
+          Press on · Wheel · Address 3 vs 5 (+2 if you danced; −1 if she saw your face).
+          T: her glove and her silence; Hook (an heiress); Celebrity +1
+          S: her silence, mostly; Hook; Exposure +1 later
+          C: Sir Gregory heard the name; Exposure +2 later
+          R: she will tell; Exposure +3 later; Composure −1
+          X: Sir Gregory roars the name; Exposure +2 now, +3 later; Notoriety +2
+        outcomes:
+          T:
+            effects:
+              - { set: glove }
+              - { item: "A lady’s glove, scented with orris", why: Miss Harland }
+              - { adj: celebrity, by: 1, why: a secret worth keeping }
+              - { hook: "Miss Sophia Harland, £12,000, who knows exactly who you are and has decided not to say", why: her glove }
+            text: She lets him kiss her hand, and when he straightens there is a glove in his. “Flanders,” she says, “is a long way off, Captain. I shall try to forget where it is.” Sir Gregory, who has been counting his losses, notices nothing.
+          S:
+            effects:
+              - { hook: "Miss Sophia Harland, £12,000, who knows who you are", why: a kissed hand }
+              - rumour:
+                  id: bell
+                  week: 43
+                  from: Lady Bellaston’s drawing room
+                  text: Miss Harland has been heard to say that she found the Hampstead road “unexpectedly agreeable”.
+                  effect: Exposure +1 (Capt. O’Rourke)
+            text: She says nothing, and goes on saying nothing in a way that is not quite a promise. But she smiles.
+          C:
+            effects:
+              - { hook: "Miss Sophia Harland, £12,000, who knows who you are", why: a kissed hand }
+              - rumour:
+                  id: bell
+                  week: 42
+                  from: Lady Bellaston’s drawing room
+                  text: Sir Gregory has been heard to wonder aloud what became of a certain Captain O’Rourke.
+                  effect: Exposure +2 (Capt. O’Rourke)
+            text: She will keep his secret. Sir Gregory, unhappily, has caught the word “Flanders” and is turning it over with the air of a man who will turn it over for some time.
+          R:
+            effects:
+              - { adj: composure, by: -1, why: refused }
+              - rumour:
+                  id: bell
+                  week: 42
+                  from: Lady Bellaston’s drawing room
+                  text: Miss Harland tells the story of the Hampstead road at every rout in Mayfair, and names names.
+                  effect: Exposure +3 (Capt. O’Rourke)
+            text: “I shall tell everyone,” she says pleasantly. “It is the most interesting thing that has happened to me since I came out.”
+          X:
+            effects:
+              - { adj: exposure, by: 2, why: named in the road }
+              - { adj: notoriety, by: 2, why: named in the road }
+              - rumour:
+                  id: bell
+                  week: 42
+                  from: Bow Street, and every drawing room in Mayfair
+                  text: Sir Gregory swears an information against one O’Rourke, calling himself a captain.
+                  effect: Exposure +3 (Capt. O’Rourke) · Notoriety +1
+            text: “O’Rourke!” roars Sir Gregory, who has followed none of it until this moment. “By God, I’ll see you on the [[nubbing-cheat]]!” The name goes off into the dark like a ball, and he has no means of calling it back.
+        next: reckon
+      - label: "Press on: put the pistol to Sir Gregory’s wig, and tell her what will happen if she remembers anything."
+        check:
+          attr: Nerve
+          diff: 4
+          bonus:
+            - { when: flags.firedShot or flags.onePistol, by: -2, why: only the doubtful pistol is loaded }
+        dev: |-
+          Press on · Wheel · Nerve 4 vs 4 (−2 if only the doubtful pistol is left).
+          T: total silence; Cruel tag; Choleric +1
+          S: Cruel; the maid talks (Exposure +1 later)
+          C: Cruel; Exposure +2 later; Melancholic +1
+          R: the pistol misfires; Exposure +3 later; Composure −2
+          X: misfire, disarmed; Notoriety +2; Exposure +4 later
+        outcomes:
+          T:
+            effects:
+              - { set: cruel }
+              - { tag: Cruel (the Underworld), why: a threat to a young lady }
+              - { adj: hum.Choleric, by: 1, why: cruelty }
+            text: She looks at the pistol, and at him, and says that she has a very bad memory for faces. Sir Gregory, under the muzzle, agrees that hers is notoriously poor. The Captain rides away with his secret, and with the knowledge of how he kept it, which he finds weighs rather more.
+          S:
+            effects:
+              - { set: cruel }
+              - { tag: Cruel (the Underworld), why: a threat to a young lady }
+              - rumour:
+                  id: maid
+                  week: 43
+                  from: A servants’ hall in Hampstead
+                  text: The maid has a great deal to say about a highwayman in a very fine coat.
+                  effect: Exposure +1 (Capt. O’Rourke)
+            text: The lady is silenced. The maid, who was not addressed, is not.
+          C:
+            effects:
+              - { set: cruel }
+              - { tag: Cruel (the Underworld), why: a threat to a young lady }
+              - { adj: hum.Melancholic, by: 1, why: shame }
+              - rumour:
+                  id: maid
+                  week: 42
+                  from: Lady Bellaston’s drawing room
+                  text: It is said that Captain O’Rourke threatened a young lady with a pistol on the Hampstead road.
+                  effect: Exposure +2 (Capt. O’Rourke)
+            text: She promises. Her eyes say otherwise, and he finds he cannot meet them.
+          R:
+            effects:
+              - { adj: composure, by: -2, why: a misfire }
+              - rumour:
+                  id: maid
+                  week: 42
+                  from: Lady Bellaston’s drawing room
+                  text: A highwayman’s pistol misfired at Sir Gregory’s wig, and Miss Harland laughed in his face.
+                  effect: Exposure +3 (Capt. O’Rourke)
+            text: He draws the trigger for emphasis. The doubtful pistol lives up to its name with a damp click. Miss Harland laughs. It is a charming laugh, and it will be heard in every drawing room in Mayfair by Thursday.
+          X:
+            effects:
+              - { adj: notoriety, by: 2, why: disarmed by a baronet }
+              - rumour:
+                  id: maid
+                  week: 42
+                  from: Bow Street
+                  text: Sir Gregory describes the highwayman to a magistrate, with a pistol in evidence.
+                  effect: Exposure +4 (Capt. O’Rourke) · Notoriety +1
+              - { lose_matching: pistol, why: knocked out of your hand }
+            text: Click. Sir Gregory, discovering a courage he did not know he had, knocks the pistol out of the Captain’s hand and into the coach, where it is kept as evidence.
+        next: reckon
+      - label: Show her the letters, and suggest that all three of them keep their secrets.
+        gate:
+          when: flags.letters
+          need: Sir Gregory’s letters
+        dev: Gated (letters) · certain. No Exposure. Miss Harland becomes a conspirator; Sir Gregory a Nemesis.
+        do:
+          effects:
+            - { hook: "Miss Sophia Harland, £12,000, your accomplice, who would like to know what her guardian has done with her fortune", why: the letters }
+          text: Miss Harland reads the first letter over his arm by the coach lamp. Then she reads it again, and looks at her guardian in a manner that the Captain would not wish to be looked at. “I think,” she says, “that none of us was on the Hampstead road tonight.” Sir Gregory agrees with great feeling.
+        next: reckon
+      - label: "Withdraw: deny everything in a passable Yorkshire accent, and ride off."
+        withdraw: true
+        dev: Withdraw · certain. Keeps the spoils. Exposure +2 arrives later as a rumour.
+        do:
+          effects:
+            - rumour:
+                id: bell
+                week: 43
+                from: Lady Bellaston’s drawing room
+                text: Miss Harland thinks she saw Captain O’Rourke on the Hampstead road, though he spoke like a Yorkshireman.
+                effect: Exposure +2 (Capt. O’Rourke)
+          text: “Ee, I’m sure I never were in Flanders, miss,” says the Captain, and spurs away. The accent is passable. Unhappily, the coat is not.
+        next: reckon
+  - id: chase
+    num: IV
+    phase: The Crisis
+    title: Pursued across the Furze
+    sid: heath.04b.chase
+    dev: |-
+      requires outriderArmed ∨ sirPistol · replaces the recognition crisis
+      Press on, or withdraw.
+    text: |-
+      The outrider has found his courage, and his blunderbuss, and the Captain’s back. Behind him the lamps swing and somebody is shouting “Thief!” in a voice used to being obeyed. Ahead, the heath falls away into black furze, rabbit-holes and the ponds.
+
+      {if flags.wounded}His left arm has gone warm and stupid. He holds the reins in his right.{end}
+    ask: Press on, or withdraw?
+    options:
+      - label: "Withdraw: lope for it across the heath, by the ponds."
+        withdraw: true
+        check:
+          attr: Constitution
+          diff: 4
+          bonus:
+            - { when: flags.wounded, by: -1, why: wounded }
+        dev: |-
+          Withdraw · Wheel · Constitution 3 vs 4 (−1 if wounded).
+          T/S: clean away with everything
+          C: a purse lost in the furze (half the spoils)
+          R: the grey goes lame; Debts +£3 to the Bell
+          X: thrown; spoils lost; Exposure +2, Notoriety +2
+        outcomes:
+          T:
+            effects:
+              - { set: chase }
+            text: The grey knows the heath better than he does. They go down among the ponds like a pair of ghosts, and the shouting falls behind and becomes an argument between the outrider and the postilion about whose fault it was.
+          S:
+            effects:
+              - { set: chase }
+            text: A ball goes somewhere over his head. Then there is only furze, and wind, and the long slope to Kentish Town.
+          C:
+            effects:
+              - { set: chase }
+              - { adj: purse, by: "= -floor(spoils / 2)", why: a purse lost in the furze }
+              - { calc: spoils, to: "spoils - floor(spoils / 2)" }
+            text: He gets clear, but at the bottom of the hill one of the purses is no longer in his coat. Some Hampstead cowman will have a very good Christmas.
+          R:
+            effects:
+              - { set: chase }
+              - { adj: debts, by: £3, why: "a lamed horse, owed to the Bell" }
+              - { adj: composure, by: -1, why: a long walk }
+            text: A rabbit-hole. The grey stumbles and comes up lame. He walks her home to Holborn as the sun comes up, and the ostler at the Bell looks at her leg and names a figure.
+          X:
+            effects:
+              - { set: chase }
+              - { set: thrown }
+              - { adj: purse, by: "= -spoils", why: spoils scattered in the fall }
+              - { calc: spoils, to: "0" }
+              - { adj: exposure, by: 2, why: the horse is traced }
+              - { adj: notoriety, by: 2, why: a hue and cry }
+              - { lose: "A hired grey prancer, from the Bell in Holborn", why: caught by the outrider }
+              - { adj: debts, by: £10, why: "the Bell’s grey, lost" }
+            text: The grey goes over and he goes over the grey. He comes to in a ditch with nothing in his pockets but furze. The outrider leads the prancer back to Hampstead in triumph. It carries the Bell’s brand on its quarter.
+        next: reckon
+      - label: "Press on: wheel about and face him."
+        check:
+          attr: Nerve
+          diff: 6
+          bonus:
+            - { when: flags.wounded, by: -1, why: wounded }
+        dev: |-
+          Press on · Wheel · Nerve 4 vs 6.
+          T: he flees; Brave tag; Celebrity +1
+          S: he throws down his piece
+          C: both fire, both miss; Composure −2
+          R: wounded; Composure −2
+          X: wounded; Exposure +2; Notoriety +2
+        outcomes:
+          T:
+            effects:
+              - { tag: Brave (the Underworld), why: faced an outrider }
+              - { adj: celebrity, by: 1, why: a story worth repeating }
+            text: He wheels about and rides straight at the lamps, roaring. The outrider, who is paid by the week, makes a sound calculation and leaves.
+          S:
+            text: He turns. The outrider considers the distance, the dark, and his wages, and throws down the blunderbuss.
+          C:
+            effects:
+              - { adj: composure, by: -2, why: shot at }
+            text: Both fire; both miss. In the long astonished pause that follows, the Captain leaves.
+          R:
+            effects:
+              - { adj: composure, by: -2, why: shot }
+              - { when: not flags.wounded, then: [{ tag: "Wounded (a ball-graze, left arm)", why: the outrider }] }
+              - { set: wounded }
+            text: He turns, and receives the blunderbuss’s opinion in the shoulder. He gets away, but only just, and not all of him feels it was worth it.
+          X:
+            effects:
+              - { adj: composure, by: -2, why: shot }
+              - { adj: exposure, by: 2, why: seen close by the lamps }
+              - { adj: notoriety, by: 2, why: a hue and cry }
+              - { when: not flags.wounded, then: [{ tag: "Wounded (a ball-graze, left arm)", why: the outrider }] }
+              - { set: wounded }
+            text: He turns into the full light of the coach lamps with his mask round his neck. The outrider fires, the postilion stares, and both will be able to describe him to a magistrate down to the buttons.
+        next: reckon
+      - label: Fling him a purse over your shoulder, and ride on.
+        gate:
+          when: spoils > 0
+          need: spoils to spare
+        cost: half the spoils
+        dev: Costed · certain. Lose half the spoils; clean escape.
+        do:
+          effects:
+            - { adj: purse, by: "= -ceil(spoils / 2)", why: a purse flung to the outrider }
+            - { calc: spoils, to: "spoils - ceil(spoils / 2)" }
+          text: The purse flies back into the lamplight. The outrider, a practical man, stops to pick it up, and the Captain goes away into the dark like a sum subtracted.
+        next: reckon
