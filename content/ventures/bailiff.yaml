@@ -1,0 +1,269 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# A system Venture (Step 6): the run starts it when a writ is out and the hero is not in the Savoy.
+# Its flags tell the run what happened: paid, bribed (a month's grace), fled (into the Savoy), or
+# taken (the sponging-house, then prison). The Savoy's refuge is the design document's liberty.
+
+id: bailiff
+title: A Visitor on the Stair
+system: true
+names:
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
+sample: { writ_amount: 6000, writ_money: £25, creditor: your tailor, prison: the Fleet }
+runhead: The Life &amp; Adventures of an Adventurer
+sub: Being a Morning with a Bailiff, in five Beats
+prospectus: >-
+  <b>A Venture the run starts itself,</b> when a creditor has taken out a writ: pay, buy a
+  month's grace, run for the Liberty of the Savoy, or go to the sponging-house.
+year: 1724
+week: 20
+loot_flag: robbed
+persona: Capt. O’Rourke
+who:
+  name: Cornelius Byrne
+  as: passing as <i>Capt. O’Rourke</i>
+  origin: Younger son of an Irish squire · Book II
+
+start:
+  purse: £3
+  debts: £25
+  luck: 1
+  exposure: 3
+  notoriety: 0
+  celebrity: 2
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 1, Choleric: 1, Melancholic: 1, Phlegmatic: 0 }
+  tags: []
+  items: [His father’s sword, "A fine coat, made in Dublin and not paid for"]
+  hooks: []
+
+first: knock
+
+chapter:
+  no: Chap. X.
+  opening: In which our Hero receives a Visitor before Breakfast
+  parts:
+    - { when: flags.paid, text: "pays a Debt, to the Astonishment of all" }
+    - { when: flags.bribed, text: buys a Month of a Bailiff }
+    - { when: flags.hat, text: throws a Hat down the Stairs }
+    - { when: flags.fled, text: runs for the Liberty of the Savoy }
+  last:
+    when: flags.taken
+    text: goes to the Sponging-house
+    else: keeps his Liberty, for the present
+
+story:
+  title: The History of an Adventurer
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface:
+    sm: It was now that the bills of our hero’s tradesmen, which had hitherto followed him at a respectful distance, like a footman, came up with him all at once, like a creditor.
+    st: There is a knock, madam, which every gentleman in London knows, though he has never heard it; — it is a heavy knock, and it comes early.
+  close:
+    sm: Thus ended the visit; which, like most visits paid before breakfast, was more remarkable for its consequences than its conversation.
+    st: — And the bailiff? — He went home to his dinner, madam, which is more than I can say of his acquaintance.
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: After the Visit
+  sid: bailiff.05.reckoning
+  dev: Tells the run paid / bribed / fled / taken
+  steps:
+    - when: flags.paid
+      say: The bailiff counts the money twice, tears the writ in half with a bow, and wishes you a very good morning. It is the first writ you have ever paid, and the room seems larger for it.
+    - when: flags.bribed
+      say: The bailiff goes down the stair whistling, with your money and his writ. He will be back, he says, at the turn of the month, and he is a man of his word in that respect, if no other.
+    - when: flags.fled
+      say: By noon you are within the Liberty of the Savoy, in a garret that smells of other men’s ruin, where no bailiff may follow. The view is of the river, which is free, and of the gate, which is not.
+    - when: flags.taken
+      say: The bailiff walks you to his own house, a sponging-house off Chancery Lane with bars on every window, where for two pounds a week you may eat his dinners and consider your position. After that, {prison}.
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
+    none: Nothing is in the post. The bailiff was the news.
+  upkeep: "Upkeep follows, wherever you now are."
+  again: Receive the bailiff again
+  finis: Finis.
+
+beats:
+  - id: knock
+    num: I
+    phase: The Approach
+    title: A Knock on the Stair
+    sid: bailiff.01.knock
+    dev: The run starts this Venture when a writ is out · risky, certain
+    text: |-
+      It is not yet nine when you hear it: a tread on the stair too heavy for the landlady and too slow for the boy with the coals, and then a knock that has been knocking on doors since the reign of Queen Anne.
+
+      “A gentleman to see {persona},” says the landlady through the keyhole, in the voice of a woman who knows very well what kind of gentleman it is.
+    ask: What will you do?
+    options:
+      - label: Keep very still, and let him think you out.
+        dev: Risky · Nerve against 4 · a month’s grace, or he is in
+        check: { attr: Nerve, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: bribed }]
+            text: You keep so still that you can hear the spiders. After a quarter of an hour he goes away, telling the landlady he will call again at the end of the month. She tells him you have gone to Bath. You will owe her for that.
+          S:
+            effects: [{ set: bribed }]
+            text: He knocks, waits, knocks again, and goes. The landlady says he will be back at the turn of the month. You breathe again, with care.
+          C:
+            effects: [{ set: bribed }, { adj: hum.Choleric, by: 1, why: a morning spent under the bed }]
+            text: He goes away at last, but not before an hour has passed and you have spent it under the bed with your sword, which is not where a gentleman’s sword should be.
+          R:
+            effects: []
+            text: The floorboard by the window gives you away. “I can hear you, sir,” says the voice, kindly. “Better open, and save us both the trouble.”
+          X:
+            effects: [{ set: taken }, { adj: hum.Melancholic, by: 1, why: taken in a nightshirt }]
+            text: The landlady has a second key, and gives it him, and he has you by the arm before your stockings are on.
+        story:
+          T:
+            sm: Our hero kept so still that a spider, as he afterwards maintained, began a web between his nose and the bed-post; and the officer, after knocking at intervals for a quarter of an hour, went away persuaded that his man was at Bath, where the landlady, out of a kindness she later charged for, had sent him.
+            st: He kept still, madam. — It is the whole art of being out, and few men master it; for the conscience, as I have observed, creaks louder than any floorboard.
+          X:
+            sm: But the landlady, who had a second key and a long account against her lodger, gave it up without a struggle; and our hero was taken by the arm in his nightshirt, with one stocking on, which he afterwards declared to be the greatest indignity of his life.
+            st: One stocking, madam. — I have often thought that a man taken in both would bear it better, and a man taken in neither would not bear it at all.
+        next: [{ when: flags.bribed or flags.taken, go: reckon }, { go: writ }]
+      - label: Open the door, as a gentleman with nothing to fear.
+        dev: Certain
+        do:
+          effects: []
+          text: You open the door. On the landing stands a broad, mild man in a snuff-coloured coat, with a paper in his hand and a cudgel under his arm, both of which he holds as though they embarrass him.
+        next: writ
+
+  - id: writ
+    num: II
+    phase: The Complication
+    title: The Writ
+    sid: bailiff.02.writ
+    dev: Gated and costed options, and a risky one
+    text: |-
+      The bailiff reads the writ aloud, slowly, as though it were a sermon he had grown fond of. It is at the suit of {creditor}, for {writ_money}, and he is directed by the Sheriff to take your body. He says the last word with real regret.
+
+      “Unless,” he says, “the gentleman can see his way.”
+    ask: Can you see your way?
+    options:
+      - label: Pay him the whole of it.
+        gate: { when: purse >= writ_amount, need: "{writ_money} in purse · you have {money(purse)}" }
+        dev: Gated · certain · the writ is discharged
+        do:
+          effects: [{ adj: purse, by: "= -writ_amount", why: the writ paid }, { set: paid }]
+          text: You count it out on the washstand. The bailiff watches the money with the expression of a man watching his dinner walk away.
+        next: reckon
+      - label: Offer him a consideration to call again next month.
+        cost: "{money(max(240, floor(writ_amount / 10)))}"
+        price: "= max(240, floor(writ_amount / 10))"
+        dev: Costed · certain · a month’s grace for a tenth of the writ (at least £1)
+        do:
+          effects: [{ adj: purse, by: "= -max(240, floor(writ_amount / 10))", why: a bailiff’s consideration }, { set: bribed }]
+          text: He looks at the money for a long moment, then at the window, then at the money, and puts it in his waistcoat. He has, he says, a poor memory for addresses, which will last about a month.
+        next: reckon
+      - label: Talk to him, warmly, about the weather in {county}, and edge towards the door.
+        dev: Risky · Address against 4 · a month for nothing, or a step towards the stair
+        check: { attr: Address, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: bribed }]
+            text: It turns out his mother was from {county}. He weeps a little, puts the writ in his pocket, and says he will not find you in for a month, God help him.
+          S:
+            effects: [{ set: ahead }]
+            text: He warms to the subject, and while he is warm you are at the door, and he is behind you.
+          C:
+            effects: [{ set: ahead }, { adj: hum.Choleric, by: 1, why: a bailiff’s opinions }]
+            text: He has opinions about {county}. You have to listen to them. But you are at the door.
+          R:
+            effects: []
+            text: He has never heard of {county}, and does not want to. He stays between you and the stair.
+          X:
+            effects: [{ adj: composure, by: -2, why: a bailiff’s grip }]
+            text: He takes you by the arm, very gently and very hard, and says that is enough of the weather.
+        next: [{ when: flags.bribed, go: reckon }, { go: stair }]
+
+  - id: stair
+    num: III
+    phase: The Turn
+    title: The Stairhead
+    sid: bailiff.03.stair
+    dev: Preparations, each a bonus at the Crisis
+    text: |-
+      He is between you and the street. Behind you are the garret window, the leads, and a run of back courts that comes out, if a man is quick and knows the way, by the Strand, three hundred yards from the gate of the Savoy, where no writ can follow.{fn *}
+    notes:
+      - "* The Savoy’s privilege of sanctuary had in fact been abolished by statute in 1697, and the Mint’s held out only until 1723. This history keeps the Liberty open throughout, and owns the liberty taken."
+    ask: What do you do first?
+    options:
+      - label: Leave a shilling on the table for the landlady, who is listening on the stair.
+        cost: 1s
+        dev: Costed · certain · she holds the street door (+1)
+        do:
+          effects: [{ adj: purse, by: -1s, why: the landlady’s shilling }, { set: landlady }]
+          text: You put a shilling on the table, loudly. On the stair below, the listening stops.
+        next: run
+      - label: Throw his hat down the stairs.
+        dev: Certain · he must fetch it (+1)
+        do:
+          effects: [{ set: hat }, { adj: hum.Choleric, by: 1, why: a bailiff’s hat }]
+          text: The hat goes down four pair of stairs, bouncing, and the bailiff watches it go with the face of a man who has lost a friend.
+        next: run
+      - label: Put on your good coat. If you are to be taken, you will be taken as a gentleman.
+        dev: Certain · Composure +1
+        do:
+          effects: [{ adj: composure, by: 1, why: a good coat }]
+          text: You put on the coat, slowly, and settle the cuffs. The bailiff waits, as one gentleman waits for another.
+        next: run
+
+  - id: run
+    num: IV
+    phase: The Crisis
+    title: The Leads, or the Sponging-house
+    sid: bailiff.04.run
+    dev: Press on (risky) or Withdraw (certain)
+    text: |-
+      The bailiff has the writ in one hand and the cudgel in the other, and is beginning to look less apologetic.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: out of the window, over the leads, and run for the Liberty of the Savoy."
+        dev: Press on · Nerve against 4 · in the Savoy, or taken
+        check:
+          attr: Nerve
+          diff: 4
+          bonus:
+            - { when: flags.landlady, by: 1, why: the landlady holds the street door }
+            - { when: flags.hat, by: 1, why: he is fetching his hat }
+            - { when: flags.ahead, by: 1, why: a yard ahead of him }
+        outcomes:
+          T:
+            effects: [{ set: fled }, { adj: celebrity, by: 1, why: a famous escape }]
+            text: You are over the leads like a cat, down a water-pipe like a sailor, and through the back courts like a man with a writ behind him. You walk in at the Savoy gate at a gentleman’s pace, and bow to the bailiff, who arrives a minute later and stops at the line in the cobbles as if it were a wall.
+          S:
+            effects: [{ set: fled }]
+            text: It is a near thing, and you lose a buckle on the leads, but you are inside the Liberty before he is inside the court.
+          C:
+            effects: [{ set: fled }, { adj: hum.Melancholic, by: 1, why: a hard run }, { adj: purse, by: -2s, why: a waterman to cross the last stretch }]
+            text: You reach the river with him close behind, and a waterman takes two shillings to row you the last hundred yards to the Savoy stairs. It is the dearest boat in London.
+          R:
+            effects: [{ set: taken }]
+            text: The leads are wet. You come down the water-pipe faster than you meant to, into the arms of the bailiff’s man, who has been waiting at the bottom of it for twenty years.
+          X:
+            effects: [{ set: taken }, { adj: hum.Melancholic, by: 1, why: taken in the gutter }, { adj: notoriety, by: 1, why: a scuffle in the court }]
+            text: You get as far as the court, and slip, and the bailiff sits on you. A crowd collects. It is the most popular thing that has happened in the court all year.
+        story:
+          T:
+            sm: Our hero, without a word, went out of the window and over the leads with an agility that would have done honour to a cat, came down a water-pipe, threaded three back courts, and walked in at the gate of the Savoy at a gentleman’s pace; where he turned and bowed to the officer, who had stopped at the line of the Liberty as though at the edge of a precipice.
+            st: He bowed to the bailiff, madam, from inside the Liberty; — which is the only bow a debtor may make to his creditor with any satisfaction.
+          X:
+            sm: But slipping in the kennel of the court, he fell, and the officer sat upon him, to the great delight of the neighbourhood, which turned out to a man to see a gentleman taken, and agreed that it had never been done better.
+            st: The bailiff sat upon him, madam. — I record it without comment; for I have found that there is nothing to be said about being sat upon, that the being sat upon does not say better.
+        next: reckon
+      - label: "Withdraw: give him your arm, and go quietly, with your hat on."
+        withdraw: true
+        dev: Withdraw · certain · taken
+        do:
+          effects: [{ set: taken }]
+          text: You give him your arm, and he takes it like a partner at an assembly. You go down the stairs together, and the landlady curtseys.
+        next: reckon

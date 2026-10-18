@@ -1,0 +1,274 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# A system Venture (Step 6): a month in prison for debt. The run offers it each turn the hero is
+# confined. On a composition, flags.pound holds the pence in the pound the creditors will take;
+# the run then frees the hero if the purse can pay it. Step 12 makes the prison a place to play in.
+
+id: fleet
+title: A Month within the Walls
+system: true
+names:
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
+sample: { prison: the Fleet, debts_all: 9000, debts_money: £37 10s, creditor: "" }
+runhead: The Life &amp; Adventures of an Adventurer
+sub: Being a Month in Prison for Debt, in five Beats
+prospectus: >-
+  <b>A Venture the run offers in prison:</b> begging letters, a fellow prisoner, and a composition
+  with the creditors, at so many shillings in the pound.
+year: 1724
+week: 24
+loot_flag: won
+persona: Capt. O’Rourke
+who:
+  name: Cornelius Byrne
+  as: passing as <i>Capt. O’Rourke</i>
+  origin: Younger son of an Irish squire · Book II
+
+start:
+  purse: £4
+  debts: £37 10s
+  luck: 1
+  exposure: 3
+  notoriety: 0
+  celebrity: 1
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 0, Choleric: 1, Melancholic: 2, Phlegmatic: 1 }
+  tags: []
+  items: [His father’s sword]
+  hooks: []
+
+first: yard
+
+chapter:
+  no: Chap. XI.
+  opening: In which our Hero lives within his Means, there being none
+  parts:
+    - { when: flags.letters, text: writes to all his Relations }
+    - { when: flags.beer, text: stands the Ward a Pot of Beer }
+    - { when: flags.schedule, text: makes an honest Schedule of his Debts }
+    - { when: flags.won, text: wins at Cards of an old Prisoner }
+    - { when: flags.pound, text: makes Terms with his Creditors }
+  last:
+    when: flags.pound
+    text: sees a Door open
+    else: waits for something to turn up
+
+story:
+  title: The History of an Adventurer
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface:
+    sm: Our hero now made the acquaintance of that part of London which is built for the reception of those who have spent too freely of the rest of it.
+    st: I take the reader now into a prison, madam; — fear nothing; the door is open on our side.
+  close:
+    sm: So passed another month within the walls; which, as every prisoner knows, is the same length as a month outside, and a great deal longer.
+    st: "And the month ended, madam, as months do in prison: without anybody noticing, except the warden, who sent in his bill."
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: The Turnkey’s Round
+  sid: fleet.05.reckoning
+  dev: flags.pound → the run composes; it frees the hero if the purse can pay
+  steps:
+    - when: flags.pound
+      say: "The creditors will take {money(flags.pound)} in the pound: {money(floor(debts_all * flags.pound / 240))} in all. {if purse >= floor(debts_all * flags.pound / 240)}You can pay it, and you will.{else}You have {money(purse)}. The rest must be found, by letters, by luck or by friends.{end}"
+    - when: not flags.pound
+      say: The creditors make no terms this month. The turnkey locks the door at nine, and you lie on the boards listening to {prison} snore.
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
+    none: Nothing is in the post. Prisoners receive letters; they seldom provoke them.
+  upkeep: "Upkeep follows: the common side is free, and a room on the master’s side is not."
+  again: Another month within the walls
+  finis: Finis.
+
+beats:
+  - id: yard
+    num: I
+    phase: The Approach
+    title: Within the Walls
+    sid: fleet.01.yard
+    dev: Certain, costed and risky options
+    text: |-
+      {prison} is a small town of debtors, with its own taverns, its own tradesmen and its own Quality, all of whom owe money to someone outside. The rich pay the warden for rooms on the master’s side and live as well as they did at liberty, or better, having no more bills to fear. The poor lie on the common side and beg through the grate in the wall.{fn *}
+
+      You owe {debts_money}. It is not, by the standards of the place, very much. Nor, by the standards of your purse, is it very little.
+    notes:
+      - "* Debtors in the Fleet who could pay the warden’s fees lived on the master’s side; the rest lay on the common side, and begged from passers-by through a grate in the outer wall."
+    ask: How will you begin the month?
+    options:
+      - label: Write begging letters to everyone in {county} who ever knew your father.
+        dev: Risky · Address against 3 · a little money
+        check: { attr: Address, diff: 3 }
+        outcomes:
+          T:
+            effects: [{ set: letters }, { loot: £3, why: "an aunt in {county}" }]
+            text: An aunt in {county}, whom you had believed dead, sends three pounds and four pages on the subject of your father. You read the four pages twice. The three pounds you do not need to read.
+          S:
+            effects: [{ set: letters }, { loot: 15s, why: a godfather’s remittance }]
+            text: Your godfather sends fifteen shillings, and a sermon, and the hope that you will come home. You keep the shillings and the hope.
+          C:
+            effects: [{ set: letters }, { loot: 5s, why: a cousin’s kindness }]
+            text: A cousin sends five shillings and the news that everyone in {county} now knows where you are.
+          R:
+            effects: [{ set: letters }]
+            text: Nobody answers. You console yourself that the post from Ireland is slow, and know that it is not as slow as that.
+          X:
+            effects: [{ set: letters }, { adj: hum.Melancholic, by: 1, why: an unanswered post }]
+            text: One letter comes back, unopened, with “Not known” written across your father’s name in your brother’s hand.
+        story:
+          T:
+            sm: From the prison he wrote to every soul in {county} who had ever known his father, and was answered by an aunt whom the whole family had long believed dead, with three pounds and four close pages upon the subject of his father’s character; of which the pages were the more remarkable, and the pounds the more useful.
+            st: An aunt, madam! — There is always an aunt; — it is the one consolation of a large family.
+          X:
+            sm: Of all the letters he sent, one only came back, unopened, with “Not known” written across it in his elder brother’s hand; which our hero kept, and looked at often, and never spoke of.
+            st: — Not known. — I will not make a jest of it, madam; and nor, I think, will you.
+        next: attorney
+      - label: Stand the ward a pot of beer, to be thought a good fellow.
+        cost: 6d
+        dev: Costed · certain · a Hook
+        do:
+          effects:
+            - { adj: purse, by: -6d, why: beer for the ward }
+            - { set: beer }
+            - { hook: "Mr Feltham, a fellow debtor and once a stationer, who knows how compositions are made", why: a pot of beer }
+          text: The ward drinks your health, and an old man with ink on his fingers, who says his name is Feltham, tells you he has been composing with his creditors for eleven years and is very nearly out.
+        next: attorney
+      - label: Walk the yard, and take the measure of the place.
+        dev: Certain
+        do:
+          effects: [{ adj: hum.Phlegmatic, by: 1, why: walking the yard }]
+          text: You walk the yard. There are skittles, a chop-house, a coffee room, a chapel and a man who will marry anybody for a crown. It is London, with the noise taken out and the walls put in.
+        next: attorney
+
+  - id: attorney
+    num: II
+    phase: The Complication
+    title: The Creditors’ Attorney
+    sid: fleet.02.attorney
+    dev: Preparations for the composition, each a bonus
+    text: |-
+      In the second week an attorney comes to see you, a dry young man from Chancery Lane who acts for {creditor}{if not creditor}your creditors{end}. He would like, he says, to know what you have, so that he may know what you can give.
+    ask: What do you tell him?
+    options:
+      - label: Make him a full and honest schedule of your debts and your effects.
+        dev: Certain · +1 to the composition
+        do:
+          effects: [{ set: schedule }]
+          text: You write it all down, every farthing and every shirt. The attorney reads it with the surprise of a man who has never been told the truth before, and does not quite know where to put it.
+        next: feltham
+      - label: Flatter him, and tell him nothing.
+        dev: Risky · Address against 4
+        check: { attr: Address, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: friendly }]
+            text: He leaves liking you a good deal and knowing nothing, which is the best state in which to leave an attorney.
+          S:
+            effects: [{ set: friendly }]
+            text: He leaves amused, and inclined to recommend reasonable terms.
+          C:
+            effects: []
+            text: He leaves neither amused nor offended, which is how attorneys leave everything.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: an attorney’s manner }]
+            text: He leaves offended, and says he will advise his clients accordingly.
+          X:
+            effects: [{ adj: hum.Choleric, by: 1, why: an attorney’s manner }, { set: hostile }]
+            text: He leaves very offended, and you hear him laugh on the stair, which is worse.
+        next: feltham
+
+  - id: feltham
+    num: III
+    phase: The Turn
+    title: A Fellow Prisoner
+    sid: fleet.03.feltham
+    dev: Advice (certain, a bonus) or cards (risky, money)
+    text: |-
+      An old debtor who has been in {prison} since before the South Sea, and seems to like it, invites you to his room to talk about compositions, cards, and the iniquity of creditors, in that order.
+    ask: What will you take from him?
+    options:
+      - label: His advice, which is all he has left to give.
+        dev: Certain · +1 to the composition
+        do:
+          effects: [{ set: advice }]
+          text: Never offer what they ask, he says. Offer what they fear they will get. Then offer a little less, and let them find the difference in their hearts.
+        next: terms
+      - label: A game of piquet, for a shilling a point.
+        dev: Risky · Wit against 3
+        check: { attr: Wit, diff: 3 }
+        outcomes:
+          T:
+            effects: [{ loot: £1, why: piquet }]
+            text: You win a pound off him, and he pays with real pleasure, as a man pays a good tutor.
+          S:
+            effects: [{ loot: 6s, why: piquet }]
+            text: You win six shillings, and lose a great deal of time.
+          C:
+            effects: []
+            text: You win, and lose, and come out even, which in prison is the usual result of everything.
+          R:
+            effects: [{ adj: purse, by: -5s, why: piquet }]
+            text: He takes five shillings off you, slowly, and gives you advice on how not to lose it next time.
+          X:
+            effects: [{ note: 15s, to: "an old debtor in {prison}", why: piquet on tick }]
+            text: He wins fifteen shillings off you, and takes your note of hand for it, which he puts in a box with a great many others.
+        next: terms
+
+  - id: terms
+    num: IV
+    phase: The Crisis
+    title: Terms
+    sid: fleet.04.terms
+    dev: Press on (risky composition) or Withdraw (wait)
+    text: |-
+      At the end of the month the attorney comes again. The creditors, he says, are reasonable men, and would sooner have something than nothing. The question is how much something.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: propose a composition, at so many shillings in the pound."
+        dev: Press on · Address against 4 · 5s, 7s 6d or 10s in the pound, or refused
+        check:
+          attr: Address
+          diff: 4
+          bonus:
+            - { when: flags.schedule, by: 1, why: an honest schedule }
+            - { when: flags.friendly, by: 1, why: the attorney likes you }
+            - { when: flags.advice, by: 1, why: an old prisoner’s advice }
+            - { when: has_hook("Mr Feltham"), by: 1, why: Mr Feltham’s experience }
+            - { when: flags.hostile, by: -1, why: the attorney is offended }
+        outcomes:
+          T:
+            effects: [{ calc: flags.pound, to: "60" }]
+            text: They take five shillings in the pound. The attorney looks at you as though you had picked his pocket, and perhaps you have.
+          S:
+            effects: [{ calc: flags.pound, to: "90" }]
+            text: They take seven and sixpence in the pound, after a great deal of sighing on both sides.
+          C:
+            effects: [{ calc: flags.pound, to: "120" }]
+            text: They take ten shillings in the pound, and not a farthing less, and the attorney says you have got off lightly.
+          R:
+            effects: []
+            text: They will take nothing less than the whole, they say, and can wait. They are not in prison.
+          X:
+            effects: [{ adj: hum.Melancholic, by: 1, why: terms refused }]
+            text: They refuse, and the attorney adds that one of them has sworn to keep you in until you die, which he believes to be a figure of speech.
+        story:
+          T:
+            sm: At the month’s end he proposed to his creditors so artful a composition, at five shillings in the pound, that the attorney carried it away with the air of a man who has been robbed, and is not quite sure by whom.
+            st: Five shillings in the pound, madam; — which is to say that his debts were worth a quarter of their face; — as, I find, are most men’s.
+          X:
+            sm: His proposals were refused with indignation, and he learned besides that one of his creditors had sworn to keep him within the walls until he died; which the attorney, who had a feeling heart, assured him was only a manner of speaking.
+            st: — Until he died. — It is a long time, madam; but creditors are a patient race, and outlive most of us.
+        next: reckon
+      - label: "Withdraw: wait. Something may turn up."
+        withdraw: true
+        dev: Withdraw · certain · no composition this month
+        do:
+          effects: [{ adj: hum.Phlegmatic, by: 1, why: waiting }]
+          text: You wait. Something, as the old prisoner says, always turns up; though in his experience it is generally the warden.
+        next: reckon

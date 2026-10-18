@@ -93,7 +93,8 @@ Each beat offers a mix of the four kinds the design asks for:
 - label: Stand Will Gallow a bottle …
   gate: { when: 'has_hook("Will Gallow")', need: "Hook: Will Gallow" }
 
-# Costed: says what it costs on a badge
+# Costed: says what it costs on a badge. If the purse cannot pay, the option is locked; the
+# price is worked out from a certain option's purse effects, or given as price: 15s
   cost: 2s 6d, and a third of the spoils
 
 # Risky: goes to Fortune's Wheel, with one outcome for each segment
@@ -144,6 +145,8 @@ next:
 | `{ hook: …, why: … }` · `{ unhook: Betty Slyfield, why: … }` | Hooks, written as a person or thing and why it matters; `unhook` spends the first that starts with the words given |
 | `rumour: { id, delay, from, text, effect }` | A rumour, delivered 1–3 weeks after the Venture. On delivery the run applies the simple effects it can read in `effect` (“Exposure +3”, “Notoriety +1”, “Celebrity −1”); for anything else, add `on_delivery:` with a list of effects |
 | `{ persona: Capt. O’Rourke, why: … }` | The hero takes up a Persona, with Exposure 1; Exposure is kept separately for each name |
+| `{ pledge: His father’s sword, loan: £1, why: … }` | Pawns an item; the run keeps the ticket, redeemable in the town for a fifth more within 12 weeks |
+| `{ note: 15s, to: Mr Tozer, why: … }` | A note of hand: a debt of honour, which costs Celebrity once four weeks unpaid |
 | `{ when: …, then: [ … ], else: [ … ] }` | Effects that happen only if a condition holds |
 | `{ adj: purse, by: "= -floor(spoils / 2)", … }` | A sum worked out from the state, after `=` |
 | `{ calc: spoils, to: "0" }` | Sets a value silently |
@@ -203,10 +206,19 @@ To take up the Persona, write `{ persona: "= alias" }`; to test for it, `persona
 A Venture's `names:` block gives the names on its own page (heath's are Cornelius Byrne and
 Capt. O’Rourke). A value that begins with a name needs quotes in YAML: `st: "{alias_long}. — Of what regiment?"`.
 
+## Ventures the run starts itself
+
+`system: true` marks a Venture the run starts, never offers: `bailiff` (when a writ is out) and
+`fleet` (each month in prison). Their flags tell the run what happened (`paid`, `bribed`, `fled`,
+`taken`; `flags.pound` for a composition). Their text can use `{writ_money}`, `{writ_amount}`,
+`{creditor}`, `{prison}` and `{debts_money}`; `sample:` gives those values on the Venture's own page.
+The shops, prices and rules of the economy are in `settings.yaml` under `economy:`.
+
 ## Origins
 
 `origins.yaml` lists the eight Origins. An Origin marked `available: true` needs a `hero` block (the pools its
-names are drawn from, ranks, first lodging and a `start` like a Venture's) and an `arrival`
+names are drawn from, ranks, first lodging, starting `dress` for the six Appearances slots, and a
+`start` like a Venture's) and an `arrival`
 Venture. The others appear on the start screen as “not yet written”.
 
 ## Checking your work

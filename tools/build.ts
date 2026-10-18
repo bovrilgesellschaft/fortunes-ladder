@@ -22,7 +22,7 @@ const C = (p: string) => path.join(ROOT, 'content', p);
 export const FACTIONS = ['the Quality', 'the Church', 'the Law', 'the Projectors', 'the Army & Navy', 'the Underworld', 'the Wits', 'the Trade', 'the Brethren & the Adepts', 'the Town'];
 export const DISTRICTS = ['St Giles', 'Southwark', 'The Savoy', 'Moorfields', 'Fleet Street and the Strand', 'Covent Garden', 'The City', "St James's", 'Mayfair', 'The Environs'];
 // names a condition may read: the hero's state, and in a run the calendar (year, week, turn) and Origin
-const ROOTS = new Set(['flags', 'attrs', 'hum', 'purse', 'debts', 'composure', 'luck', 'exposure', 'notoriety', 'celebrity', 'spoils', 'start', 'persona', 'year', 'week', 'turn', 'origin', ...NAME_ROOTS]);
+const ROOTS = new Set(['flags', 'attrs', 'hum', 'purse', 'debts', 'composure', 'luck', 'exposure', 'notoriety', 'celebrity', 'spoils', 'start', 'persona', 'year', 'week', 'turn', 'origin', ...NAME_ROOTS, 'writ_amount', 'writ_money', 'creditor', 'prison', 'debts_all', 'debts_money']);
 const FNS = new Set(['money', 'floor', 'ceil', 'min', 'max', 'if', 'has_item', 'has_item_like', 'has_hook', 'has_tag', 'has_condition', 'has_persona', 'played', 'rumour_says']);
 
 export interface Report { errors: string[]; warnings: string[] }
@@ -147,6 +147,8 @@ function checkVenture(v: Venture, glossary: Record<string, GlossaryEntry>, r: Re
   const effects = (es: Effect[] | undefined, where: string) => {
     for (const e of es ?? []) {
       if ('adj' in e) amount(e.by, where, e.adj === 'purse' || e.adj === 'debts');
+      else if ('pledge' in e) amount(e.loan, where, true);
+      else if ('note' in e) { amount(e.note, where, true); text(e.to, where); }
       else if ('loot' in e) amount(e.loot, where, true);
       else if ('set' in e) ([] as string[]).concat(e.set).forEach(x => flagsSet.add(x));
       else if ('unset' in e) ([] as string[]).concat(e.unset).forEach(x => flagsSet.add(x));
@@ -175,6 +177,7 @@ function checkVenture(v: Venture, glossary: Record<string, GlossaryEntry>, r: Re
     b.options.forEach((o: Option, i) => {
       const w = `${b.id}.options[${i}]`;
       if (o.gate) { expr(o.gate.when, `${w}.gate`); text(o.gate.need, `${w}.gate.need`); }
+      if (o.price !== undefined) amount(o.price, `${w}.price`, true);
       text(o.label, `${w}.label`);
       o.check?.bonus?.forEach(x => expr(x.when, `${w}.check.bonus`));
       if (o.check && o.do) r.errors.push(at(`${w}: has both a Wheel check and a certain outcome`));

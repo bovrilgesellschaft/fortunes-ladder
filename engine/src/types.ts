@@ -1,4 +1,5 @@
 import type { NamePool, Names } from './names';
+import type { EconomySettings, Slot } from './economy';
 
 // Shapes of the content as the engine sees it, after the build has read the YAML.
 // The YAML is checked against content/schema/venture.schema.json first; these types mirror it.
@@ -29,6 +30,10 @@ export type Effect =
   | { rumour: Rumour }
   /** Take up a Persona: the hero now passes under this name, with a fresh Exposure. */
   | { persona: string; why?: string }
+  /** Pledge an item at a pawnbroker's for a loan; redeemable in the run's pawn tickets. */
+  | { pledge: string; loan: Amount; why?: string }
+  /** A note of hand: a gaming debt or a loan between gentlemen, owed to someone by name. */
+  | { note: Amount; to: string; why?: string }
   | { when: string; then: Effect[]; else?: Effect[] };
 
 export interface Rumour {
@@ -56,6 +61,9 @@ export interface Option {
   label: string;
   gate?: { when: string; need: string };
   cost?: string;
+  /** What the option takes from the purse; locked if the purse cannot pay. Worked out from a
+   *  certain option's effects when left out. */
+  price?: Amount;
   withdraw?: boolean;
   check?: { attr: string; diff: number; bonus?: Bonus[] };
   dev?: string;
@@ -150,6 +158,10 @@ export interface Venture {
   title: string;
   /** The names its text uses ({given}, {alias}…) on the Venture's own page; a run supplies its own. */
   names?: Names;
+  /** Other values its text uses on its own page, which a run supplies (the bailiff's writ, say). */
+  sample?: Record<string, string | number>;
+  /** A Venture the run starts itself (the bailiff, the prison), never offered. */
+  system?: boolean;
   /** Test content: placeholder Ventures written to exercise the engine, to be kept, rewritten or dropped. */
   test?: boolean;
   offer?: Offer;
@@ -198,6 +210,7 @@ export interface Origin {
     true_rank: Rank;
     claimed_rank: Rank;
     lodging: { district: string; room: Room };
+    dress: Partial<Record<Slot, { tier: number; name: string }>>;
     start: HeroStart;
   };
   /** The arrival Venture, played in the first turn. */
@@ -213,6 +226,7 @@ export interface Settings {
   /** The run's start date when none is chosen; null = a random week in the range. */
   start?: When | null;
   start_range: { from: number; to: number };
+  economy: EconomySettings;
 }
 
 /** Everything a run page needs. */

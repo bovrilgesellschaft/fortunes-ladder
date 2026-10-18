@@ -29,3 +29,17 @@
 .kv.circ dd{text-align:right}
 .wheelbox.replayed{padding:4px 0;margin:6px 0 0}
 .finis-run{text-align:center;margin:20px 0}
+
+/* the Ledger's Appearances and debts (Step 6) */
+.kv.app dd{font-size:.86rem}
+.appsum{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-family:var(--caps);letter-spacing:.04em;font-size:.82rem;color:var(--ink2)}
+.appsum.short span:first-child{color:var(--bad)}
+.lst.writs li{color:var(--bad)}
+/* the town's affairs */
+.affairs{display:grid;gap:10px}
+.affairs table{width:100%}
+.affairs td .btn{padding:2px 9px;font-size:.88rem}
+.affairs select{font:inherit;font-family:var(--body);font-size:.92rem;color:var(--ink);background:var(--leaf);border:1px solid var(--ink2);padding:2px 4px;max-width:100%}
+.notice{border-left:3px solid var(--rubric);padding:4px 10px;margin:8px 0 0;font-style:italic}
+.rowacts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.small{font-size:.88rem;color:var(--ink2)}

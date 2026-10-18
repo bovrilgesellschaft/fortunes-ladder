@@ -3,29 +3,127 @@
   "title": "The run's numbers",
   "type": "object",
   "additionalProperties": false,
-  "required": ["turn_weeks", "living", "lodging", "room", "start_range"],
+  "required": [
+    "turn_weeks",
+    "living",
+    "lodging",
+    "room",
+    "start_range"
+  ],
   "properties": {
-    "turn_weeks": { "type": "integer", "minimum": 1 },
-    "living": {
-      "type": "object", "additionalProperties": false,
-      "required": ["Vagabond", "Servant", "Tradesman", "Gentleman", "Esquire", "Baronet or Knight", "Peer"],
-      "patternProperties": { ".*": { "type": ["string", "number"] } }
+    "turn_weeks": {
+      "type": "integer",
+      "minimum": 1
     },
-    "lodging": { "type": "object", "additionalProperties": { "type": ["string", "number"] } },
+    "living": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Vagabond",
+        "Servant",
+        "Tradesman",
+        "Gentleman",
+        "Esquire",
+        "Baronet or Knight",
+        "Peer"
+      ],
+      "patternProperties": {
+        ".*": {
+          "type": [
+            "string",
+            "number"
+          ]
+        }
+      }
+    },
+    "lodging": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number"
+        ]
+      }
+    },
     "room": {
-      "type": "object", "additionalProperties": false, "required": ["garret", "room", "first floor"],
-      "properties": { "garret": { "type": "number" }, "room": { "type": "number" }, "first floor": { "type": "number" } }
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "garret",
+        "room",
+        "first floor"
+      ],
+      "properties": {
+        "garret": {
+          "type": "number"
+        },
+        "room": {
+          "type": "number"
+        },
+        "first floor": {
+          "type": "number"
+        }
+      }
     },
     "start": {
       "oneOf": [
-        { "type": "null" },
-        { "type": "object", "required": ["year", "week"], "additionalProperties": false,
-          "properties": { "year": { "type": "integer", "minimum": 1719, "maximum": 1745 }, "week": { "type": "integer", "minimum": 1, "maximum": 52 } } }
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "required": [
+            "year",
+            "week"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "year": {
+              "type": "integer",
+              "minimum": 1719,
+              "maximum": 1745
+            },
+            "week": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 52
+            }
+          }
+        }
       ]
     },
     "start_range": {
-      "type": "object", "required": ["from", "to"], "additionalProperties": false,
-      "properties": { "from": { "type": "integer" }, "to": { "type": "integer" } }
+      "type": "object",
+      "required": [
+        "from",
+        "to"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "type": "integer"
+        },
+        "to": {
+          "type": "integer"
+        }
+      }
+    },
+    "economy": {
+      "type": "object",
+      "description": "The core economy (Step 6); checked by the build.",
+      "required": [
+        "expected",
+        "credit",
+        "wear",
+        "catalogue",
+        "values",
+        "pawn",
+        "lender",
+        "notes",
+        "tradesman",
+        "savoy",
+        "prison"
+      ]
     }
   }
 }

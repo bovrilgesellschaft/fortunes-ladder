@@ -14,6 +14,7 @@ import { Campaign, type CampaignState } from '../engine/src/campaign';
 import { odds } from '../engine/src/core';
 import { Rng } from '../engine/src/rng';
 import { SEGMENTS } from '../engine/src/types';
+import { SLOTS, WEEKLY, appearances } from '../engine/src/economy';
 import { loadAll } from './build';
 
 const { world, report } = loadAll();
@@ -24,16 +25,38 @@ const strip = (h: string) => h.replace(/<span class="cant"[^>]*>|<\/span>|<sup c
 const problems: string[] = [];
 const offered: Record<string, number> = {}, played: Record<string, number> = {};
 let heathChances = 0, heathOffered = 0, endPurse = 0, endDebts = 0, runs = 0, replays = 0;
+const tally: Record<string, number> = {};
+const count = (k: string) => (tally[k] = (tally[k] ?? 0) + 1);
+
+/** A careless young man's affairs: he shops, pawns, borrows, pays a little, and sometimes pinches. */
+function affairs(c: Campaign, pick: Rng) {
+  const H = c.hero, r = () => pick.next();
+  if (r() < 0.25) { const sl = SLOTS[pick.int(0, 5)]; if (!c.buy(sl, pick.int(1, 3), r() < 0.5)) count('bought ' + (WEEKLY.includes(sl) ? 'a servant or equipage' : 'clothes')); }
+  if (r() < 0.12) { const p = c.pawnable(); if (p.length && !c.pawn(p[pick.int(0, p.length - 1)].item)) count('pawned'); }
+  if (r() < 0.2 && H.pledges.length && !c.redeem(0)) count('redeemed');
+  if (r() < 0.12 && c.canBorrow() >= 1200 && !c.borrow(1200)) count('borrowed £5');
+  if (r() < 0.3 && H.loans.length && !c.repay(0, H.purse)) count('repaid');
+  if (r() < 0.3 && H.debts && H.purse && !c.payTradesmen(Math.min(H.debts, H.purse))) count('paid tradesmen');
+  if (r() < 0.3 && H.notes.length && !c.payNote(0)) count('paid a note');
+  if (r() < 0.1) c.setLiving(H.living === 'claimed' ? 'pinching' : 'claimed');
+  if (r() < 0.04 && !c.inSavoy()) { c.move('The Savoy', 'garret'); count('went into the Savoy'); }
+  if (c.inSavoy() && r() < 0.3) { if (c.move('Fleet Street and the Strand', 'garret')) count('left the Savoy'); else count('kept in the Savoy'); }
+  if (H.confined && r() < 0.3) c.setSide(H.confined.side === 'room' ? 'common' : 'room');
+  if (H.confined && r() < 0.5 && !c.payOut()) count('paid out of prison');
+}
 
 function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
   const c = Campaign.begin(world, 'younger-son', seed, world.settings.start);
   const pick = new Rng(policySeed);
   for (let t = 0; t < turns; t++) {
     if (c.st.phase === 'town') {
-      c.st.offers.forEach(id => (offered[id] = (offered[id] ?? 0) + 1));
+      affairs(c, pick);
+      if (c.hero.confined && c.st.offers.some(o => o !== 'fleet')) problems.push(`seed ${seed}: offered ${c.st.offers} in prison`);
       const ready = c.hero.persona === (c.extra() as Record<string, unknown>).alias && c.hero.items.some(i => i.includes('pistol')) && c.hero.items.includes('A crape mask');
       const d = c.date();
       if (ready && d.year === 1724 && d.week >= 41 && d.week <= 46 && !c.st.played.heath) { heathChances++; if (c.st.offers.includes('heath')) heathOffered++; }
+      c.st.offers.forEach(id => (offered[id] = (offered[id] ?? 0) + 1));
+      if (c.st.phase !== 'town') { /* paying out of prison may have redrawn the offers */ }
       if (!c.st.offers.length || pick.next() < 0.08) c.idle();
       else {
         // prefer heath when it is offered, to exercise it
@@ -43,6 +66,7 @@ function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
     }
     if (c.st.phase === 'venture') {
       const id = c.st.current!.id; played[id] = (played[id] ?? 0) + 1;
+      if (id === 'bailiff' && (!c.activeWrit() || c.inSavoy())) problems.push(`seed ${seed}: the bailiff came with no writ, or into the Savoy`);
       let run = c.makeRun(); let at = c.byId[id].first; let steps = 0;
       const where = () => `seed ${seed} turn ${c.st.turn} ${id}/${at}`;
       while (at !== 'reckon') {
@@ -82,7 +106,10 @@ function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
       const r = run.reckon();
       if (BAD.test(strip(r.html))) problems.push(`${where()}: reckoning: ${strip(r.html).slice(0, 120)}`);
       for (const x of run.S.rumours) if (BAD.test(strip(x.text))) problems.push(`${where()}: rumour ${x.id}`);
+      const before = { conf: !!c.hero.confined, savoy: c.inSavoy() };
       c.finishVenture(run, r.chapter);
+      if (id === 'bailiff') count(c.hero.confined ? 'taken by the bailiff' : c.inSavoy() && !before.savoy ? 'fled into the Savoy' : run.S.flags.paid ? 'paid the bailiff' : 'bought a month of the bailiff');
+      if (id === 'fleet' && run.S.flags.pound) count(c.hero.confined ? 'composed, still owing' : 'composed and released');
     }
     if (c.st.phase === 'bills') {
       const H = c.hero;
@@ -92,6 +119,12 @@ function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
       for (const [p, x] of Object.entries(H.personas)) if (x < 0 || x > 10) problems.push(`seed ${seed}: Exposure (${p}) is ${x}`);
       for (const [h, x] of Object.entries(H.hum)) if (x < 0 || x > 5) problems.push(`seed ${seed}: ${h} is ${x}`);
       if (H.purse < 0) problems.push(`seed ${seed} turn ${c.st.turn}: purse below nothing`);
+      if (H.debts < 0 || H.loans.some(l => l.owed < 0)) problems.push(`seed ${seed} turn ${c.st.turn}: a debt below nothing`);
+      const app = appearances(H.dress, world.settings.economy); if (app < 0 || app > 18) problems.push(`seed ${seed}: Appearances ${app}`);
+      for (const sl of SLOTS) { const d = H.dress[sl]; if (d && !WEEKLY.includes(sl) && !H.items.includes(d.name)) problems.push(`seed ${seed}: ${sl} worn but not possessed`); }
+      if (H.writs.some(w => w.kind === 'loan' && (w.loan === undefined || w.loan >= H.loans.length))) problems.push(`seed ${seed}: a writ for a loan that is gone`);
+      for (const e of c.st.bills?.events ?? []) { if (/writ/.test(e)) count('writs taken out'); if (/forfeit/.test(e)) count('pledges forfeit'); if (/Savoyard/.test(e)) count('became Savoyards'); }
+      if (H.confined) count('turns in prison');
       c.nextTurn();
     }
     // the save must survive a round trip at every turn boundary
@@ -121,6 +154,7 @@ console.log(`${runs} runs of 20 turns, ${replays} mid-Venture reloads replayed.`
 console.log(`offered: ${Object.entries(offered).map(([k, x]) => `${k} ${x}`).join(', ')}`);
 console.log(`played:  ${Object.entries(played).map(([k, x]) => `${k} ${x}`).join(', ')}`);
 console.log(`heath offered on ${heathOffered} of ${heathChances} chances (a ready hero, in its window).`);
-console.log(`after 20 turns, on average: purse ${L(endPurse / runs)}, debts ${L(endDebts / runs)}.`);
+console.log(`after 20 turns, on average: purse ${L(endPurse / runs)}, tradesmen ${L(endDebts / runs)}.`);
+console.log(`the economy: ${Object.entries(tally).sort().map(([k, x]) => `${k} ${x}`).join(', ')}.`);
 if (problems.length) { console.log(`\n${problems.length} problem(s):`); problems.slice(0, 30).forEach(p => console.log('  ' + p)); process.exit(1); }
 console.log('No problems.');

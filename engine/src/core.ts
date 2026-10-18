@@ -19,6 +19,9 @@ export interface State {
   spoils: number; story: (Passage & { fresh?: boolean })[]; storyAdded: boolean;
   /** The name the hero passes under in this Venture. */
   persona: string;
+  /** Pledged and noted during the Venture, for the run to keep. */
+  pledges: { item: string; loan: number }[];
+  notes: { to: string; amount: number }[];
 }
 
 /** The hero a Venture starts from, when it is played inside a run rather than on its own page. */
@@ -37,6 +40,8 @@ export interface RunOpts {
   extra?: Record<string, unknown>;
   /** Whether a Venture has been played in this run. */
   played?: (id: string) => boolean;
+  /** Added to every Exposure gain, with the reasons (shabby, pinching, a claim far above the truth). */
+  exposureExtra?: { by: number; why: string };
 }
 
 const LIM: Record<string, [number, number]> = { composure: [0, 8], exposure: [0, 10], luck: [0, 3], celebrity: [0, 10], notoriety: [0, 10] };
@@ -125,13 +130,13 @@ export class Run {
         purse: o.purse, debts: o.debts, composure: o.attrs.Nerve + 1, luck: o.luck,
         exposure: o.exposure, notoriety: o.notoriety, celebrity: o.celebrity,
         attrs: { ...o.attrs }, hum: { ...o.hum }, conditions: [...o.conditions], tags: [...o.tags], items: [...o.items], hooks: [...o.hooks],
-        flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false, persona: o.persona,
+        flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false, persona: o.persona, pledges: [], notes: [],
       }
       : {
         purse: this.amount(h.purse), debts: this.amount(h.debts), composure: h.composure ?? h.attrs.Nerve + 1, luck: h.luck,
         exposure: h.exposure, notoriety: h.notoriety, celebrity: h.celebrity,
         attrs: { ...h.attrs }, hum: { ...h.hum }, conditions: [...(h.conditions ?? [])], tags: [...h.tags], items: [...h.items], hooks: [...h.hooks],
-        flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false, persona: this.v.persona,
+        flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false, persona: this.v.persona, pledges: [], notes: [],
       };
     // a kit is lent for the Venture: in a run the hero may not own it yet
     for (const it of this.v.kit?.items ?? []) if (!this.S.items.includes(it)) this.S.items.push(it);
@@ -142,7 +147,7 @@ export class Run {
   // ----- expressions and text -----
 
   scope() {
-    const x = this.opts.extra ?? { year: this.v.year, week: this.v.week, turn: 0, origin: '', ...(this.v.names ? nameVars(this.v.names) : {}) };
+    const x = this.opts.extra ?? { year: this.v.year, week: this.v.week, turn: 0, origin: '', ...(this.v.names ? nameVars(this.v.names) : {}), ...(this.v.sample ?? {}) };
     return { ...x, ...this.S, start: this.START } as Record<string, unknown>;
   }
 
@@ -207,6 +212,8 @@ export class Run {
 
   adj(path: string, d: number, why: string) {
     if (!d) return;
+    const xx = this.opts.exposureExtra;
+    if (path === 'exposure' && d > 0 && xx?.by) { d += xx.by; why += ` (+${xx.by}: ${xx.why})`; }
     const S = this.S as unknown as Record<string, any>;
     const [a, b] = path.split('.');
     if (b) S[a][b] = Math.max(0, Math.min(5, S[a][b] + d));
@@ -238,6 +245,20 @@ export class Run {
         if (i > -1) { S.log.push(`Hook spent: ${S.hooks[i]} — ${e.why ?? ''}`); S.hooks.splice(i, 1); this.fx.push({ t: 'Hook spent', tone: 'bad' }); }
       }
       else if ('rumour' in e) this.rumour(e.rumour);
+      else if ('pledge' in e) {
+        const i = S.items.indexOf(e.pledge);
+        if (i > -1) {
+          const loan = this.amount(e.loan);
+          S.items.splice(i, 1); S.pledges.push({ item: e.pledge, loan });
+          this.adj('purse', loan, e.why ?? 'a pledge');
+          this.fx.push({ t: 'Pledged: ' + e.pledge.split(',')[0], tone: 'bad' }); S.log.push(`Pledged: ${e.pledge} for ${money(loan)}`);
+        }
+      }
+      else if ('note' in e) {
+        const amount = this.amount(e.note), to = this.inline(e.to);
+        S.notes.push({ to, amount });
+        this.fx.push({ t: `Note of hand ${money(amount)}`, tone: 'bad' }); S.log.push(`Note of hand: ${money(amount)} to ${to} — ${e.why ?? ''}`);
+      }
       else if ('persona' in e) {
         // "= alias": the run's drawn Persona name; otherwise the name as written
         const p = e.persona.trim().startsWith('=') ? String(this.eval(e.persona.trim().slice(1))) : e.persona;
@@ -276,7 +297,21 @@ export class Run {
   // ----- options -----
 
   gate(o: Option) { return o.gate ? { ok: this.test(o.gate.when), need: this.inline(o.gate.need) } : { ok: true, need: '' }; }
-  locked(o: Option) { return !this.gate(o).ok || (!o.do && !o.check); }
+
+  /** What the option takes from the purse: its price, or a certain option's plain purse costs. */
+  price(o: Option): number {
+    if (o.price !== undefined) return this.amount(o.price);
+    let p = 0;
+    for (const e of o.do?.effects ?? []) {
+      if ('adj' in e && e.adj === 'purse' && !(typeof e.by === 'string' && e.by.trim().startsWith('='))) {
+        const d = this.amount(e.by); if (d < 0) p -= d;
+      }
+    }
+    return p;
+  }
+  /** A costed option the purse cannot pay is locked (ruling, Step 6). */
+  affordable(o: Option) { return this.price(o) <= Math.max(0, this.S.purse); }
+  locked(o: Option) { return !this.gate(o).ok || (!o.do && !o.check) || !this.affordable(o); }
 
   margin(o: Option) {
     const ch = o.check!;

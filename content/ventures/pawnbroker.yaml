@@ -109,12 +109,10 @@ beats:
     options:
       - label: Your father’s sword.
         gate: { when: has_item("His father’s sword"), need: "His father’s sword" }
-        dev: Gated · certain · a third of £3
+        dev: Gated · certain · a real pledge, redeemable in the town for a fifth more
         do:
           effects:
-            - { lose: His father’s sword, why: pledged }
-            - { adj: purse, by: £1, why: a pledge on the sword }
-            - { hook: "A pawnbroker’s ticket for your father’s sword: £1 4s to redeem, within twelve weeks", why: pledged }
+            - { pledge: His father’s sword, loan: £1, why: a pledge on the sword }
             - { set: sword }
             - { adj: hum.Melancholic, by: 1, why: a father’s sword under the counter }
           text: He draws it an inch, looks at the blade, and puts it back as gently as if it were his own. “A pound,” he says. Your father carried it at the Boyne, on the losing side. It seems to have kept its value better than the cause.
@@ -124,9 +122,7 @@ beats:
         dev: Gated · certain · pawning goods not paid for
         do:
           effects:
-            - { lose: "A fine coat, made in Dublin and not paid for", why: pledged }
-            - { adj: purse, by: 15s, why: a pledge on the coat }
-            - { hook: "A pawnbroker’s ticket for the Dublin coat: 18s to redeem, within twelve weeks", why: pledged }
+            - { pledge: "A fine coat, made in Dublin and not paid for", loan: 15s, why: a pledge on the coat }
             - { set: coat }
           text: He holds it to the light, finds the tailor’s mark, and smiles for the first time. “Fifteen shillings,” he says, “and I shan’t ask whose.” You go out into Fleet Street in your waistcoat, which in January is a statement of principle.
         next: ring

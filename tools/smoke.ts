@@ -39,7 +39,7 @@ async function playRun(seed: string, actions: number, reloadEvery: number) {
   let doc = dom.window.document;
   doc.querySelector<HTMLInputElement>('#seed')!.value = seed;
   doc.querySelector<HTMLButtonElement>('#go')!.click();
-  let turns = 0, beats = 0, reloads = 0, chapters = 0;
+  let turns = 0, beats = 0, reloads = 0, chapters = 0, affairs = 0;
   for (let i = 0; i < actions; i++) {
     await sleep(70);
     if (reloadEvery && i % reloadEvery === reloadEvery - 1) {
@@ -61,6 +61,9 @@ async function playRun(seed: string, actions: number, reloadEvery: number) {
     if (again) { again.click(); continue; }
     const turn = doc.querySelector<HTMLButtonElement>('#turn');
     if (turn) { turn.click(); turns++; continue; }
+    // now and then, the hero's affairs: shops, the pawnbroker, the lender, the debts, the prison side
+    const aff = [...doc.querySelectorAll<HTMLButtonElement>('[data-buy],[data-acct],[data-dismiss],[data-pawn],[data-redeem],[data-borrow],[data-trade],[data-repay],[data-note],#side,#payout')];
+    if (aff.length && Math.random() < 0.3) { aff[Math.floor(Math.random() * aff.length)].click(); affairs++; continue; }
     const offers = [...doc.querySelectorAll<HTMLButtonElement>('[data-v]')];
     if (offers.length) { offers[Math.floor(Math.random() * offers.length)].click(); continue; }
     const idle = doc.querySelector<HTMLButtonElement>('#idle');
@@ -70,7 +73,7 @@ async function playRun(seed: string, actions: number, reloadEvery: number) {
   const text = doc.querySelector('#story')!.textContent ?? '';
   if (/undefined|NaN|\{if|\[\[/.test(text)) errors.push(`seed ${seed}: stray text on the page`);
   dom.window.close();
-  return { turns, beats, reloads, chapters };
+  return { turns, beats, reloads, chapters, affairs };
 }
 
 async function playVenture(file: string, times: number) {
@@ -89,12 +92,12 @@ async function playVenture(file: string, times: number) {
   return done;
 }
 
-const totals = { turns: 0, beats: 0, reloads: 0 };
+const totals = { turns: 0, beats: 0, reloads: 0, affairs: 0 };
 for (let s = 1; s <= 4; s++) {
-  const r = await playRun('smoke-' + s, 220, 23);
-  totals.turns += r.turns; totals.beats += r.beats; totals.reloads += r.reloads;
+  const r = await playRun('smoke-' + s, 320, 23);
+  totals.turns += r.turns; totals.beats += r.beats; totals.reloads += r.reloads; totals.affairs += r.affairs;
 }
-console.log(`run page: ${totals.turns} turns, ${totals.beats} choices, ${totals.reloads} reloads from the save.`);
+console.log(`run page: ${totals.turns} turns, ${totals.beats} choices, ${totals.affairs} clicks on the hero's affairs, ${totals.reloads} reloads from the save.`);
 for (const f of fs.readdirSync('dist').filter(f => f.endsWith('.html') && f !== 'index.html')) {
   console.log(`${f}: played to the Reckoning ${await playVenture('dist/' + f, 3)} times.`);
 }

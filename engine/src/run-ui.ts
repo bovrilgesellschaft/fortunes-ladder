@@ -1,11 +1,12 @@
 // The run page (dist/index.html): the start, the town between Ventures, the Ventures
 // themselves, the bills, and the end. The headless rules live in campaign.ts.
 
-import { money } from './core';
+import { money, parseMoney } from './core';
 import { Campaign, SAVE_VERSION, dateLabel, type CampaignState, type Letter } from './campaign';
 import { seedFrom } from './rng';
 import { drawNames, type Names } from './names';
 import type { Rank, Room, World } from './types';
+import { SLOTS, WEEKLY, condition, rankBelow, type Slot } from './economy';
 import { RANKS } from './types';
 import { $, Chrome, Ledger, VentureView, esc, ledgerFromRun, store, type LedgerData } from './view';
 
@@ -33,7 +34,7 @@ export function mountRun(world: World) {
     const raw = store.get(KEY) ?? store.get(OLD_KEY); if (!raw) return null;
     try {
       const st = JSON.parse(raw) as CampaignState;
-      if (st.v !== SAVE_VERSION) return null;
+      if (st.v > SAVE_VERSION) return null; // older saves are brought up to date
       return new Campaign(world, st);
     } catch { return null; }
   }
@@ -47,20 +48,44 @@ export function mountRun(world: World) {
     origin: `${c!.origin.name} · Book ${book(H().claimedRank)}`,
   });
   const upkeepLine = () => `${money(c!.weeklyUpkeep())} a week`;
+  const TIER = ['none', 'plain', 'good', 'fine'];
+  const lodgingLine = () => {
+    const h = H();
+    if (h.confined) return h.confined.stage === 'sponging-house' ? 'a sponging-house' : `${h.confined.where}, the ${h.confined.side === 'room' ? 'master’s' : 'common'} side`;
+    return `a ${h.lodging.room}, ${h.lodging.district}`;
+  };
   const circumstances = (): [string, string][] => [
     ['Date', dateLabel(c!.st.at).replace(/^the /, '')],
     ['Turn', String(c!.st.turn)],
-    ['Lodging', `a ${H().lodging.room}, ${H().lodging.district}`],
-    ['Living as', `a ${H().claimedRank}`],
+    ['Lodging', lodgingLine()],
+    ['Living as', H().confined ? 'a prisoner' : c!.inSavoy() ? 'a Savoyard' : `a ${c!.livingRank()}${H().living === 'pinching' ? ' (pinching)' : ''}`],
     ['Upkeep', upkeepLine()],
   ];
+  // the hero's possessions, without the clothes, which the Appearances list shows
+  const possessions = () => { const worn = new Set(SLOTS.map(sl => H().dress[sl]?.name).filter(Boolean)); return H().items.filter(i => !worn.has(i)); };
+  const economy = (): Pick<LedgerData, 'appearance' | 'debtRows' | 'writs'> => {
+    const h = H(), e = world.settings.economy;
+    const rows: [string, string][] = SLOTS.map(sl => {
+      const d = h.dress[sl];
+      const cond = d && !WEEKLY.includes(sl) ? condition(d, e) : 'Fine';
+      return [sl, d ? `${TIER[d.tier]}${cond === 'Fine' ? '' : `, ${cond.toLowerCase()}`}` : 'none'];
+    });
+    const debtRows: [string, string][] = [['Tradesmen', money(h.debts)]];
+    if (h.notes.length) debtRows.push(['Notes of hand', money(h.notes.reduce((a, n) => a + n.amount, 0))]);
+    if (h.loans.length) debtRows.push(['Moneylender', money(h.loans.reduce((a, l) => a + l.owed, 0))]);
+    if (h.pledges.length) debtRows.push(['In pawn', `${h.pledges.length} ticket${h.pledges.length === 1 ? '' : 's'}`]);
+    return {
+      appearance: { rows, score: c!.appearances(), expected: c!.expected(), credit: c!.credit() },
+      debtRows, writs: h.writs.map(w => `A writ: ${w.creditor}, ${money(c!.writAmount(w))}`),
+    };
+  };
   function heroLedger(): LedgerData {
     const h = H();
     return {
       who: who(), purse: h.purse, debts: h.debts, composure: null, attrs: h.attrs, hum: h.hum,
       exposure: showExposure(h.persona) ? (h.personas[h.persona] ?? 0) : null,
       notoriety: h.notoriety, celebrity: h.celebrity, luck: h.luck,
-      conditions: h.conditions, tags: h.tags, items: h.items, hooks: h.hooks, circumstances: circumstances(),
+      conditions: h.conditions, tags: h.tags, items: possessions(), hooks: h.hooks, circumstances: circumstances(), ...economy(),
     };
   }
   const chapterNo = () => `Chap. ${roman(c!.st.story.length + 1)}.`;
@@ -187,14 +212,105 @@ export function mountRun(world: World) {
     };
   }
 
+  let notice = '';
+  const act = (f: () => string | null | void) => { const r = f(); notice = r || ''; save(); render(); };
+
+  /** The hero's affairs: Appearances and the shops, the pawnbroker, the debts, the moneylender. */
+  function affairsHTML(): string {
+    const h = H(), e = world.settings.economy, inside = !!h.confined;
+    const shop = SLOTS.map(sl => {
+      const d = h.dress[sl], weekly = WEEKLY.includes(sl);
+      const opts = e.catalogue[sl].map((it, i) => `<option value="${i + 1}">${esc(it.name)}, ${money(typeof it.price === 'number' ? it.price : priceOf(it.price))}${weekly ? ' a week' : ''}</option>`).join('');
+      const cond = d && !weekly ? ({ Fine: 'new', Worn: 'worn', Shabby: 'shabby' } as const)[condition(d, e)] : '';
+      const acts = weekly
+        ? `<button class="btn" type="button" data-buy="${sl}">Hire</button>${d ? `<button class="btn" type="button" data-dismiss="${sl}">Dismiss</button>` : ''}`
+        : `<button class="btn" type="button" data-buy="${sl}">Buy</button><button class="btn" type="button" data-acct="${sl}">On account</button>`;
+      const shopCells = inside ? '' : `<td><select data-tier="${sl}" aria-label="${sl} to buy">${opts}</select></td><td><div class="rowacts">${acts}</div></td>`;
+      return `<tr><td>${sl}</td><td class="small">${d ? `${esc(d.name)}${cond ? ` · ${cond}` : ''}` : 'none'}</td>${shopCells}</tr>`;
+    }).join('');
+    const pawn = c!.pawnable().map(p => `<tr><td>${esc(p.item)}</td><td class="n">${money(p.loan)}</td><td><div class="rowacts"><button class="btn" type="button" data-pawn="${esc(p.item)}">Pledge</button></div></td></tr>`).join('');
+    const tickets = h.pledges.map((p, i) => `<tr><td>${esc(p.item)}</td><td class="small">until ${dateLabel(p.at + e.pawn.weeks).replace(/^the /, '')}</td><td><div class="rowacts"><button class="btn" type="button" data-redeem="${i}">Redeem, ${money(c!.redeemCost(p))}</button></div></td></tr>`).join('');
+    const notes = h.notes.map((n, i) => `<tr><td>A note of hand to ${esc(n.to)}</td><td class="n">${money(n.amount)}</td><td><div class="rowacts"><button class="btn" type="button" data-note="${i}">Pay it</button></div></td></tr>`).join('');
+    const loans = h.loans.map((l, i) => `<tr><td>${esc(l.from)}, due ${dateLabel(l.due).replace(/^the /, '')}</td><td class="n">${money(l.owed)}</td><td><div class="rowacts"><button class="btn" type="button" data-repay="${i}">Repay</button></div></td></tr>`).join('');
+    const can = c!.canBorrow();
+    const offers = e.lender.offers.map(a => typeof a === 'number' ? a : priceOf(a)).filter(a => a <= can);
+    return `
+      <section class="screen affairs">
+        <h2><span class="phase">Your affairs</span>Appearances, the pawnbroker and the debts</h2>
+        <p class="lead">Appearances ${c!.appearances()} against the ${c!.expected()} a ${h.claimedRank} is expected to show${c!.appearances() < c!.expected() ? ', so every Exposure gain is one worse' : ''}. Credit ${money(c!.credit())}${c!.inSavoy() || inside ? ' (nothing, while you are where you are)' : ''}.</p>
+        ${notice ? `<p class="notice">${esc(notice)}</p>` : ''}
+        <div class="tablewrap"><table class="account"><thead><tr><th>Slot</th><th>Now</th>${inside ? '' : '<th>The shops</th><th></th>'}</tr></thead><tbody>${shop}</tbody></table></div>
+        <h3 class="sec">The pawnbroker</h3>
+        <p class="small">He lends a third of an item’s worth, holds it twelve weeks, and wants a fifth more to give it back.</p>
+        ${pawn || tickets ? `<div class="tablewrap"><table class="account"><tbody>${pawn}${tickets}</tbody></table></div>` : '<p class="small">You have nothing he will take.</p>'}
+        <h3 class="sec">The debts</h3>
+        <div class="tablewrap"><table class="account"><tbody>
+          <tr><td>The tradesmen’s books</td><td class="n">${money(h.debts)}</td><td><div class="rowacts">${h.debts && h.purse ? `<button class="btn" type="button" data-trade="${Math.min(h.debts, h.purse)}">Pay ${money(Math.min(h.debts, h.purse))}</button>` : ''}</div></td></tr>
+          ${notes}${loans}
+        </tbody></table></div>
+        ${inside ? '' : `<p class="small" style="margin-top:8px">${esc(e.lender.name)} lends against your Appearances, up to your Credit. He keeps a tenth back, charges one in the hundred a week, and wants it again in ${e.lender.term} weeks. ${offers.length ? '' : 'He will lend you nothing more at present.'}</p>
+        ${offers.length ? `<div class="actions" style="margin-top:4px">${offers.map(a => `<button class="btn" type="button" data-borrow="${a}">Borrow ${money(a)}</button>`).join('')}</div>` : ''}`}
+      </section>`;
+  }
+  const priceOf = (a: string | number) => (typeof a === 'number' ? a : parseMoney(a));
+
+  function wireAffairs() {
+    root.querySelectorAll<HTMLButtonElement>('[data-buy]').forEach(b => (b.onclick = () => { const sl = b.dataset.buy as Slot; act(() => c!.buy(sl, +$<HTMLSelectElement>(`[data-tier="${sl}"]`).value)); }));
+    root.querySelectorAll<HTMLButtonElement>('[data-acct]').forEach(b => (b.onclick = () => { const sl = b.dataset.acct as Slot; act(() => c!.buy(sl, +$<HTMLSelectElement>(`[data-tier="${sl}"]`).value, true)); }));
+    root.querySelectorAll<HTMLButtonElement>('[data-dismiss]').forEach(b => (b.onclick = () => act(() => c!.dismiss(b.dataset.dismiss as Slot))));
+    root.querySelectorAll<HTMLButtonElement>('[data-pawn]').forEach(b => (b.onclick = () => act(() => c!.pawn(b.dataset.pawn!))));
+    root.querySelectorAll<HTMLButtonElement>('[data-redeem]').forEach(b => (b.onclick = () => act(() => c!.redeem(+b.dataset.redeem!))));
+    root.querySelectorAll<HTMLButtonElement>('[data-note]').forEach(b => (b.onclick = () => act(() => c!.payNote(+b.dataset.note!))));
+    root.querySelectorAll<HTMLButtonElement>('[data-repay]').forEach(b => (b.onclick = () => act(() => c!.repay(+b.dataset.repay!, H().purse))));
+    root.querySelectorAll<HTMLButtonElement>('[data-trade]').forEach(b => (b.onclick = () => act(() => c!.payTradesmen(+b.dataset.trade!))));
+    root.querySelectorAll<HTMLButtonElement>('[data-borrow]').forEach(b => (b.onclick = () => act(() => c!.borrow(+b.dataset.borrow!))));
+  }
+
+  function renderPrison() {
+    const st = c!.st, h = H(), conf = h.confined!, e = world.settings.economy;
+    chapter(false);
+    ledger.render(heroLedger());
+    const due = c!.enforceable();
+    root.innerHTML = `
+      <section class="screen">
+        <h2><span class="phase">Turn ${st.turn} · ${dateLabel(st.at)}</span>${esc(conf.where.replace(/^the /, 'The '))}</h2>
+        <p class="lead">You owe ${money(due)} that the law can recover, and have ${money(h.purse)}. ${h.purse >= due ? 'You could pay it all and walk out today.' : 'The door opens when the creditors are paid, or compose.'}</p>
+        ${st.news.length ? `<div class="letters">${st.news.map(r => letterHTML(r, true)).join('')}</div>` : ''}
+        ${h.purse >= due ? `<div class="actions"><button class="btn primary" type="button" id="payout">Pay ${money(due)} and walk out</button></div>` : ''}
+      </section>
+      <section class="screen">
+        <h2><span class="phase">This month</span>Within the walls</h2>
+        <div class="cards">${st.offers.map(id => c!.byId[id]).map(v => `
+          <div class="card"><div class="cd">${esc(conf.where)}</div><div class="ct">${v.title}</div>
+            <div class="cb">Begging letters, a fellow prisoner, and terms with your creditors, at so many shillings in the pound.</div>
+            <button class="btn primary" type="button" data-v="${v.id}">Undertake it</button></div>`).join('')}
+          <div class="card off"><div class="cd">${esc(conf.where)}</div><div class="ct">Idle the month</div><div class="cb">Nothing is done, and nothing is spent but time.</div><button class="btn" type="button" id="idle">Idle</button></div>
+        </div>
+      </section>
+      <section class="screen">
+        <h2><span class="phase">Your side</span>The ${conf.side === 'room' ? 'master’s' : 'common'} side</h2>
+        <p class="lead">The common side is free, and Melancholic rises a point a month there. A room on the master’s side costs ${money(priceOf(e.prison.room))} a week.</p>
+        <div class="actions"><button class="btn" type="button" id="side">${conf.side === 'room' ? 'Go down to the common side' : 'Take a room on the master’s side'}</button></div>
+      </section>
+      ${affairsHTML()}`;
+    chrome.applyLongS(root);
+    root.querySelectorAll<HTMLButtonElement>('[data-v]').forEach(b => (b.onclick = () => { c!.startVenture(b.dataset.v!); save(); render(); top(); }));
+    $('#idle').onclick = () => { c!.idle(); save(); render(); top(); };
+    $('#side').onclick = () => act(() => c!.setSide(conf.side === 'room' ? 'common' : 'room'));
+    $('#payout')?.addEventListener('click', () => act(() => c!.payOut()));
+    wireAffairs();
+  }
+
   function renderTown() {
     const st = c!.st, h = H();
+    if (h.confined) return renderPrison();
     chapter(false);
     ledger.render(heroLedger());
     const offers = st.offers.map(id => c!.byId[id]);
+    const below = rankBelow(h.claimedRank), living = world.settings.living;
     root.innerHTML = `
       <section class="screen">
-        <h2><span class="phase">Turn ${st.turn} · ${dateLabel(st.at)}</span>The Town</h2>
+        <h2><span class="phase">Turn ${st.turn} · ${dateLabel(st.at)}</span>${c!.inSavoy() ? 'The Liberty of the Savoy' : 'The Town'}</h2>
         ${st.news.length ? `<p class="lead">The post has brought ${st.news.length === 1 ? 'a letter' : st.news.length + ' letters'} since the last Venture.</p><div class="letters">${st.news.map(r => letterHTML(r, true)).join('')}</div>`
           : `<p class="lead">${st.turn === 1 ? 'London lies before you.' : 'The post has brought nothing. The Town, for the moment, is talking about someone else.'}</p>`}
         ${st.post.length ? `<div class="dev" style="margin-top:10px">in the post: ${st.post.map(r => `${r.from} (${dateLabel(r.at)})`).join('; ')}</div>` : ''}
@@ -218,14 +334,21 @@ export function mountRun(world: World) {
           </div>
         </div>
       </section>
+      ${affairsHTML()}
       <section class="screen">
         <h2><span class="phase">Your lodging</span>A ${h.lodging.room} in ${h.lodging.district}</h2>
-        <p class="lead">You live as a ${h.claimedRank}: ${upkeepLine()}, lodging included. Moving delays every letter in the post by a week.</p>
+        <p class="lead">${c!.inSavoy()
+          ? `Inside the Liberty no bailiff can touch you, but your Credit is nothing, your clothes wear twice as fast, and each month costs a point of Celebrity and raises Melancholic. ${c!.canLeaveSavoy() ? 'You may leave when you choose.' : `You cannot leave while you owe ${money(c!.enforceable())} and your Credit outside would be only ${money(c!.credit(true))}.`}`
+          : `Upkeep ${upkeepLine()}, lodging included. Moving delays every letter in the post by a week; the Savoy is a refuge from writs.`}</p>
         <div class="actions" style="align-items:flex-end">
           <label class="field">District <select id="dist">${Object.keys(world.settings.lodging).map(d => `<option ${d === h.lodging.district ? 'selected' : ''}>${d}</option>`).join('')}</select></label>
           <label class="field">Room <select id="room">${ROOMS.map(r => `<option ${r === h.lodging.room ? 'selected' : ''}>${r}</option>`).join('')}</select></label>
           <button class="btn" type="button" id="move">Move lodgings</button>
         </div>
+        ${c!.inSavoy() || rankBelow(h.claimedRank) === h.claimedRank ? '' : `<div class="field" style="margin-top:14px">Living<div class="radio">
+          <label><input type="radio" name="living" value="claimed" ${h.living === 'claimed' ? 'checked' : ''}> as a ${h.claimedRank}, at ${money(priceOf(living[h.claimedRank]))} a week</label>
+          <label><input type="radio" name="living" value="pinching" ${h.living === 'pinching' ? 'checked' : ''}> pinching, as a ${below}, at ${money(priceOf(living[below]))} a week: your clothes wear twice as fast, and every Exposure gain is one worse</label>
+        </div></div>`}
       </section>
       <section class="screen">
         <h2><span class="phase">Or</span>Retire from the world</h2>
@@ -237,7 +360,9 @@ export function mountRun(world: World) {
     chrome.applyLongS(root);
     root.querySelectorAll<HTMLButtonElement>('[data-v]').forEach(b => (b.onclick = () => { c!.startVenture(b.dataset.v!); save(); render(); top(); }));
     $('#idle').onclick = () => { c!.idle(); save(); render(); top(); };
-    $('#move').onclick = () => { c!.move($<HTMLSelectElement>('#dist').value, $<HTMLSelectElement>('#room').value as Room); save(); render(); };
+    $('#move').onclick = () => act(() => (c!.move($<HTMLSelectElement>('#dist').value, $<HTMLSelectElement>('#room').value as Room) ? null : 'The bailiffs are waiting at the gate. You cannot leave the Liberty until what you owe falls below your Credit outside.'));
+    root.querySelectorAll<HTMLInputElement>('input[name=living]').forEach(r => (r.onchange = () => act(() => c!.setLiving(r.value as 'claimed' | 'pinching'))));
+    wireAffairs();
     $('#retire').onclick = () => {
       $('#confirmBox').innerHTML = `<div class="confirm"><p>Retire now? The run ends, and cannot be taken up again.</p><button class="btn primary" type="button" id="yes">Retire</button><button class="btn" type="button" id="no">Not yet</button></div>`;
       $('#yes').onclick = () => { c!.retire(); save(); render(); top(); };
@@ -248,9 +373,13 @@ export function mountRun(world: World) {
   function renderVenture() {
     const cur = c!.st.current!; const v = c!.byId[cur.id];
     chapter(true, chapterNo(), v.chapter.opening + '.');
-    root.innerHTML = `<div class="vhead"><div class="eyebrow">A Venture · ${esc(v.offer?.district ?? '')}</div><div class="vt">${v.title}</div><div class="vs">${v.sub}</div>${v.test ? '<div class="dev" style="margin-top:8px">placeholder Venture, written for Step 5</div>' : ''}</div>`;
+    root.innerHTML = `<div class="vhead"><div class="eyebrow">A Venture${v.offer ? ' · ' + esc(v.offer.district) : ''}</div><div class="vt">${v.title}</div><div class="vs">${v.sub}</div>${v.test ? '<div class="dev" style="margin-top:8px">placeholder Venture, written for Step 5</div>' : ''}</div>`;
     const { run, path, next } = c!.replay();
-    const ledgerNow = () => ledger.render(ledgerFromRun(run, who(run.S.persona), showExposure(run.S.persona), circumstances()));
+    const ledgerNow = () => {
+      const L = ledgerFromRun(run, who(run.S.persona), showExposure(run.S.persona), circumstances());
+      const worn = new Set(SLOTS.map(sl => H().dress[sl]?.name).filter(Boolean));
+      ledger.render({ ...L, items: run.S.items.filter(i => !worn.has(i)), ...economy(), debtRows: [['Tradesmen', money(run.S.debts)], ...(economy().debtRows ?? []).slice(1)] });
+    };
     const vw = new VentureView(run, {
       chrome,
       random: () => { const x = c!.random(); save(); return x; },
@@ -282,6 +411,7 @@ export function mountRun(world: World) {
           <tr><td><b>The month</b></td><td class="n"><b>${money(b.total)}</b></td><td class="n">${money(b.total - b.owed)}</td><td class="n">${b.owed ? money(b.owed) : '—'}</td></tr>
         </tbody></table></div>
         ${b.cooled.length ? `<p class="lead" style="margin-top:12px">With nothing to feed them, ${b.cooled.join(' and ')} cool by a point.</p>` : ''}
+        ${b.events?.length ? `<ul class="lst" style="margin-top:12px">${b.events.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
       </section>
       ${letters.length ? `<section class="screen"><h2><span class="phase">The post</span>${letters.length === 1 ? 'A letter arrives' : letters.length + ' letters arrive'}</h2><div class="letters">${letters.map(r => letterHTML(r, true)).join('')}</div></section>` : ''}
       <section class="screen"><div class="actions"><button class="btn primary" type="button" id="turn">Turn the page</button></div></section>`;

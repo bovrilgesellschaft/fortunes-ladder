@@ -29,6 +29,12 @@
     true_rank: Gentleman
     claimed_rank: Gentleman
     lodging: { district: Fleet Street and the Strand, room: garret }
+    # a Gentleman's expected 8 exactly (Proposed)
+    dress:
+      Coat: { tier: 3, name: "A fine coat, made in Dublin and not paid for" }
+      Wig: { tier: 1, name: A plain bob wig }
+      Linen: { tier: 2, name: Good Holland shirts }
+      Sword: { tier: 2, name: His father’s sword }
     start:
       purse: £5                      # systems spec, starting purse by Origin
       debts: £20                     # to a Dublin tailor
@@ -43,6 +49,8 @@
       items:
         - His father’s sword
         - A fine coat, made in Dublin and not paid for
+        - A plain bob wig
+        - Good Holland shirts
       hooks: []
 
 - id: foundling

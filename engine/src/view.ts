@@ -119,6 +119,11 @@ export interface LedgerData {
   conditions: string[]; tags: string[]; items: string[]; hooks: string[];
   /** Extra rows under "Circumstances" (a run's date, lodging, rank, Upkeep). */
   circumstances?: [string, string][];
+  /** A run's Appearances: one row per slot, the score against the rank's expectation, and Credit. */
+  appearance?: { rows: [string, string][]; score: number; expected: number; credit: number };
+  /** A run's debts by kind, in place of the single Debts line, and any writs out. */
+  debtRows?: [string, string][];
+  writs?: string[];
 }
 
 export class Ledger {
@@ -131,6 +136,8 @@ export class Ledger {
       ...Object.fromEntries(Object.entries(L.hum).map(([k, x]) => ['h' + k, x])),
       conditions: L.conditions.join('|'), tags: L.tags.join('|'), items: L.items.join('|'), hooks: L.hooks.join('|'),
       circ: (L.circumstances ?? []).map(x => x.join(':')).join('|'),
+      app: L.appearance ? L.appearance.rows.map(x => x.join(':')).join('|') + L.appearance.score : '',
+      debtRows: (L.debtRows ?? []).map(x => x.join(':')).join('|') + (L.writs ?? []).join('|'),
     };
     const f = (k: string) => (this.prev[k] !== undefined && this.prev[k] !== vals[k] ? ' flash' : '');
     const meter = (k: string, x: number, max: number, cls = '') => `<div class="meter ${cls}${f(cls === 'exp' ? 'exposure' : 'h' + k)}"><span>${k}</span><span class="bar"><b style="width:${x / max * 100}%"></b></span><em>${x}/${max}</em></div>`;
@@ -139,7 +146,13 @@ export class Ledger {
    <div class="who"><div class="nm">${L.who.name}</div><div class="as">${L.who.as}</div><div class="orig">${L.who.origin}</div></div>
    ${L.circumstances?.length ? `<h3>Circumstances</h3><dl class="kv circ${f('circ')}">${L.circumstances.map(([k, x]) => `<dt>${k}</dt><dd>${x}</dd>`).join('')}</dl>` : ''}
    <h3>Purse &amp; debts</h3>
-   <dl class="kv"><dt>Purse</dt><dd class="${f('purse').trim()}">${vals.purse}</dd><dt>Debts</dt><dd class="${f('debts').trim()}">${vals.debts}</dd></dl>
+   <dl class="kv"><dt>Purse</dt><dd class="${f('purse').trim()}">${vals.purse}</dd>${L.debtRows
+     ? L.debtRows.map(([k, x]) => `<dt>${k}</dt><dd class="${f('debtRows').trim()}">${x}</dd>`).join('')
+     : `<dt>Debts</dt><dd class="${f('debts').trim()}">${vals.debts}</dd>`}</dl>
+   ${L.writs?.length ? `<ul class="lst writs">${L.writs.map(w => `<li>${w}</li>`).join('')}</ul>` : ''}
+   ${L.appearance ? `<h3>Appearances</h3>
+   <dl class="kv app${f('app')}">${L.appearance.rows.map(([k, x]) => `<dt>${k}</dt><dd>${x}</dd>`).join('')}</dl>
+   <div class="appsum${L.appearance.score < L.appearance.expected ? ' short' : ''}"><span>${L.appearance.score} of the ${L.appearance.expected} expected</span><span>Credit ${money(L.appearance.credit)}</span></div>` : ''}
    ${L.composure === null ? '' : `<h3>Composure</h3>
    <div class="pips${f('composure')}" aria-label="Composure ${L.composure} of 8">${Array.from({ length: 8 }, (_, i) => `<i class="${i < L.composure! ? 'on' : ''}"></i>`).join('')}</div>`}
    <h3>Attributes</h3>
@@ -199,6 +212,7 @@ export class VentureView {
     let why = '';
     if (o.gate) badges.push(`<span class="badge ${g.ok ? 'ok' : 'no'}">${g.ok ? '✓' : '✗'} Requires ${g.need}</span>`);
     if (o.cost) badges.push(`<span class="badge cost">Costs ${run.inline(o.cost)}</span>`);
+    if (!run.affordable(o)) badges.push(`<span class="badge no">✗ Needs ${money(run.price(o))} · you have ${money(Math.max(0, run.S.purse))}</span>`);
     if (o.check) {
       const { m, b: bn, why: w, comp } = run.margin(o); why = w;
       badges.push(`<span class="badge">Wheel · ${o.check.attr} ${run.S.attrs[o.check.attr]}${bn ? (bn > 0 ? ' + ' : ' − ') + Math.abs(bn) : ''} vs ${o.check.diff}${comp ? ' · Composure spent' : ''}</span>${this.stripHTML(odds(m))}`);

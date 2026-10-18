@@ -34,3 +34,63 @@ room:
 # January 1724, so that heath (October 1724) comes round in the eleventh turn; set to null for random.
 start: { year: 1724, week: 1 }
 start_range: { from: 1719, to: 1741 }
+
+# ---------- the core economy (Step 6) ----------
+# Canon and Ruling values are marked; the rest are Proposed, for a ruling in the systems spec.
+# The Editor quotes none of these prices as fact.
+economy:
+  # Appearances each rank expects; below it, every Exposure gain is +1 (systems spec)
+  expected: { Vagabond: 0, Servant: 0, Tradesman: 4, Gentleman: 8, Esquire: 11, Baronet or Knight: 14, Peer: 16 }
+  # Credit = Appearances × this, by Claimed Rank (systems spec)
+  credit: { Vagabond: 0d, Servant: 0d, Tradesman: 10s, Gentleman: £3, Esquire: £6, Baronet or Knight: £15, Peer: £40 }
+  wear: { worn: 24, shabby: 48 }          # weeks: Fine, then Worn, then Shabby (counts a tier lower)
+  # the shops: tiers plain, good, fine. Servant and Equipage are paid by the week.
+  catalogue:
+    Coat:
+      - { name: A plain cloth coat, price: £2 10s }
+      - { name: A good broadcloth coat, price: £8 }
+      - { name: A fine laced coat, price: £24 }          # Canon (heath's coat)
+    Wig:
+      - { name: A plain bob wig, price: 15s }
+      - { name: A good bag wig, price: £3 }
+      - { name: A fine full-bottomed wig, price: £10 }
+    Linen:
+      - { name: Plain linen shirts, price: 12s }
+      - { name: Good Holland shirts, price: £2 }
+      - { name: "Fine cambric, with lace ruffles", price: £6 }
+    Sword:
+      - { name: A plain small-sword, price: £1 }
+      - { name: A good small-sword, price: £4 }
+      - { name: A silver-hilted small-sword, price: £15 }
+    Servant:
+      - { name: A boy to run errands, price: 1s 6d }
+      - { name: A footman in livery, price: 5s }
+      - { name: A valet, price: 10s }
+    Equipage:
+      - { name: Chairs by the week, price: 5s }
+      - { name: "A chair kept, with two chairmen", price: £1 }
+      - { name: A jobbed chariot and pair, price: £3 }
+  # what the pawnbroker will reckon things worth, besides clothes and swords
+  values:
+    "A brace of pistols, one doubtful": 15s
+    A crape mask: 1s
+    "A gold repeating watch, with a coat of arms scratched out": £6
+  pawn: { fraction: 0.3333, weeks: 12, redeem: 0.2 }       # a third; held 12 weeks; a fifth to redeem (systems spec)
+  lender:
+    name: Mr Grubb, a money-scrivener of Chancery Lane
+    fee: 0.1          # a tenth kept back (Ruling)
+    weekly: 0.01      # 1% a week (Ruling)
+    term: 12          # weeks to repay
+    grace: 4          # weeks overdue before a writ (systems spec)
+    offers: [£5, £10, £20, £50]
+  notes: { grace: 4 }  # weeks unpaid before Celebrity falls a point a week (systems spec)
+  tradesman: your tailor
+  savoy:
+    living: Vagabond    # Upkeep falls to the Savoy's level (design document)
+    season: 12          # weeks inside before the Savoyard tag
+    tag: Savoyard (the Quality)
+  prison:
+    sponging: £2        # the week in the sponging-house (systems spec)
+    room: 2s 6d         # a prison room, a week; the common side is free (systems spec)
+    fleet: the Fleet
+    marshalsea: the Marshalsea
