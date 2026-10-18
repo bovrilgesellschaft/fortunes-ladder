@@ -1,0 +1,92 @@
+# yaml-language-server: $schema=schema/origins.schema.json
+#
+# The eight Origins the game ships with (design document; sexes by the ruling of 18 October 2026).
+# Only an Origin marked available can be played; Step 19 fills in the rest.
+# Starting figures are the systems spec's (Proposed) unless marked.
+
+- id: younger-son
+  name: Younger son of an Irish squire
+  sex: man
+  arrives: The Holyhead coach to Charing Cross
+  strengths: Rank (claimed), sword
+  secret: No estate, only a name and a debt
+  available: true
+  arrival: holyhead-coach
+  hero:
+    name: Cornelius Byrne
+    styled: Mr Byrne
+    history: The History of Mr Cornelius Byrne
+    true_rank: Gentleman
+    claimed_rank: Gentleman
+    lodging: { district: Fleet Street and the Strand, room: garret }
+    start:
+      purse: £5                      # systems spec, starting purse by Origin
+      debts: £20                     # to a Dublin tailor
+      luck: 1
+      exposure: 0                    # under his own name
+      notoriety: 0
+      celebrity: 0
+      # two Origin strengths at 3, the rest at 2, Learning 0–2 (systems spec); "Rank and sword" read as Address and Nerve
+      attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+      hum: { Sanguine: 1, Choleric: 1, Melancholic: 0, Phlegmatic: 0 }
+      tags: []
+      items:
+        - His father’s sword
+        - A fine coat, made in Dublin and not paid for
+      hooks: []
+
+- id: foundling
+  name: Foundling
+  sex: either
+  arrives: On foot along the Oxford road
+  strengths: Address, Nerve
+  secret: Unknown parentage; a recognition scene may reveal noble blood or a hanged mother
+  available: false
+
+- id: country-innocent
+  name: Country innocent
+  sex: either
+  arrives: The York waggon to the Bell, Wood Street
+  strengths: Countenance, Nerve
+  secret: A seducer at home, and a bawd already waiting in the inn yard
+  available: false
+
+- id: barbers-apprentice
+  name: Barber's apprentice
+  sex: man
+  arrives: Runaway, by the Dover road into Southwark
+  strengths: Wit, surgery, gossip
+  secret: Indentures broken; a master with a claim
+  available: false
+
+- id: curates-daughter
+  name: Curate's daughter
+  sex: woman
+  arrives: The Bath coach, with one trunk
+  strengths: Learning, Countenance
+  secret: A ruined reputation from the parish
+  available: false
+
+- id: valet
+  name: Valet to a ruined lord
+  sex: man
+  arrives: Following his master's creditors to town
+  strengths: Manners, wardrobe
+  secret: Took the lord's clothes, papers and name
+  available: false
+
+- id: strolling-player
+  name: Strolling player
+  sex: either
+  arrives: With a booth company for Bartholomew Fair
+  strengths: Personas, disguise
+  secret: A vagrancy conviction
+  available: false
+
+- id: discharged-sailor
+  name: Discharged sailor
+  sex: man
+  arrives: Paid off at Wapping with a pocket of prize money
+  strengths: Constitution, cant
+  secret: Deserted, or so the Navy says
+  available: false

@@ -11,10 +11,10 @@ project *Picaresque*. This repository holds the game.
 
 | Folder | What is in it |
 | --- | --- |
-| `content/` | Everything the player reads, in YAML: the Ventures and the Editor's dictionaries. See [content/README.md](content/README.md) for how to write it. |
+| `content/` | Everything the player reads, in YAML: the Ventures, the Origins, the run's numbers and the Editor's dictionaries. See [content/README.md](content/README.md) for how to write it. |
 | `content/schema/` | The rules the YAML is checked against; also gives editors autocompletion. |
-| `engine/src/` | The TypeScript engine: `core.ts` (state, effects, the Wheel, the Reckoning), `expr.ts` (conditions and sums), `ui.ts` (the page). |
-| `engine/page/` | The page shell and stylesheet, carried over unchanged from the published *A Ball in Hanover Square*. |
+| `engine/src/` | The TypeScript engine: `core.ts` (a Venture: state, effects, the Wheel, the Reckoning), `campaign.ts` (a run: hero, calendar, offers, bills, the post, saves), `expr.ts` (conditions and sums), `rng.ts` (the seeded Wheel), `view.ts` (the page parts both kinds of page share), `ui.ts` (a Venture's own page) and `run-ui.ts` (the run). |
+| `engine/page/` | The page shells and stylesheet. `style.css` is carried over unchanged from the published *A Ball in Hanover Square*; `run.css` adds the screens between Ventures. |
 | `tools/` | The build, the checks and the tests. |
 | `reference/` | The published prototypes of heath and ball as they stood on 17 October 2026, before conversion. |
 
@@ -24,7 +24,9 @@ project *Picaresque*. This repository holds the game.
 npm install
 npm run check      # check all content
 npm test           # play every path through every Venture
-npm run build      # write dist/<id>.html, one self-contained page per Venture
+npm run build      # write dist/index.html (the run) and dist/<id>.html (one page per Venture)
+npm run test-runs  # play 300 whole runs and check saves replay exactly
+npm run smoke      # click through the built pages in a simulated browser
 npm run typecheck  # check the engine's types
 ```
 

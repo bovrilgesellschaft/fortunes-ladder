@@ -1,0 +1,67 @@
+<title>Fortune's Ladder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+{{style}}
+</style>
+
+<div class="sheet">
+  <div class="runhead">
+    <span id="runheadText">Fortune's Ladder</span>
+    <div class="toggles">
+      <button class="tg" id="longsBtn" aria-pressed="false" title="Print with the long s"><span class="dot"></span>Long ſ</button>
+      <button class="tg" id="devBtn" aria-pressed="false"><span class="dot"></span>Designer's view</button>
+    </div>
+  </div>
+  <div class="inner">
+    <header class="titlepage" id="titlepage">
+      <div class="eyebrow">A Picaresque in Ventures · London, 1719–1745</div>
+      <h1>Fortune's Ladder</h1>
+      <p class="sub">Being the Life, Rise and probable Fall of an Adventurer, in four-week Turns</p>
+      <p class="prospectus"><b>The run shell, Step 5.</b> One Origin, a calendar of turns, three Ventures offered each month, the bills, the post, and a Story that grows by a chapter whenever Fortune's Wheel lands on Triumph or Catastrophe. Most Ventures here are placeholders, written to exercise the engine; the designer's view marks them. The run saves itself after every choice.</p>
+      <div class="fleuron" aria-hidden="true">❧ ❧ ❧</div>
+    </header>
+
+    <div class="layout">
+      <main>
+        <div class="tabs" role="tablist" aria-label="Views">
+          <button class="tab" role="tab" id="tabPlay" aria-selected="true" aria-controls="playPane" type="button">The Run</button>
+          <button class="tab" role="tab" id="tabStory" aria-selected="false" aria-controls="storyPane" tabindex="-1" type="button">The Story<span class="new" id="storyNew" hidden aria-label="new passage"> ❧</span></button>
+        </div>
+        <div id="playPane" role="tabpanel" aria-labelledby="tabPlay">
+          <div class="chap" id="chapBox" hidden>
+            <div class="no" id="chapNo"></div>
+            <div class="in" id="chapIn"></div>
+          </div>
+          <div id="story"></div>
+        </div>
+        <div id="storyPane" role="tabpanel" aria-labelledby="tabStory" hidden>
+          <div class="storyhead">
+            <div class="eyebrow">The Story</div>
+            <div class="tt" id="storyTitle">The History of an Adventurer</div>
+            <div class="by">Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe</div>
+            <div class="voices" role="group" aria-label="Narrative voice">
+              <button type="button" id="vSm" aria-pressed="true">after Smollett</button>
+              <button type="button" id="vSt" aria-pressed="false">after Sterne</button>
+            </div>
+          </div>
+          <div id="storyBody"></div>
+        </div>
+        <div id="live" class="sr" aria-live="polite"></div>
+      </main>
+      <div class="ledgerwrap">
+        <details class="ledger" id="ledgerBox" open>
+          <summary><span>The Ledger</span><span id="ledSum"></span></summary>
+          <div class="lg" id="ledger"></div>
+        </details>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="gloss" hidden role="note"></div>
+
+<script>
+{{script}}
+</script>

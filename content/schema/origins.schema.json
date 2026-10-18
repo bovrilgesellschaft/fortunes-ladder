@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "The Origins",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "name", "sex", "arrives", "strengths", "secret", "available"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^[a-z-]+$" },
+      "name": { "type": "string" },
+      "sex": { "enum": ["man", "woman", "either"] },
+      "arrives": { "type": "string" },
+      "strengths": { "type": "string" },
+      "secret": { "type": "string" },
+      "available": { "type": "boolean" },
+      "arrival": { "type": "string", "description": "The id of the arrival Venture, played in the first turn." },
+      "hero": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "styled", "history", "true_rank", "claimed_rank", "lodging", "start"],
+        "properties": {
+          "name": { "type": "string" },
+          "styled": { "type": "string" },
+          "history": { "type": "string" },
+          "true_rank": { "$ref": "#/definitions/rank" },
+          "claimed_rank": { "$ref": "#/definitions/rank" },
+          "lodging": {
+            "type": "object", "additionalProperties": false, "required": ["district", "room"],
+            "properties": { "district": { "type": "string" }, "room": { "enum": ["garret", "room", "first floor"] } }
+          },
+          "start": { "type": "object", "description": "As a Venture's start; checked against venture.schema.json's start." }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "rank": { "enum": ["Vagabond", "Servant", "Tradesman", "Gentleman", "Esquire", "Baronet or Knight", "Peer"] }
+  }
+}

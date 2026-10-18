@@ -1,7 +1,8 @@
 # Writing content
 
 Everything a player reads lives in this folder, in YAML: one file per Venture in `ventures/`,
-and the Editor's two dictionaries in `glossary.yaml`. The engine never needs touching to change
+the Editor's two dictionaries in `glossary.yaml`, the Origins in `origins.yaml`, and the run's
+numbers (Upkeep, lodging, the turn, the start date) in `settings.yaml`. The engine never needs touching to change
 a word, a price or a consequence.
 
 You can edit any file directly on github.com (open it and press the pencil). Claude builds and
@@ -28,6 +29,30 @@ story: { … }                   # the Story's title, preface and close
 reckoning: { … }               # Beat V
 beats: [ … ]                   # Beats I–IV
 ```
+
+### In a run
+
+A Venture is offered in a run only if it has an `offer` block:
+
+```yaml
+offer:
+  district: Covent Garden        # one of the ten districts, shown on the card
+  blurb: When the playhouses empty, the Town goes on to Tom King’s…
+  when: has_persona("Capt") and has_item_like("pistol")   # optional: who may be offered it
+  from: { year: 1724, week: 41 }  # optional: only between these dates
+  to: { year: 1724, week: 46 }
+  weight: 3                      # optional: relative chance of being drawn (default 1)
+  repeat: true                   # optional: may be offered again after it is played
+  arrival: true                  # instead: played in the first turn, as an Origin's arrival
+kit:                             # optional: lent for this Venture only
+  items: [A hired grey prancer, from the Bell in Holborn]
+  returned: [A hired grey prancer, from the Bell in Holborn]   # taken back after the Reckoning
+test: true                       # placeholder content, marked on the card
+```
+
+Each turn the run draws three offers from the Ventures whose conditions hold. In a run the Venture
+starts from the hero as they are, not from its `start` block, which is used only on the Venture's
+own page. `who`, `persona` and `start` stay required for that page.
 
 Every Venture has five beats: **Approach, Complication, Turn, Crisis, Reckoning**. The Crisis may
 come in variants (heath has `known` and `chase`); its choices are labelled **Press on:** or
@@ -117,7 +142,8 @@ next:
 | `{ condition: "Wounded (a ball-graze, left arm)", why: … }` | A wound, disease or Affliction |
 | `{ item: …, why: … }` · `{ lose: …, why: … }` | Possessions; `lose_matching: pistol` loses the first item containing the word |
 | `{ hook: …, why: … }` · `{ unhook: Betty Slyfield, why: … }` | Hooks, written as a person or thing and why it matters; `unhook` spends the first that starts with the words given |
-| `rumour: { id, delay, from, text, effect }` | A rumour, delivered 1–3 weeks after the Venture |
+| `rumour: { id, delay, from, text, effect }` | A rumour, delivered 1–3 weeks after the Venture. On delivery the run applies the simple effects it can read in `effect` (“Exposure +3”, “Notoriety +1”, “Celebrity −1”); for anything else, add `on_delivery:` with a list of effects |
+| `{ persona: Capt. O’Rourke, why: … }` | The hero takes up a Persona, with Exposure 1; Exposure is kept separately for each name |
 | `{ when: …, then: [ … ], else: [ … ] }` | Effects that happen only if a condition holds |
 | `{ adj: purse, by: "= -floor(spoils / 2)", … }` | A sum worked out from the state, after `=` |
 | `{ calc: spoils, to: "0" }` | Sets a value silently |
@@ -137,6 +163,8 @@ flags.sirPistol or flags.outriderArmed
 has_hook("Will Gallow")      has_item("A borrowed fan")      has_tag("Brother")
 has_condition("Wounded")     rumour_says("Exposure")
 exposure > start.exposure    # start = the state at the Approach
+has_persona("Capt")          played("blue-boar")
+year == 1724 and week >= 41  # in a run: the calendar, the turn, and the Origin's id
 ```
 
 Sums may use `+ - * /`, `floor()`, `ceil()`, `min()`, `max()`, and `if(condition, a, b)`.
@@ -159,6 +187,12 @@ Every Triumph and Catastrophe should have a Story passage in both voices, descri
 event with the same facts (style guide). The Venture's `story` block gives the History's title,
 a preface (written when the first passage is) and a close (added at the Reckoning).
 
+## Origins
+
+`origins.yaml` lists the eight Origins. An Origin marked `available: true` needs a `hero` block (name,
+how the Town styles him, ranks, first lodging and a `start` like a Venture's) and an `arrival`
+Venture. The others appear on the start screen as “not yet written”.
+
 ## Checking your work
 
 Claude runs these after any change; you can too, with Node installed:
@@ -167,7 +201,9 @@ Claude runs these after any change; you can too, with Node installed:
 npm install         # once
 npm run check       # the schema and every cross-reference: beats, flags, glossary words, sums
 npm test            # plays every path through every Venture and reports anything broken
-npm run build       # writes dist/<id>.html, one self-contained page per Venture
+npm run build       # writes dist/index.html (the run) and dist/<id>.html, one page per Venture
+npm run test-runs   # plays 300 whole runs, reloading saves mid-Venture, and checks they replay exactly
+npm run smoke       # after a build: clicks through the built pages in a simulated browser
 ```
 
 `npm run check` stops on errors (a beat that doesn't exist, a flag read but never set, a word not

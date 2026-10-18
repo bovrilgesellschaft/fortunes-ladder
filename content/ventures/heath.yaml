@@ -5,6 +5,16 @@
 
 id: heath
 title: The Heath by Moonlight
+offer:
+  district: The Environs
+  blurb: Jack Sheppard is the talk of the Town, and the coaches come up the Hampstead road after midnight. A man with pistols, a mask and a hired horse might mend his fortunes in an hour.
+  from: { year: 1724, week: 41 }
+  to: { year: 1724, week: 46 }
+  when: has_persona("Capt") and has_item_like("pistol") and has_item("A crape mask")
+  weight: 3
+kit:
+  items: [A hired grey prancer, from the Bell in Holborn]
+  returned: [A hired grey prancer, from the Bell in Holborn]
 runhead: The Life &amp; Adventures of Capt. O'Rourke
 sub: Being a Night upon the Hampstead Road, in five Beats
 prospectus: >-

@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=schema/settings.schema.json
+#
+# The run's numbers, from the systems spec. Money as money ("£1 5s"); the engine counts pence.
+
+turn_weeks: 4            # one Venture every four weeks (Ruling)
+
+# Living at a rank, per week: dress, board, servants, chairs (Ruling, systems spec "Money")
+living:
+  Vagabond: 1s
+  Servant: 0d
+  Tradesman: 8s
+  Gentleman: £1 5s
+  Esquire: £3 10s
+  Baronet or Knight: £9
+  Peer: £25
+
+# A decent room, per week, by district (Ruling). A garret costs half, a first floor double.
+lodging:
+  St Giles: 7d
+  The Savoy: 1s
+  Southwark: 1s 6d
+  Moorfields: 2s
+  Fleet Street and the Strand: 4s
+  The City: 5s
+  Covent Garden: 6s
+  St James's: 15s
+  Mayfair: £1
+room:
+  garret: 0.5
+  room: 1
+  first floor: 2
+
+# Start date. The systems spec proposes a random week in 1719–1741. Step 5's test runs start in
+# January 1724, so that heath (October 1724) comes round in the eleventh turn; set to null for random.
+start: { year: 1724, week: 1 }
+start_range: { from: 1719, to: 1741 }

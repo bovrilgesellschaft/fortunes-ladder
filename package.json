@@ -7,7 +7,9 @@
     "check": "node tools/run.mjs build check",
     "test": "node tools/run.mjs test",
     "typecheck": "tsc --noEmit",
-    "verify-conversion": "node tools/run.mjs verify"
+    "verify-conversion": "node tools/run.mjs verify",
+    "test-runs": "node tools/run.mjs campaign-test",
+    "smoke": "node tools/run.mjs smoke"
   },
   "repository": {
     "type": "git",

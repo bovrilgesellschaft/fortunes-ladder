@@ -1,0 +1,320 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# PLACEHOLDER (Step 5): a money Venture, written to exercise the run shell. Pledges follow the
+# systems spec (a third of the price; redemption is Step 6). Keep, rewrite or drop it in Step 10.
+
+id: pawnbroker
+title: A Morning at the Pawnbroker’s
+test: true
+offer:
+  district: Fleet Street and the Strand
+  blurb: When the purse is light and the tailor is not, there is always a shop off Fleet Street with three gilt balls over the door, and a man inside who lends at a third of the value.
+  repeat: true
+  weight: 1
+runhead: The Life &amp; Adventures of Mr Cornelius Byrne
+sub: Being a Morning under the Three Balls, in five Beats
+prospectus: >-
+  <b>A placeholder Venture,</b> written to exercise the run shell: pledges, a borrowed kindness,
+  a watch of uncertain history, and a footman looking for it.
+year: 1724
+week: 12
+loot_flag: sold
+persona: Mr Byrne
+who:
+  name: Cornelius Byrne
+  as: under his own name
+  origin: Younger son of an Irish squire · Book II
+
+start:
+  purse: 10s
+  debts: £26
+  luck: 1
+  exposure: 0
+  notoriety: 0
+  celebrity: 1
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 1, Choleric: 1, Melancholic: 1, Phlegmatic: 0 }
+  tags: []
+  items: [His father’s sword, "A fine coat, made in Dublin and not paid for"]
+  hooks: []
+
+first: shop
+
+chapter:
+  no: Chap. IV.
+  opening: In which our Hero visits his Uncle
+  parts:
+    - { when: flags.sword, text: pledges his Father’s Sword }
+    - { when: flags.coat, text: pawns a Coat that is not his }
+    - { when: flags.kind, text: does a Kindness }
+    - { when: flags.watch, text: buys a Watch with a History }
+    - { when: flags.sold, text: sells it back to its Owner }
+  last:
+    when: flags.withdrew
+    text: leaves by the side Door
+    else: walks home richer than he came, or says he does
+
+story:
+  title: The History of Mr Cornelius Byrne
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface:
+    sm: There comes a morning in the life of every gentleman in London when he discovers that he has an uncle; that is to say, a pawnbroker, who receives him with the tenderness of a relation and the arithmetic of a Lombard, and lends him a third of what anything is worth.
+    st: I would spare Mr Byrne this chapter, madam, if I could; — but a history that omitted the pawnbroker would be a romance, and I have promised you the truth.
+  close:
+    sm: Thus ended our hero’s first acquaintance with the three balls; which, like most acquaintances made in want, he resolved to drop as soon as he could afford it, and renewed as soon as he could not.
+    st: — And so to the street again; lighter by a sword, or a coat, or a scruple; I will not say which; — it varies with the reader.
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: The Street Again
+  sid: pawnbroker.05.reckoning
+  dev: Placeholder · redemption of pledges is Step 6
+  steps:
+    - when: flags.sword or flags.coat
+      say: The ticket goes into your waistcoat pocket, next to the place where the money was. Twelve weeks, the broker said, and a fifth on top to have it back.
+    - when: flags.watch and not flags.sold
+      say: You have a gold watch that you cannot wear, cannot easily sell, and keep taking out to look at. It tells the time admirably.
+    - when: not (flags.sword or flags.coat or flags.watch)
+      say: You come out into Fleet Street with nothing pledged and nothing bought, which is the rarest way to leave a pawnbroker’s.
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
+    none: Nothing is in the post. Pawnbrokers are discreet; it is the only thing they give away.
+  upkeep: "Upkeep follows: the garret, the candles, and whatever the ticket will not cover."
+  again: Go back to the pawnbroker’s
+  finis: Finis.
+
+beats:
+  - id: shop
+    num: I
+    phase: The Approach
+    title: Under the Three Balls
+    sid: pawnbroker.01.shop
+    dev: Placeholder · two gated pledges and a certain browse
+    text: |-
+      The shop is up an alley off Fleet Street, under a sign of three gilt balls that have seen better days and better customers.{fn *} Inside it is dark, for the convenience of everybody, and divided into little boxes, so that a gentleman pledging his watch need not see the lady pledging her stays.
+
+      The broker has a face like a ledger, and greets you as if he has been expecting you since you were born.
+    notes:
+      - "* The three gilt balls of the pawnbroker’s sign are generally traced to the Lombard money-lenders, or to the arms of the Medici; the story is older than the evidence for it."
+    ask: What will you pledge?
+    options:
+      - label: Your father’s sword.
+        gate: { when: has_item("His father’s sword"), need: "His father’s sword" }
+        dev: Gated · certain · a third of £3
+        do:
+          effects:
+            - { lose: His father’s sword, why: pledged }
+            - { adj: purse, by: £1, why: a pledge on the sword }
+            - { hook: "A pawnbroker’s ticket for your father’s sword: £1 4s to redeem, within twelve weeks", why: pledged }
+            - { set: sword }
+            - { adj: hum.Melancholic, by: 1, why: a father’s sword under the counter }
+          text: He draws it an inch, looks at the blade, and puts it back as gently as if it were his own. “A pound,” he says. Your father carried it at the Boyne, on the losing side. It seems to have kept its value better than the cause.
+        next: ring
+      - label: The coat, which is very fine, and still the tailor’s.
+        gate: { when: has_item_like("Dublin"), need: "The Dublin coat" }
+        dev: Gated · certain · pawning goods not paid for
+        do:
+          effects:
+            - { lose: "A fine coat, made in Dublin and not paid for", why: pledged }
+            - { adj: purse, by: 15s, why: a pledge on the coat }
+            - { hook: "A pawnbroker’s ticket for the Dublin coat: 18s to redeem, within twelve weeks", why: pledged }
+            - { set: coat }
+          text: He holds it to the light, finds the tailor’s mark, and smiles for the first time. “Fifteen shillings,” he says, “and I shan’t ask whose.” You go out into Fleet Street in your waistcoat, which in January is a statement of principle.
+        next: ring
+      - label: Nothing yet. Look about you, as a man of means might.
+        dev: Certain
+        do:
+          effects: [{ adj: hum.Phlegmatic, by: 1, why: browsing }]
+          text: You look about you. There is a great deal to look at, most of it someone’s grandmother’s.
+        next: ring
+
+  - id: ring
+    num: II
+    phase: The Complication
+    title: The Next Box
+    sid: pawnbroker.02.ring
+    dev: Placeholder · a kindness (costed), silence (certain), or a word for her (risky)
+    text: |-
+      Through the partition you hear a young woman’s voice, very low. She has a wedding ring to pledge, and needs five shillings for the rent, and the broker is offering three, and she is trying not to cry, and nearly managing it.
+    ask: What do you do?
+    options:
+      - label: Lean round the partition and lend her the five shillings yourself.
+        cost: 5s
+        gate: { when: purse >= 60, need: "5s in purse · you have {money(purse)}" }
+        dev: Gated and costed · certain · a Hook
+        do:
+          effects:
+            - { adj: purse, by: -5s, why: a loan to a stranger }
+            - { set: kind }
+            - { hook: "Mrs Hannah Pratt, a seaman’s wife of Wapping, who owes you five shillings and a kindness", why: a loan through a partition }
+          text: She looks at the coins, and at you, and does not quite believe either. Her name is Hannah Pratt, and her husband is at sea, and she will pay you back, she says, when his ship comes in. You find, rather to your surprise, that you believe her.
+        next: watch
+      - label: Speak up for her to the broker, as a gentleman.
+        dev: Risky · Address against 4
+        check: { attr: Address, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: kind }, { hook: "Mrs Hannah Pratt, a seaman’s wife of Wapping, who owes you a kindness", why: a word to the broker }]
+            text: You remind the broker, in your father’s voice, that the ring is gold and the lady is respectable. He gives her six shillings to be rid of you both, and she thanks you so warmly that the broker blushes, which you had not thought possible.
+          S:
+            effects: [{ set: kind }]
+            text: The broker sighs and gives her five shillings. She thanks you without looking at you, which is the London way of being grateful.
+          C:
+            effects: [{ set: kind }, { adj: hum.Choleric, by: 1, why: a broker’s insolence }]
+            text: He gives her five shillings and you a look, and his prices for you go up a shade, which you will discover later.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: a broker’s insolence }]
+            text: The broker tells you to mind your own pledges. The young woman takes her three shillings and goes, without a word to either of you.
+          X:
+            effects: [{ adj: hum.Choleric, by: 1, why: a broker’s insolence }, { adj: hum.Melancholic, by: 1, why: a kindness that misfired }]
+            text: The broker, offended, gives her two shillings instead of three, and she goes out weeping, and it is your fault, and you know it.
+        story:
+          T:
+            sm: Hearing a young woman beat down below her needs by the broker, our hero put in a word for her with such an air of the old gentry that the fellow gave her six shillings to be rid of them both; and she thanked him so warmly, before the whole shop, that the broker coloured to the ears, a thing not seen in that alley within living memory.
+            st: Six shillings, madam. — It is a small sum to set down in a history; — but I have weighed it against the sums I have set down elsewhere, and I find it heavier than most of them.
+          X:
+            sm: His interference did her more harm than good; for the broker, piqued, gave her two shillings in place of three, and she went out in tears; and Mr Byrne learned that day what every reformer learns at last, that a gentleman’s indignation is very often paid for by somebody else.
+            st: — She wept. — I will not make a joke of it, madam, and neither, to his credit, did he.
+        next: watch
+      - label: Say nothing. It is none of your business, and you have business of your own.
+        dev: Certain
+        do:
+          effects: []
+          text: You say nothing. She takes her three shillings and goes. You hear her on the stairs for some time.
+        next: watch
+
+  - id: watch
+    num: III
+    phase: The Turn
+    title: A Watch of Uncertain History
+    sid: pawnbroker.03.watch
+    dev: Placeholder · receiving (gated by purse, costed) or refusing
+    text: |-
+      When the shop is empty, the broker leans across the counter and lays a gold repeating watch in front of you. It is very good, very new, and engraved inside the case with a coat of arms that has been scratched out with a pin.
+
+      “Come by honestly, sir,” he says. “By somebody. Two pound, to a gentleman. It would fetch six anywhere you was not known.”
+    ask: Will you buy the watch?
+    options:
+      - label: Pay two pounds for it.
+        cost: £2
+        gate: { when: purse >= 480, need: "£2 in purse · you have {money(purse)}" }
+        dev: Gated and costed · certain · receiving stolen goods
+        do:
+          effects:
+            - { adj: purse, by: -£2, why: a watch of uncertain history }
+            - { item: "A gold repeating watch, with a coat of arms scratched out", why: bought under the counter }
+            - { set: watch }
+          text: You pay. The watch goes into your pocket, where it ticks so loudly that you are sure the whole of Fleet Street can hear it.
+        next: footman
+      - label: Ask him, very pleasantly, whose arms were on the case.
+        dev: Risky · Wit against 4
+        check: { attr: Wit, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ hook: "The watch’s owner: Lord Tunstall’s son, who lost it at hazard and told his father it was stolen", why: a broker’s indiscretion }]
+            text: The broker, flattered by your knowing air, tells you more than he means to. The watch was lost at hazard by Lord Tunstall’s son, who told his father it was stolen. That is worth knowing, and worth more than the watch.
+          S:
+            effects: []
+            text: He taps the side of his nose. You have learned that there is something to know, which is the beginning of knowing it.
+          C:
+            effects: [{ adj: hum.Choleric, by: 1, why: a broker’s contempt }]
+            text: He takes the watch back, and tells you that a gentleman who asks questions buys nothing in this shop.
+          R:
+            effects: []
+            text: He takes the watch back and says it was a joke. Neither of you laughs.
+          X:
+            effects:
+              - rumour:
+                  id: broker
+                  delay: 2
+                  from: A pawnbroker’s off Fleet Street
+                  text: An Irish gentleman has been asking questions about a watch that is not his, in a shop where nobody asks questions.
+                  effect: Notoriety +1
+            text: He takes the watch back, and remembers your face, and you have the feeling he will sell that too.
+        next: footman
+      - label: Push it back across the counter.
+        dev: Certain
+        do:
+          effects: []
+          text: You push it back. He shrugs, and it goes into a drawer with a great many other watches, all of them come by honestly by somebody.
+        next: footman
+
+  - id: footman
+    num: IV
+    phase: The Crisis
+    title: A Footman in Livery
+    sid: pawnbroker.04.footman
+    dev: Placeholder · Press on (risky) or Withdraw (certain); the stakes depend on the watch
+    text: |-
+      The street door opens and a footman in a good livery comes in, out of breath, asking after a gold repeater with his young master’s arms on the case. There is a reward, he says. Five guineas, and no questions.
+
+      {if flags.watch}The watch in your pocket begins, at that moment, to strike the hour.{end}
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: stay, and turn the footman’s errand to your profit."
+        dev: Press on · Nerve against 4 · with the watch, a reward or a scandal; without it, an acquaintance
+        check: { attr: Nerve, diff: 4, bonus: [{ when: flags.watch, by: -1, why: a watch striking in your pocket }] }
+        outcomes:
+          T:
+            effects:
+              - when: flags.watch
+                then:
+                  - { lose: "A gold repeating watch, with a coat of arms scratched out", why: returned for the reward }
+                  - { loot: 5 guineas, why: the reward }
+                  - { set: sold }
+                else:
+                  - { hook: "The Tunstall footman, who thinks you an honest gentleman", why: a word of advice in a pawnshop }
+            text: "{if flags.watch}You produce the watch with a bow, as a gentleman who has just rescued it from a den of thieves. The footman pays you five guineas on the spot. The broker’s face is a study. You have done in five minutes what Mr Wild does for a living.{else}You tell the footman where in the shop he might look, and he finds it, and thinks you the most honest gentleman in London.{end}"
+          S:
+            effects:
+              - when: flags.watch
+                then:
+                  - { lose: "A gold repeating watch, with a coat of arms scratched out", why: returned for the reward }
+                  - { loot: £3, why: part of the reward }
+                  - { set: sold }
+            text: "{if flags.watch}You give it up for the reward, which turns out, on examination, to be three pounds, the footman having kept the rest for his trouble.{else}The footman finds his watch in the drawer, and goes. You were not needed, which is restful.{end}"
+          C:
+            effects:
+              - when: flags.watch
+                then:
+                  - { lose: "A gold repeating watch, with a coat of arms scratched out", why: returned }
+                  - { loot: £1, why: a part of a part of the reward }
+                  - { set: sold }
+            text: "{if flags.watch}You give it up, and the footman gives you a pound and a look that says he knows exactly how you came by it.{else}The footman finds the watch, and looks at you as though you had put it there.{end}"
+          R:
+            effects:
+              - when: flags.watch
+                then:
+                  - { lose: "A gold repeating watch, with a coat of arms scratched out", why: taken back }
+                  - { adj: hum.Choleric, by: 1, why: two pounds gone }
+            text: "{if flags.watch}The footman takes the watch out of your hand, thanks you very much, and leaves without the reward, or at least without giving it to you.{else}The footman finds the watch and leaves. The broker looks at you as though you had cost him money.{end}"
+          X:
+            effects:
+              - when: flags.watch
+                then:
+                  - { lose: "A gold repeating watch, with a coat of arms scratched out", why: taken back }
+                  - { adj: notoriety, by: 1, why: a receiver of stolen goods }
+                  - rumour:
+                      id: tunstall
+                      delay: 2
+                      from: Lord Tunstall’s house in Soho Square
+                      text: Young Mr Tunstall’s watch was found in the pocket of an Irishman in a pawnshop, who said he had found it. His lordship is minded to send for a constable.
+                      effect: Notoriety +1 · Exposure +1
+                else: [{ adj: hum.Choleric, by: 1, why: suspected }]
+            text: "{if flags.watch}The footman takes the watch out of your pocket himself, quite quickly, and calls you a thief in a voice they can hear in Fleet Street. You are out of the shop before he has finished saying it, which helps, but not much.{else}The footman, finding the watch in the drawer, decides you look like the sort of man who sells watches, and says so.{end}"
+        story:
+          T:
+            sm: "At this moment entered a footman in search of his young master’s watch, with five guineas in his hand; whereupon our hero, with an inspiration worthy of Mr Wild himself, produced the article from his own pocket, received the reward, and left the broker contemplating the instability of trade."
+            st: "He bought it for two pounds and sold it for five guineas, madam, to its rightful owner; — which is, I am told, how the whole City of London does its business, and is called commerce."
+          X:
+            sm: "But the footman, who had been in service long enough to know a receiver when he saw one, took the watch out of Mr Byrne’s pocket with his own hand, and cried thief with such a voice that our hero was halfway to Temple Bar before the word was out."
+            st: "— Thief! cried the footman. — It is a word, madam, which has more effect upon the legs than upon the conscience; and I have never known it fail of either."
+        next: reckon
+      - label: "Withdraw: slip out by the side door into the alley."
+        withdraw: true
+        dev: Withdraw · certain
+        do:
+          effects: [{ set: withdrew }]
+          text: You slip out by the side door. Every pawnbroker has one, for the convenience of everybody.
+        next: reckon

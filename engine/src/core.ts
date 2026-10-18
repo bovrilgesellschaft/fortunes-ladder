@@ -14,8 +14,28 @@ export interface State {
   exposure: number; notoriety: number; celebrity: number;
   attrs: Record<string, number>; hum: Record<string, number>;
   conditions: string[]; tags: string[]; items: string[]; hooks: string[];
-  flags: Record<string, number>; log: string[]; rumours: (Rumour & { week: number })[];
+  flags: Record<string, number>; log: string[]; rumours: (Rumour & { week: number; persona: string })[];
   spoils: number; story: (Passage & { fresh?: boolean })[]; storyAdded: boolean;
+  /** The name the hero passes under in this Venture. */
+  persona: string;
+}
+
+/** The hero a Venture starts from, when it is played inside a run rather than on its own page. */
+export interface HeroSeed {
+  purse: number; debts: number; luck: number; exposure: number; notoriety: number; celebrity: number;
+  attrs: Record<string, number>; hum: Record<string, number>;
+  conditions: string[]; tags: string[]; items: string[]; hooks: string[];
+  persona: string;
+}
+
+export interface RunOpts {
+  hero?: HeroSeed;
+  /** The week number rumour delays count from (a run's absolute week); default the Venture's week. */
+  at?: number;
+  /** Extra names for conditions and text: year, week, turn, origin. */
+  extra?: Record<string, unknown>;
+  /** Whether a Venture has been played in this run. */
+  played?: (id: string) => boolean;
 }
 
 const LIM: Record<string, [number, number]> = { composure: [0, 8], exposure: [0, 10], luck: [0, 3], celebrity: [0, 10], notoriety: [0, 10] };
@@ -71,7 +91,10 @@ export class Run {
   readonly beats: Record<string, Beat>;
   readonly fns: Record<string, Fn>;
 
-  constructor(content: Content) {
+  readonly opts: RunOpts;
+
+  constructor(content: Content, opts: RunOpts = {}) {
+    this.opts = opts;
     this.v = content.venture;
     this.glossary = content.glossary;
     this.beats = Object.fromEntries(this.v.beats.map(b => [b.id, b]));
@@ -88,25 +111,39 @@ export class Run {
       has_condition: (p) => S().conditions.some(h => h.startsWith(p as string)),
       has_tag: (p) => S().tags.some(h => h.startsWith(p as string)),
       rumour_says: (w) => S().rumours.some(r => r.effect.includes(w as string)),
+      has_persona: (p) => S().persona.startsWith(p as string),
+      played: (id) => !!this.opts.played?.(id as string),
     };
     this.start();
   }
 
   start() {
-    const h = this.v.start;
-    this.S = {
-      purse: this.amount(h.purse), debts: this.amount(h.debts), composure: h.composure ?? h.attrs.Nerve + 1, luck: h.luck,
-      exposure: h.exposure, notoriety: h.notoriety, celebrity: h.celebrity,
-      attrs: { ...h.attrs }, hum: { ...h.hum }, conditions: [...(h.conditions ?? [])], tags: [...h.tags], items: [...h.items], hooks: [...h.hooks],
-      flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false,
-    };
+    const h = this.v.start, o = this.opts.hero;
+    this.S = o
+      ? {
+        purse: o.purse, debts: o.debts, composure: o.attrs.Nerve + 1, luck: o.luck,
+        exposure: o.exposure, notoriety: o.notoriety, celebrity: o.celebrity,
+        attrs: { ...o.attrs }, hum: { ...o.hum }, conditions: [...o.conditions], tags: [...o.tags], items: [...o.items], hooks: [...o.hooks],
+        flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false, persona: o.persona,
+      }
+      : {
+        purse: this.amount(h.purse), debts: this.amount(h.debts), composure: h.composure ?? h.attrs.Nerve + 1, luck: h.luck,
+        exposure: h.exposure, notoriety: h.notoriety, celebrity: h.celebrity,
+        attrs: { ...h.attrs }, hum: { ...h.hum }, conditions: [...(h.conditions ?? [])], tags: [...h.tags], items: [...h.items], hooks: [...h.hooks],
+        flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false, persona: this.v.persona,
+      };
+    // a kit is lent for the Venture: in a run the hero may not own it yet
+    for (const it of this.v.kit?.items ?? []) if (!this.S.items.includes(it)) this.S.items.push(it);
     this.START = JSON.parse(JSON.stringify(this.S));
     this.fx = [];
   }
 
   // ----- expressions and text -----
 
-  scope() { return { ...this.S, start: this.START } as Record<string, unknown>; }
+  scope() {
+    const x = this.opts.extra ?? { year: this.v.year, week: this.v.week, turn: 0, origin: '' };
+    return { ...x, ...this.S, start: this.START } as Record<string, unknown>;
+  }
 
   eval(src: string): unknown { return evaluate(compile(src), this.scope(), this.fns); }
   test(src?: string): boolean { return src === undefined ? true : !!this.eval(src); }
@@ -200,6 +237,12 @@ export class Run {
         if (i > -1) { S.log.push(`Hook spent: ${S.hooks[i]} — ${e.why ?? ''}`); S.hooks.splice(i, 1); this.fx.push({ t: 'Hook spent', tone: 'bad' }); }
       }
       else if ('rumour' in e) this.rumour(e.rumour);
+      else if ('persona' in e) {
+        if (S.persona !== e.persona) {
+          S.persona = e.persona; S.exposure = 1;
+          this.fx.push({ t: 'Persona: ' + e.persona, tone: 'neu' }); S.log.push(`Persona taken up: ${e.persona}, Exposure 1 — ${e.why ?? ''}`);
+        }
+      }
       else if ('when' in e) this.apply(this.test(e.when) ? e.then : e.else);
     }
   }
@@ -212,8 +255,8 @@ export class Run {
   rumour(r: Rumour) {
     const S = this.S;
     if (S.rumours.some(x => x.id === r.id)) return;
-    const week = r.week ?? this.v.week + (r.delay ?? 1);
-    const q = { ...r, week, text: this.inline(r.text) };
+    const week = r.week ?? (this.opts.at ?? this.v.week) + (r.delay ?? 1);
+    const q = { ...r, week, text: this.inline(r.text), persona: S.persona };
     S.rumours.push(q);
     this.fx.push({ t: 'A rumour is abroad', tone: 'bad' });
     S.log.push(`Rumour queued (week ${week}): ${r.from} — ${r.effect}`);
@@ -281,7 +324,12 @@ export class Run {
       else lines.push(this.prose(s.say));
     }
     if (this.v.story && this.S.story.length) this.S.story.push({ ...this.v.story.close, fresh: true });
-    return { html: lines.join(''), chapter: this.chapter() };
+    const chapter = this.chapter();
+    for (const it of this.v.kit?.returned ?? []) {
+      const i = this.S.items.indexOf(it);
+      if (i > -1) { this.S.items.splice(i, 1); this.S.log.push(`Returned: ${it}`); }
+    }
+    return { html: lines.join(''), chapter };
   }
 
   chapter(): string {

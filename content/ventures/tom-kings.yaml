@@ -1,0 +1,287 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# PLACEHOLDER (Step 5): written to exercise the run shell: the canon venue Tom King's, a wit,
+# a wager and a challenge. Duels proper are Step 14. Keep, rewrite or drop it in Step 10.
+
+id: tom-kings
+title: Tom King’s after Midnight
+test: true
+offer:
+  district: Covent Garden
+  blurb: When the playhouses empty, the Town goes on to Tom King’s in the Piazza, where anyone may sit down and nobody goes home. A man might make his name there, or have it made for him.
+  repeat: true
+  weight: 1
+runhead: The Life &amp; Adventures of Mr Cornelius Byrne
+sub: Being a Night among the Wits, in five Beats
+prospectus: >-
+  <b>A placeholder Venture,</b> written to exercise the run shell: the Piazza after the play,
+  a wit at the next table, a wager, and a challenge for the morning.
+year: 1724
+week: 30
+loot_flag: won
+persona: Mr Byrne
+who:
+  name: Cornelius Byrne
+  as: under his own name
+  origin: Younger son of an Irish squire · Book II
+
+start:
+  purse: £2
+  debts: £26
+  luck: 1
+  exposure: 0
+  notoriety: 0
+  celebrity: 1
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 1, Choleric: 1, Melancholic: 1, Phlegmatic: 0 }
+  tags: []
+  items: [His father’s sword, "A fine coat, made in Dublin and not paid for"]
+  hooks: []
+
+first: piazza
+
+chapter:
+  no: Chap. V.
+  opening: In which our Hero sits up with the Wits
+  parts:
+    - { when: flags.chair, text: arrives in a Chair }
+    - { when: flags.footpad, text: meets a Footpad in the Piazza }
+    - { when: flags.riposte, text: is thought witty }
+    - { when: flags.coffee, text: throws a Dish of Coffee }
+    - { when: flags.won, text: wins a Wager }
+    - { when: flags.meeting, text: keeps an Appointment in the Fields }
+  last:
+    when: flags.withdrew
+    text: begs Pardon
+    else: goes home at Dawn
+
+story:
+  title: The History of Mr Cornelius Byrne
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface:
+    sm: Our hero had now been long enough in town to know that a gentleman’s reputation is made after midnight, in rooms where nobody is sober enough to remember it and everybody repeats it in the morning.
+    st: I come now to the wits, madam; — of whom I shall say only, that they are like the lamps in the Piazza, very bright at a distance and very smoky close to.
+  close:
+    sm: So passed the night; and our hero went home by the first light, through a market already full of cabbages, with the conviction, common to young men who have sat up with wits, that he had said several very good things, though he could not now recall them.
+    st: And so to bed, madam, as the sun got up; — the one being as tired of the night as the other was of the morning.
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: Cabbages at Dawn
+  sid: tomkings.05.reckoning
+  dev: Placeholder · nothing further to settle
+  steps:
+    - say: The Piazza at dawn is all market-carts and cabbage leaves. You pick your way home through it, a gentleman of the Town among the greengrocers, and nobody looks at your coat.
+    - when: flags.meeting and not flags.withdrew
+      say: The fields at Marylebone are cold at six in the morning, and the grass is wet, and you will remember both longer than the quarrel.
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
+    none: Nothing is in the post. The wits have already forgotten you, which in Covent Garden is a kind of mercy.
+  upkeep: "Upkeep follows: the garret, the coffee, and a chair home, if you were so foolish."
+  again: Go back to Tom King’s
+  finis: Finis.
+
+beats:
+  - id: piazza
+    num: I
+    phase: The Approach
+    title: The Piazza after the Play
+    sid: tomkings.01.piazza
+    dev: Placeholder · costed, risky and gated options
+    text: |-
+      The playhouses are out, and the whole of Covent Garden is under the arcades of the Piazza, which is to say the whole of the Town that has nowhere better to be.{fn *} Tom King’s stands among the market sheds: a low, hot, crowded house where anyone may sit down and nobody is ever asked to leave, so long as they keep buying coffee.
+
+      You are three streets away, in your good coat, with the rain coming on.
+    notes:
+      - "* The Piazza of Covent Garden was laid out by Inigo Jones for the Earl of Bedford in the 1630s, the first regular square in London."
+    ask: How will you arrive?
+    options:
+      - label: Take a [[chair]], and arrive dry.
+        cost: 1s
+        dev: Costed · certain
+        do:
+          effects: [{ adj: purse, by: -1s, why: a chair }, { set: chair }, { adj: celebrity, by: 1, why: arriving in a chair }]
+          text: The chairmen trot you through the rain and set you down at the very door, with a flourish, in front of a crowd of people who see you arrive in a chair. That is what the shilling was for.
+        next: wit
+      - label: Walk through the Piazza in the rain, and save the shilling.
+        dev: Risky · Nerve against 3 · footpads
+        check: { attr: Nerve, diff: 3 }
+        outcomes:
+          T:
+            effects: [{ set: footpad }, { loot: 3s, why: a footpad’s purse }]
+            text: A footpad steps out of the arcade with a knife and asks for your money. You ask for his. He is so astonished that he gives it you, three shillings, and runs.
+          S:
+            effects: []
+            text: You walk through the Piazza in the rain, and arrive wet, but unrobbed.
+          C:
+            effects: [{ adj: hum.Choleric, by: 1, why: a ruined coat }]
+            text: You arrive unrobbed, but a carriage goes through a puddle beside you, and you enter Tom King’s looking like a man who has swum there.
+          R:
+            effects: [{ set: footpad }, { adj: purse, by: -5s, why: a footpad }]
+            text: A footpad steps out of the arcade with a knife and asks for your money, and you find that you give it him, five shillings, before you have quite decided to.
+          X:
+            effects: [{ set: footpad }, { adj: purse, by: -10s, why: footpads }, { adj: hum.Melancholic, by: 1, why: robbed in the rain }]
+            text: Two footpads, not one. They take ten shillings and your hat, and would take the coat if it were not raining.
+        story:
+          T:
+            sm: Walking through the Piazza in the rain, he was set upon by a footpad, who demanded his money; to which our hero replied by demanding the footpad’s, in a voice so like a magistrate’s that the poor fellow surrendered three shillings and ran off into the market, to reconsider his profession.
+            st: He robbed the robber, madam; — I know not whether to set it down as a crime or a public service, and I have therefore set it down as both.
+          X:
+            sm: In the arcade two footpads fell upon him, and relieved him of ten shillings and his hat; leaving him, out of a delicacy for which he was afterwards grateful, the coat, it being too wet to be worth the trouble.
+            st: — His hat, madam! — There are losses a man may laugh at, and losses he cannot; — and a hat in the rain, I find, is the second kind.
+        next: wit
+      - label: Go in on Mr Tozer’s arm, as his friend from Galway.
+        gate: { when: has_hook("The stout traveller"), need: "Hook: Mr Tozer" }
+        dev: Gated (the Hook from the Holyhead coach) · certain
+        do:
+          effects: [{ adj: celebrity, by: 1, why: introduced by Tozer }]
+          text: Tozer is already inside, and he introduces you to the whole room as the finest fellow ever to come off the Holyhead coach. The room has heard Tozer say this before, about other people, but it is kind enough to pretend it has not.
+        next: wit
+
+  - id: wit
+    num: II
+    phase: The Complication
+    title: A Wit at the Next Table
+    sid: tomkings.02.wit
+    dev: Placeholder · risky riposte, certain silence, certain coffee
+    text: |-
+      At the next table a thin young man in a great deal of lace is entertaining his friends. Presently he turns, looks at your coat for a long moment, and says, quite loudly, that he did not know the bogs of Ireland ran to tailors.
+
+      His friends laugh. The room, which has been talking, has stopped.
+    ask: What do you do?
+    options:
+      - label: Answer him in kind.
+        dev: Risky · Wit against 4
+        check: { attr: Wit, diff: 4, bonus: [{ when: has_persona("Capt"), by: 1, why: a captain’s confidence }] }
+        outcomes:
+          T:
+            effects: [{ set: riposte }, { tag: "Wit (the Wits)", why: a riposte at Tom King’s }, { adj: celebrity, by: 1, why: repeated in the morning }]
+            text: You tell him that Ireland has tailors and bogs both, and sends her bogs to London to be made into gentlemen. The room roars. By morning it has been repeated in four coffee houses, and improved in three.
+          S:
+            effects: [{ set: riposte }]
+            text: You say something neat about lace. It is not the best thing said that night, but it is not the worst, and the room goes back to its talk with the air of having been fairly entertained.
+          C:
+            effects: [{ set: riposte }, { adj: hum.Choleric, by: 1, why: a hit taken }]
+            text: You answer him, and he answers you, and on the whole he has the better of it, but not by enough to matter.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: laughed at }]
+            text: You think of nothing. Then you think of something, and it comes out wrong, and the room laughs at it in a way you will remember on your deathbed.
+          X:
+            effects: [{ adj: hum.Choleric, by: 2, why: laughed out of the room }, { adj: celebrity, by: -1, why: "a joke at your expense, repeated" }]
+            text: You answer, and he answers your answer, and his friends answer his, and by the end of it you are a joke that four coffee houses will be telling by noon.
+        story:
+          T:
+            sm: A young gentleman at the next table, much laced and little furnished, having asked aloud whether the bogs of Ireland ran to tailors, our hero replied that Ireland had both, and sent her bogs to London to be made into gentlemen; which was thought so good that it went round four coffee houses by the morning, and was improved in three.
+            st: — It was not, I own, a very good joke, madam; — but it was made at the right moment, which is the whole of wit, and to the right fool, which is the whole of fame.
+          X:
+            sm: To the laced young gentleman’s insult he returned an answer, which was answered again, and that again, until our hero found himself the butt of the whole table, and heard his own coat described, by noon next day, in four coffee houses and a newspaper.
+            st: The newspaper, madam. — I have looked for the paragraph, and cannot find it; — I am persuaded nonetheless that it exists, for Mr Byrne could recite it to the end of his life.
+        next: wager
+      - label: Laugh, as if the joke were on someone else.
+        dev: Certain
+        do:
+          effects: [{ adj: hum.Phlegmatic, by: 1, why: a joke swallowed }]
+          text: You laugh. The young man is disappointed; he had hoped for more. The room goes back to its coffee. You have lost nothing, except the chance of something.
+        next: wager
+      - label: Throw your coffee in his face.
+        dev: Certain · a quarrel
+        do:
+          effects: [{ set: coffee }, { adj: hum.Choleric, by: 1, why: a dish of coffee thrown }, { adj: notoriety, by: 1, why: an assault in Tom King’s }]
+          text: The coffee is hot and the aim is good. The young man rises, dripping, and says in a very quiet voice that he will send a friend to you in the morning.
+        next: wager
+
+  - id: wager
+    num: III
+    phase: The Turn
+    title: A Wager
+    sid: tomkings.03.wager
+    dev: Placeholder · a costed and risky wager, or none
+    text: |-
+      Later, when the room has forgotten the young man in lace, or pretends to, a red-faced squire proposes a wager to the table: a guinea that the next man through the door will be drunk.
+
+      Nobody will take it. In Tom King’s at two in the morning it is not a wager but a certainty.
+    ask: Will you bet?
+    options:
+      - label: Take the other side, at odds of three to one, and watch the door like a hawk.
+        cost: a guinea, if you lose
+        gate: { when: purse >= 252, need: "a guinea in purse · you have {money(purse)}" }
+        dev: Gated and costed · risky · Wit against 4 (reading the street)
+        check: { attr: Wit, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ loot: 3 guineas, why: a wager won }, { adj: hum.Sanguine, by: 1, why: a wager won }]
+            text: The next man through the door is a Quaker, come to sell the house its candles, and as sober as a stone. You win three guineas. The squire pays, and then tries to get the Quaker drunk out of spite.
+          S:
+            effects: [{ loot: 1 guinea, why: "a wager, pressed and won" }]
+            text: The next man through the door is the watchman, and he is only a little drunk, and the table, after a long argument, rules him sober. You win a guinea.
+          C:
+            effects: []
+            text: The next man through the door is so exactly halfway between drunk and sober that the table cannot decide, and the wager is called off.
+          R:
+            effects: [{ adj: purse, by: -1 guinea, why: a wager lost }]
+            text: The next man through the door is very drunk indeed. He is also, it turns out, the squire’s brother.
+          X:
+            effects: [{ adj: purse, by: -1 guinea, why: a wager lost }, { adj: hum.Choleric, by: 1, why: a sharp practice }]
+            text: The next man is drunk, and the squire has a man posted in the street to see that he would be. You pay, and you know it, and he knows you know.
+        story:
+          T:
+            sm: A squire having laid a guinea that the next man through the door would be drunk, our hero took the bet at three to one; and the next man through the door was a Quaker chandler, come about the candles, and as sober as a judge ought to be; so that Mr Byrne won three guineas, and the squire, by way of revenge, offered the Quaker a bottle.
+            st: A Quaker, madam, at two in the morning, in Tom King’s! — I would not believe it myself, if I had not invented it.
+          X:
+            sm: Our hero took the wager, and lost it, the squire having a confederate in the street whose business it was to send in a drunk man at need; which Mr Byrne discovered too late to object, and soon enough to be angry.
+            st: — Sharp practice, madam. — But the guinea was gone; and I have observed that a man’s indignation is generally in proportion to the sum, and seldom to the wrong.
+        next: meeting
+      - label: Keep your money, and enjoy the argument.
+        dev: Certain
+        do:
+          effects: []
+          text: You keep your money. The argument about what constitutes drunk goes on until four, and is never settled.
+        next: meeting
+
+  - id: meeting
+    num: IV
+    phase: The Crisis
+    title: A Friend in the Morning
+    sid: tomkings.04.meeting
+    dev: Placeholder · Press on (risky) or Withdraw (certain) · duels proper are Step 14
+    text: |-
+      {if flags.coffee}At four o’clock a friend of the young man in lace comes to your table, very correct, and names a place in the fields beyond Marylebone, and the hour of six.{else}At four o’clock a stranger at the bar, who has drunk a good deal and listened to more, takes offence at your accent, and proposes that you settle it in the fields beyond Marylebone at six.{end}
+
+      It is a long way to Marylebone. It is a short way home.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: keep the appointment, with your sword."
+        dev: Press on · Nerve against 5 · Wounded on a Catastrophe
+        check: { attr: Nerve, diff: 5, bonus: [{ when: has_item("His father’s sword"), by: 1, why: your father’s sword }] }
+        outcomes:
+          T:
+            effects: [{ set: meeting }, { adj: celebrity, by: 1, why: honour satisfied }, { tag: "Man of Honour (the Quality)", why: a meeting at Marylebone }]
+            text: He comes, with his friend. You draw. He looks at your father’s sword, and at your face, and offers, in a very correct voice, to consider the matter closed. You consider it closed. The story is all over the Town by dinner, much to your advantage.
+          S:
+            effects: [{ set: meeting }]
+            text: You wait in the wet grass until seven. Nobody comes. You walk home with your honour intact and your boots ruined.
+          C:
+            effects: [{ set: meeting }, { adj: hum.Melancholic, by: 1, why: a cold dawn }]
+            text: You cross swords for a minute, very badly on both sides, until the seconds stop it and everybody agrees honour is satisfied. Nobody is hurt. Everybody has a cold.
+          R:
+            effects: [{ set: meeting }, { adj: celebrity, by: -1, why: disarmed }]
+            text: He disarms you in three passes, very prettily, and hands you back your sword with a bow. It is not a wound. It is worse.
+          X:
+            effects: [{ set: meeting }, { condition: "Wounded (a sword-cut, right arm)", why: a meeting at Marylebone }, { adj: hum.Melancholic, by: 1, why: blood on the grass }]
+            text: You are pinked in the arm in the second pass. It is not deep, but it bleeds a great deal on the grass, and on your coat, and on your opinion of yourself.
+        story:
+          T:
+            sm: At six in the morning, in the fields beyond Marylebone, his adversary, having looked upon our hero’s sword, and then upon his countenance, discovered that the insult had been a misunderstanding; and the two parted with bows, and the story went about the Town by dinner much to Mr Byrne’s advantage.
+            st: There was no duel, madam. — I am sorry for it, as a historian; as a Christian I rejoice; and as a man who has been to Marylebone at six in the morning, I am chiefly cold.
+          X:
+            sm: At the second pass he was pinked in the sword arm, not deeply, but with a great effusion of blood, which spoiled the grass, the coat and the morning; and he walked home to the Strand holding his arm, persuaded he was dying, and proved, by the evening, to be mistaken.
+            st: — A scratch, said the surgeon. — A scratch, madam, as the Thames is a ditch.
+        next: reckon
+      - label: "Withdraw: send a handsome apology, and go home to bed."
+        withdraw: true
+        dev: Withdraw · certain · Celebrity −1
+        do:
+          effects: [{ set: withdrew }, { adj: celebrity, by: -1, why: an apology sent }]
+          text: You write a handsome apology on the back of the coffee-house bill, and send it by the potboy. It is accepted. By noon it is being read aloud in the Piazza, and the young man in lace is telling everyone he is a very terrible fellow.
+        next: reckon

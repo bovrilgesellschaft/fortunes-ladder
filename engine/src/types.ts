@@ -25,6 +25,8 @@ export type Effect =
   | { hook: string; why?: string }
   | { unhook: string; why?: string }
   | { rumour: Rumour }
+  /** Take up a Persona: the hero now passes under this name, with a fresh Exposure. */
+  | { persona: string; why?: string }
   | { when: string; then: Effect[]; else?: Effect[] };
 
 export interface Rumour {
@@ -35,7 +37,11 @@ export interface Rumour {
   week?: number;
   from: string;
   text: string;
+  /** What the letter does, as the player reads it: "Exposure +3 (Mrs Delacourt)". */
   effect: string;
+  /** What it does to the hero on delivery. If left out, the engine reads simple effects
+   *  ("Exposure +3", "Notoriety +1", "Celebrity −1") from the effect text. */
+  on_delivery?: Effect[];
 }
 
 export interface Passage { sm: string; st: string }
@@ -115,9 +121,36 @@ export interface HeroStart {
   hooks: string[];
 }
 
+/** A calendar date: year and week, 1–52. */
+export interface When { year: number; week: number }
+
+/** When and how often a Venture is offered in a run. A Venture without one is never offered. */
+export interface Offer {
+  /** A short line for the card the player chooses from. */
+  blurb: string;
+  /** The district, shown on the card. */
+  district: string;
+  /** A condition on the hero and the calendar (year, week, turn, origin, persona). */
+  when?: string;
+  /** Relative chance of being drawn; default 1. */
+  weight?: number;
+  /** May be offered again after it has been played. */
+  repeat?: boolean;
+  /** Offered only between these dates, inclusive. */
+  from?: When;
+  to?: When;
+  /** Not offered: played at once as this Origin's arrival. */
+  arrival?: boolean;
+}
+
 export interface Venture {
   id: string;
   title: string;
+  /** Test content: placeholder Ventures written to exercise the engine, to be kept, rewritten or dropped. */
+  test?: boolean;
+  offer?: Offer;
+  /** Lent to the hero for this Venture only: given at the Approach, taken back after the Reckoning if still held. */
+  kit?: { items: string[]; returned?: string[] };
   runhead: string;
   sub: string;
   prospectus: string;
@@ -140,3 +173,51 @@ export interface Venture {
 export interface GlossaryEntry { dictionary: 'cant' | 'town'; definition: string }
 
 export interface Content { venture: Venture; glossary: Record<string, GlossaryEntry> }
+
+export const RANKS = ['Vagabond', 'Servant', 'Tradesman', 'Gentleman', 'Esquire', 'Baronet or Knight', 'Peer'] as const;
+export type Rank = typeof RANKS[number];
+export type Room = 'garret' | 'room' | 'first floor';
+
+/** An Origin: who the hero was before London. Only an available one can be played. */
+export interface Origin {
+  id: string;
+  name: string;
+  sex: 'man' | 'woman' | 'either';
+  arrives: string;
+  strengths: string;
+  secret: string;
+  available: boolean;
+  /** The rest is needed only for an available Origin. */
+  hero?: {
+    name: string;
+    /** "Mr Byrne": how the Town addresses the hero under the true name. */
+    styled: string;
+    /** The History's title in the Story tab. */
+    history: string;
+    true_rank: Rank;
+    claimed_rank: Rank;
+    lodging: { district: string; room: Room };
+    start: HeroStart;
+  };
+  /** The arrival Venture, played in the first turn. */
+  arrival?: string;
+}
+
+export interface Settings {
+  living: Record<Rank, Amount>;
+  lodging: Record<string, Amount>;
+  room: Record<Room, number>;
+  /** Weeks in a turn (ruling: four). */
+  turn_weeks: number;
+  /** The run's start date when none is chosen; null = a random week in the range. */
+  start?: When | null;
+  start_range: { from: number; to: number };
+}
+
+/** Everything a run page needs. */
+export interface World {
+  ventures: Venture[];
+  origins: Origin[];
+  settings: Settings;
+  glossary: Record<string, GlossaryEntry>;
+}

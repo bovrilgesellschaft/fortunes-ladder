@@ -1,0 +1,301 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# PLACEHOLDER (Step 5): the Younger son's arrival, written to exercise the run shell.
+# Keep, rewrite or drop it in Step 10 or Step 19.
+
+id: holyhead-coach
+title: The Holyhead Coach
+test: true
+offer:
+  district: Fleet Street and the Strand
+  blurb: The arrival.
+  arrival: true
+runhead: The Life &amp; Adventures of Mr Cornelius Byrne
+sub: Being an Arrival at Charing Cross, in five Beats
+prospectus: >-
+  <b>A placeholder Venture,</b> written to exercise the run shell. The Younger son's arrival:
+  a coach yard, a stranger, a new name, and the first night in London.
+year: 1724
+week: 1
+loot_flag: won
+persona: Mr Byrne
+who:
+  name: Cornelius Byrne
+  as: under his own name
+  origin: Younger son of an Irish squire · Book II
+
+start:
+  purse: £5
+  debts: £20
+  luck: 1
+  exposure: 0
+  notoriety: 0
+  celebrity: 0
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 1, Choleric: 1, Melancholic: 0, Phlegmatic: 0 }
+  tags: []
+  items: [His father’s sword, "A fine coat, made in Dublin and not paid for"]
+  hooks: []
+
+first: yard
+
+chapter:
+  no: Chap. I.
+  opening: In which our Hero arrives in London
+  parts:
+    - { when: flags.porter, text: hires a Porter }
+    - { when: flags.stranger, text: is befriended in an Inn Yard }
+    - { when: flags.won, text: wins at Hazard }
+    - { when: flags.fleeced, text: is relieved of his Money by a Friend }
+    - { when: flags.captain, text: takes a Commission from nobody }
+    - { when: flags.coffee, text: shows his Coat in Covent Garden }
+  last:
+    when: flags.withdrew
+    text: goes early to Bed
+    else: sees the Sun rise over the Strand
+
+story:
+  title: The History of Mr Cornelius Byrne
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface:
+    sm: Mr Cornelius Byrne, the younger son of a squire in the county of Galway, came up to London in the new year with a sword that had been his father’s, a coat that was still the tailor’s, and five pounds, which were his own and would not long remain so.
+    st: I have been asked, madam, why a younger son should come to London at all; — and I answer, that a younger son must go somewhere, and London is the only place large enough to hold his expectations.
+  close:
+    sm: Such was our hero’s first night in the capital; in which, if he made no fortune, he at least made a beginning, and learned the price of a bed, which is the first lesson London teaches.
+    st: And so he slept. — It is the one thing a man may do in London without paying a tradesman for it, and even that, I find, is reckoned in the rent.
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: A Garret off the Strand
+  sid: holyhead.05.reckoning
+  dev: Placeholder · settles the first lodging · nothing further
+  steps:
+    - when: flags.withdrew
+      say: You climb four pair of stairs off the Strand to a garret with a bed, a chair and a window full of chimneys, and fall asleep in your coat, which is the safest place for it.
+    - when: not flags.withdrew
+      say: You come home to the Strand at dawn, climb four pair of stairs to a garret with a bed, a chair and a window full of chimneys, and sleep till noon in your coat.
+    - when: flags.captain
+      say: The landlady addresses you as Captain before you have reached the second landing. News travels faster in London than coaches.
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
+    none: Nothing is in the post. London has not noticed you yet, which is the most it does for anyone.
+  upkeep: "Upkeep follows: the garret, the candles, and the life of a gentleman, which is dearer than the garret."
+  again: Arrive again
+  finis: Finis Chap. I.
+
+beats:
+  - id: yard
+    num: I
+    phase: The Approach
+    title: The Coach Yard at Charing Cross
+    sid: holyhead.01.yard
+    dev: Placeholder arrival · one certain, one costed, one risky option
+    text: |-
+      The coach comes down the Strand in the dark of a January afternoon and turns in under an arch at Charing Cross, where a bronze king on a bronze horse has been riding nowhere since before you were born.{fn *}
+
+      You have been a week on the road from Holyhead. You have a trunk, a sword that was your father’s, a fine coat that is still, strictly speaking, the tailor’s, and five pounds in a purse about your neck. Every one of them is visible to the forty people in the yard, and you have the uncomfortable sense that every one of them has noticed.
+    notes:
+      - "* The bronze Charles I at Charing Cross was cast by Hubert Le Sueur in 1633, hidden during the Commonwealth, and set up on its present site in 1675."
+    ask: How will you get yourself and your trunk off the coach?
+    options:
+      - label: Carry the trunk yourself, as a gentleman would rather not.
+        dev: Certain · costs only dignity
+        do:
+          effects: [{ adj: hum.Choleric, by: 1, why: a trunk carried through a crowd }]
+          text: You shoulder the trunk and push out through the yard. A carter laughs. A boy offers to carry your sword for a penny. You arrive at the street door in a temper, which is the London manner, so you are already more at home than you think.
+        next: stranger
+      - label: Hire a porter for sixpence.
+        cost: 6d
+        dev: Costed · certain
+        do:
+          effects: [{ adj: purse, by: -6d, why: a porter }, { set: porter }]
+          text: A porter with arms like a ship’s cable takes the trunk on his head and walks off with it at a pace that makes you run. You find him at the street door, waiting, and he is a little offended that you doubted him.
+        next: stranger
+      - label: Accept the help of an obliging gentleman in a bottle-green coat, who has seen your trouble.
+        dev: Risky · Wit against 3 · a sharper's opening
+        check: { attr: Wit, diff: 3 }
+        outcomes:
+          T:
+            effects: [{ set: stranger }, { hook: "Mr Dawlish, a sharper of the coach yards, who owes you a good turn", why: you saw through him and said nothing }]
+            text: The gentleman in green is very obliging, and his hand is very quick, and you catch it at the strings of your purse as politely as if you were handing him a dish of tea. He laughs, owns the attempt, and says his name is Dawlish. A man who can see that, he says, will want a friend in London. He may be right.
+          S:
+            effects: [{ set: stranger }]
+            text: The gentleman in green carries the trunk to the door, tells you which inns cheat and which only overcharge, and leaves you with the warm conviction that London is a friendly place.
+          C:
+            effects: [{ set: stranger }, { adj: purse, by: -1s, why: "a tip, extracted" }]
+            text: He carries the trunk, tells you his name is Dawlish, and holds out his hand for a shilling so frankly that you give it him before you have thought about it. He was not, it seems, a gentleman. Or not only.
+          R:
+            effects: [{ set: stranger }, { adj: purse, by: -5s, why: lost in the yard }]
+            text: At the door you find your trunk, your sword and your coat, and five shillings fewer in the purse than there were. The obliging gentleman has obliged someone else.
+          X:
+            effects: [{ set: [stranger, fleeced] }, { adj: purse, by: -£2, why: robbed in the yard }, { adj: hum.Melancholic, by: 1, why: a first lesson }]
+            text: He is so very obliging. He carries the trunk, admires the sword, and shakes your hand at the door with real feeling. Two pounds go with the hand. You do not find out until the evening, by which time he has shaken several more.
+        story:
+          T:
+            sm: Our hero had scarce set foot in the yard before a gentleman in a bottle-green coat made him an offer of his services; but Mr Byrne, who had been raised among horse-copers, caught the obliging hand at his purse-strings, and the two parted the best friends in the world, each with a high opinion of the other’s talents.
+            st: — Sir, said the gentleman in green. — Sir, said Mr Byrne, holding his wrist. — And there, madam, was the foundation laid of a friendship which neither of them, to the end of his days, could account for.
+          X:
+            sm: In the yard he fell in with a gentleman so obliging, so warm in his offers and so tender in his parting, that Mr Byrne went up to his garret two pounds the lighter, and spent the evening composing a letter of thanks to a man he would never see again.
+            st: Two pounds, madam. — I set it down plainly, for I find there is no way of setting it down that makes it less.
+        next: dice
+
+  - id: stranger
+    num: II
+    phase: The Complication
+    title: The Tap-room of the Inn
+    sid: holyhead.02.taproom
+    dev: Placeholder · a gated, a costed and a risky option
+    text: |-
+      Inside, the tap-room smells of wet wool, hot pewter and Irish [[usquebaugh]], which last you suspect is in your honour. A table of travellers is throwing dice for the reckoning. One of them, a stout man in a scratch wig, makes room for you on the settle without being asked.
+
+      “Come up to make your fortune?” he says. “We all did. Some of us are still waiting for it to come down.”
+    ask: What will you do in the tap-room?
+    options:
+      - label: Take a hand at hazard with the travellers.
+        dev: Risky · Wit against 4
+        next: name
+        check: { attr: Wit, diff: 4 }
+        outcomes: &dice
+          T:
+            effects: [{ loot: £3, why: won at hazard }, { adj: hum.Sanguine, by: 1, why: a run of mains }]
+            text: The dice like you. You throw main after main, and the stout man pays the reckoning for the whole table with the air of a man settling an old account with Providence. You are three pounds richer, and the most popular Irishman in Westminster.
+          S:
+            effects: [{ loot: 15s, why: won at hazard }]
+            text: You win fifteen shillings, lose five, and win them back. By the end you have fifteen shillings more than you began with, and the travellers think you a sound fellow, which in a tap-room is worth more.
+          C:
+            effects: [{ loot: 5s, why: won at hazard }, { adj: hum.Choleric, by: 1, why: a disputed main }]
+            text: You win five shillings, and a quarrel with a drover about whether a seven is a seven when the die is cocked. He is a big drover. You let the seven go.
+          R:
+            effects: [{ adj: purse, by: -10s, why: lost at hazard }]
+            text: You lose ten shillings, quietly, in the manner of a man who has lost ten shillings before. The travellers respect it. The purse does not.
+          X:
+            effects: [{ adj: purse, by: -£1 5s, why: lost at hazard }, { set: fleeced }, { adj: hum.Melancholic, by: 1, why: a cold run }]
+            text: You lose twenty-five shillings in a quarter of an hour, which is a week of living like a gentleman, and the stout man is so sorry for you that he buys you a glass of the usquebaugh. It does not help.
+        story:
+          T: &diceT
+            sm: Being invited to the dice, he threw such a run of mains that the company paid the reckoning among them with the faces of men at a funeral; and Mr Byrne went up to bed three pounds the richer, persuaded, as every young man is who wins on his first night, that he had a genius for play.
+            st: He won, madam. — I could wish he had lost; for a man who loses on his first night in London is cured, and a man who wins is merely postponed.
+          X: &diceX
+            sm: At the dice he lost five-and-twenty shillings in a quarter of an hour, with such good humour that the company swore he was the best-bred Irishman they had ever robbed.
+            st: — Seven, said the caster. — And I will spare the reader the rest of the arithmetic, as Fortune did not spare Mr Byrne.
+      - label: Stand the table a bowl of punch, to be thought a gentleman.
+        cost: 3s
+        dev: Costed · certain · Celebrity-adjacent goodwill
+        do:
+          effects: [{ adj: purse, by: -3s, why: a bowl of punch }, { adj: hum.Sanguine, by: 1, why: punch }, { hook: "The stout traveller, Mr Tozer, a hop-factor of Southwark, who knows everybody", why: punch bought }]
+          text: The punch comes in a bowl the size of a font, and the table drinks your health in it, twice, and then the King’s, and then, quietly, the other King’s, until the landlord coughs. The stout man’s name is Tozer. He is a hop-factor in Southwark, and he knows, he says, everybody.
+        next: name
+      - label: Ask the landlord, with the manner of a man of family, for his best room at half the price.
+        gate: { when: attrs.Address >= 3, need: "Address 3 · you have {attrs.Address}" }
+        dev: Gated (Address 3) · certain
+        do:
+          effects: [{ adj: purse, by: 2s, why: a room got cheap }]
+          text: You explain to the landlord, in the voice your father used to the tenantry, that you are expecting remittances from Galway. He gives you supper for nothing, on account. Nobody has ever been so polite to the expectation of a remittance.
+        next: name
+
+  - id: dice
+    num: II
+    phase: The Complication
+    title: The Tap-room of the Inn
+    sid: holyhead.02.dice
+    dev: Placeholder · reached by way of Mr Dawlish · the same choice as the tap-room, offered by him
+    text: |-
+      Your obliging friend in green, or the memory of him, leads you to the tap-room, where a table of travellers is throwing dice for the reckoning. A stout man in a scratch wig makes room on the settle.
+
+      “Come up to make your fortune?” he says. “We all did.”
+    ask: Will you throw?
+    options:
+      - label: Take a hand at hazard with the travellers.
+        dev: Risky · Wit against 4
+        check: { attr: Wit, diff: 4 }
+        outcomes: *dice
+        story:
+          T: *diceT
+          X: *diceX
+        next: name
+      - label: Keep your money where it is, and drink your small beer.
+        dev: Certain
+        do:
+          effects: [{ adj: hum.Phlegmatic, by: 1, why: small beer }]
+          text: You drink small beer and watch the dice change hands. By the end of the evening you have learned the rules of hazard, the names of three inns that water their wine, and that the stout man is called Tozer. It is not a fortune. It is not nothing.
+        next: name
+
+  - id: name
+    num: III
+    phase: The Turn
+    title: A Name for London
+    sid: holyhead.03.name
+    dev: Placeholder · a milestone · the Persona Captain O'Rourke (design document's example)
+    text: |-
+      Late in the evening the landlord brings a pen and his book, to enter your name. The tap-room watches. A young man in a fine coat, with a sword and a brogue, may be anybody in London, and the next thing he writes will decide who.
+
+      Your father’s name is a good one in Galway. In London it is worth exactly what you owe on it.
+    ask: What name do you give the landlord?
+    options:
+      - label: Write “Captain O’Rourke, late of the Imperial service”, in a bold hand.
+        dev: Certain · milestone · takes up the Persona Capt. O’Rourke (Exposure 1) · Story M
+        do:
+          effects:
+            - { persona: Capt. O’Rourke, why: a name given to a landlord }
+            - { set: captain }
+            - { adj: celebrity, by: 1, why: an officer of the Emperor’s in the tap-room }
+          text: You write it large. The landlord reads it upside down and stands a little straighter. Tozer raises his glass to the Emperor. Nobody asks which regiment, which is fortunate, because you have not yet decided.
+        story:
+          M:
+            sm: Being asked his name by the landlord, he wrote himself down Captain O’Rourke, late of the Imperial service; a commission which cost him nothing, which no army had granted, and which was to serve him better than most that are bought.
+            st: Captain O’Rourke. — Of what regiment? — Madam, of the regiment of younger sons, which is the largest in Europe, and the worst paid.
+        next: coffee
+      - label: Write your own name, plain Cornelius Byrne.
+        dev: Certain · no Persona
+        do:
+          effects: [{ adj: hum.Melancholic, by: 1, why: an honest name in a dishonest town }]
+          text: You write your own name. The landlord reads it, nods, and enters you as “Mr Burn, Irish”. It is a start.
+        next: coffee
+
+  - id: coffee
+    num: IV
+    phase: The Crisis
+    title: Covent Garden at Midnight
+    sid: holyhead.04.coffee
+    dev: Placeholder · Press on (risky) or Withdraw (certain)
+    text: |-
+      It is past eleven. Tozer, who has drunk his share of the punch and some of yours, proposes that you see the Town: the Piazza, the coffee houses, the theatres coming out. A gentleman who means to make his way, he says, must be seen early, before the Town has made up its mind.
+
+      The garret is two streets away, and has a bed in it.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: go with Tozer to the Covent Garden coffee houses, and show the coat."
+        dev: Press on · Address against 4 · Celebrity, or a Tag, or a quarrel
+        check: { attr: Address, diff: 4, bonus: [{ when: has_persona("Capt"), by: 1, why: a captain’s bearing }] }
+        outcomes:
+          T:
+            effects: [{ set: coffee }, { adj: celebrity, by: 1, why: talked of in the Piazza }, { tag: "Agreeable (the Town)", why: a first night in Covent Garden }]
+            text: You are a success. You tell the story of the Holyhead road so well that a table of wits buys you a dish of coffee to hear it again, and an actress from Drury Lane asks whether all Irish gentlemen are so tall. By two you have been introduced to more people than you met in a year in Galway.
+          S:
+            effects: [{ set: coffee }, { adj: celebrity, by: 1, why: seen in the Piazza }]
+            text: The coffee houses are hot, loud and full of people who know each other. By two o’clock some of them know you too, or at least your coat.
+          C:
+            effects: [{ set: coffee }, { adj: purse, by: -4s, why: "coffee, punch and a link-boy" }]
+            text: You are seen, admired a little, and charged a great deal. Coffee in Covent Garden at midnight costs what claret costs in Galway, and the link-boy who lights you home wants sixpence for every street.
+          R:
+            effects: [{ set: coffee }, { adj: hum.Choleric, by: 1, why: laughed at }]
+            text: A wit at the next table asks, quite loudly, whether the Emperor dresses all his officers in Dublin. The table laughs. You find nothing to say until you are in bed, and then a great deal.
+          X:
+            effects: [{ set: coffee }, { adj: hum.Choleric, by: 2, why: a quarrel in the Piazza }, { adj: notoriety, by: 1, why: a scuffle with the Watch }]
+            text: There is a quarrel, then a scuffle, then the Watch. You never learn what it was about. You spend the rest of the night in the round-house, and come out at dawn with your coat torn and a reputation.
+        story:
+          T:
+            sm: Thence, by the persuasion of Mr Tozer, he went on to the coffee houses of Covent Garden, where he told the story of his journey so well that a table of wits paid for his coffee to hear it again, and an actress of Drury Lane asked him whether all the gentlemen of Ireland were made upon so large a plan.
+            st: She asked, madam, whether all the gentlemen of Ireland were so tall; — and he answered, that he was the shortest of his family; — which was a lie, and the first he told in London, and by no means the last.
+          X:
+            sm: In the Piazza a dispute arose, upon what occasion no one could afterwards remember, which ended in a general engagement and the arrival of the Watch; and our hero passed the remainder of his first night in London in the round-house, in company with a chairman, two apprentices and a parson, all of whom protested their innocence with equal warmth.
+            st: The round-house, madam. — I would rather not describe it; and indeed I need not, for every reader of sensibility has spent a night there in imagination, and the rest in fact.
+        next: reckon
+      - label: "Withdraw: plead the journey, and go up to the garret."
+        withdraw: true
+        dev: Withdraw · certain
+        do:
+          effects: [{ set: withdrew }, { adj: hum.Phlegmatic, by: 1, why: an early night }]
+          text: You plead the journey. Tozer says you are very right, and goes to Covent Garden without you, and you hear him singing in the Strand an hour later.
+        next: reckon

@@ -22,4 +22,5 @@ lustring:     { dictionary: town, definition: "A glossy silk, much worn for even
 mantua:       { dictionary: town, definition: "A loose gown, open at the front over a petticoat. Its maker is a mantua-maker, and is generally owed money." }
 perruquier:   { dictionary: town, definition: "A wig-maker." }
 rout:         { dictionary: town, definition: "A large evening party, at which there is too little room and nothing to do but be seen." }
+usquebaugh:   { dictionary: town, definition: "Whisky. The name is the Irish for the water of life." }
 toast:        { dictionary: town, definition: "A lady whose health is drunk by the gentlemen; a reigning beauty." }

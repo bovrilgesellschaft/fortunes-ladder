@@ -113,6 +113,70 @@
           "description": "false switches off Luck earned on a Catastrophe against the odds."
         }
       }
+    },
+    "test": {
+      "type": "boolean",
+      "description": "Placeholder content written to exercise the engine (Step 5), to be kept, rewritten or dropped."
+    },
+    "offer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blurb",
+        "district"
+      ],
+      "description": "When and how often the Venture is offered in a run. Without it, it is never offered.",
+      "properties": {
+        "blurb": {
+          "type": "string",
+          "description": "A short line for the card the player chooses from."
+        },
+        "district": {
+          "type": "string"
+        },
+        "when": {
+          "$ref": "#/definitions/expr"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0
+        },
+        "repeat": {
+          "type": "boolean"
+        },
+        "from": {
+          "$ref": "#/definitions/when"
+        },
+        "to": {
+          "$ref": "#/definitions/when"
+        },
+        "arrival": {
+          "type": "boolean",
+          "description": "Not offered: played in the first turn as an Origin's arrival."
+        }
+      }
+    },
+    "kit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "description": "Lent for this Venture: given at the Approach; those listed under returned are taken back after the Reckoning.",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "returned": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -644,6 +708,21 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
+            "persona"
+          ],
+          "properties": {
+            "persona": {
+              "type": "string"
+            },
+            "why": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
             "when",
             "then"
           ],
@@ -694,6 +773,9 @@
         },
         "effect": {
           "type": "string"
+        },
+        "on_delivery": {
+          "$ref": "#/definitions/effects"
         }
       }
     },
@@ -1019,6 +1101,26 @@
         },
         "finis": {
           "type": "string"
+        }
+      }
+    },
+    "when": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "year",
+        "week"
+      ],
+      "properties": {
+        "year": {
+          "type": "integer",
+          "minimum": 1719,
+          "maximum": 1745
+        },
+        "week": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 52
         }
       }
     }

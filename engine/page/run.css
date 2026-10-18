@@ -1,0 +1,31 @@
+/* The run page: the screens between Ventures, in the same printed-leaf manner as the Ventures. */
+.screen h2{font-family:var(--display);font-weight:400;font-size:1.55rem;margin:0 0 .4em;line-height:1.2;text-wrap:balance}
+.screen h2 .phase{display:block;font-family:var(--caps);font-size:.82rem;letter-spacing:.14em;color:var(--ink2);margin-bottom:2px}
+.screen + .screen{margin-top:30px;padding-top:24px;border-top:1px solid var(--rule)}
+.lead{font-style:italic;color:var(--ink2);margin:0 0 14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:14px;margin-top:10px}
+.card{display:flex;flex-direction:column;gap:6px;border:1px solid var(--rule);background:var(--leaf);padding:14px 16px 14px;min-width:0}
+.card.pick{border-color:var(--ink)}
+.card.off{background:var(--shade);color:var(--ink2)}
+.card .cd{font-family:var(--caps);letter-spacing:.08em;font-size:.8rem;color:var(--rubric)}
+.card .ct{font-family:var(--display);font-size:1.25rem;line-height:1.2}
+.card .cb{font-size:.92rem;flex:1}
+.card .cm{font-family:var(--caps);letter-spacing:.04em;font-size:.84rem;color:var(--ink2)}
+.card .btn{align-self:flex-start;margin-top:4px}
+.card[aria-disabled="true"] .ct{color:var(--ink2)}
+.test{font-family:var(--mono);font-size:.72rem;color:var(--pencil);border:1px solid currentColor;padding:0 5px;align-self:flex-start}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+.field{display:flex;flex-direction:column;gap:4px;font-family:var(--caps);letter-spacing:.05em;font-size:.88rem;color:var(--ink2)}
+.field input,.field select{font:inherit;font-family:var(--body);letter-spacing:0;font-size:1rem;color:var(--ink);background:var(--leaf);border:1px solid var(--ink2);padding:5px 8px;min-width:0;max-width:100%}
+.radio{display:flex;flex-direction:column;gap:6px;margin-top:6px;font-size:.95rem}
+.radio label{display:flex;gap:8px;align-items:baseline;cursor:pointer}
+.confirm{border:1px solid var(--rubric);padding:12px 14px;margin-top:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.confirm p{margin:0;flex:1 1 16rem}
+.vhead{text-align:center;margin-bottom:18px}
+.vhead .vt{font-family:var(--display);font-size:clamp(1.6rem,4.4vw,2.2rem);line-height:1.1;text-wrap:balance}
+.vhead .vs{font-style:italic;color:var(--ink2);font-size:.95rem}
+.bills td.n,.bills th.n{text-align:right}
+.done-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.kv.circ dd{text-align:right}
+.wheelbox.replayed{padding:4px 0;margin:6px 0 0}
+.finis-run{text-align:center;margin:20px 0}
