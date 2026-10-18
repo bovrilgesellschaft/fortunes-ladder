@@ -187,10 +187,26 @@ Every Triumph and Catastrophe should have a Story passage in both voices, descri
 event with the same facts (style guide). The Venture's `story` block gives the History's title,
 a preface (written when the first passage is) and a close (added at the Reckoning).
 
+## Names
+
+The hero's and the Persona's names are drawn afresh for each run (or chosen on the start screen),
+so text never writes them out. Use these instead:
+
+| Write | For example |
+| --- | --- |
+| `{given}` · `{surname}` · `{name}` · `{styled}` | Dermot · Kirwan · Dermot Kirwan · Mr Kirwan |
+| `{county}` | Roscommon |
+| `{alias}` · `{alias_long}` | Maj. Plunkett · Major Plunkett: the Persona the Origin offers |
+| `{alias_title}` · `{alias_title_lc}` · `{alias_surname}` · `{alias_claim}` | Major · major · Plunkett · late of the French service |
+
+To take up the Persona, write `{ persona: "= alias" }`; to test for it, `persona == alias`.
+A Venture's `names:` block gives the names on its own page (heath's are Cornelius Byrne and
+Capt. O’Rourke). A value that begins with a name needs quotes in YAML: `st: "{alias_long}. — Of what regiment?"`.
+
 ## Origins
 
-`origins.yaml` lists the eight Origins. An Origin marked `available: true` needs a `hero` block (name,
-how the Town styles him, ranks, first lodging and a `start` like a Venture's) and an `arrival`
+`origins.yaml` lists the eight Origins. An Origin marked `available: true` needs a `hero` block (the pools its
+names are drawn from, ranks, first lodging and a `start` like a Venture's) and an `arrival`
 Venture. The others appear on the start screen as “not yet written”.
 
 ## Checking your work

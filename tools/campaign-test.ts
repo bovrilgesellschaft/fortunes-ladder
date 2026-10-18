@@ -31,7 +31,7 @@ function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
   for (let t = 0; t < turns; t++) {
     if (c.st.phase === 'town') {
       c.st.offers.forEach(id => (offered[id] = (offered[id] ?? 0) + 1));
-      const ready = c.hero.persona.startsWith('Capt') && c.hero.items.some(i => i.includes('pistol')) && c.hero.items.includes('A crape mask');
+      const ready = c.hero.persona === (c.extra() as Record<string, unknown>).alias && c.hero.items.some(i => i.includes('pistol')) && c.hero.items.includes('A crape mask');
       const d = c.date();
       if (ready && d.year === 1724 && d.week >= 41 && d.week <= 46 && !c.st.played.heath) { heathChances++; if (c.st.offers.includes('heath')) heathOffered++; }
       if (!c.st.offers.length || pick.next() < 0.08) c.idle();
@@ -62,6 +62,10 @@ function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
         const luckFx = run.fx.slice();
         const res = run.resolve(o, seg); run.fx = luckFx.concat(run.fx);
         if (BAD.test(strip(res.html))) problems.push(`${where()}: outcome: ${strip(res.html).slice(0, 120)}`);
+        // the canon sample names must not leak into a run that drew others
+        const all = res.html + run.S.story.map(x => x.sm + x.st).join('') + run.prose(beat.text);
+        for (const [n, w] of [[c.hero.names.surname, 'Byrne'], [c.hero.names.alias_surname, 'O’Rourke'], [c.hero.names.given, 'Cornelius']])
+          if (n !== w && all.includes(w)) problems.push(`${where()}: “${w}” appears in a run whose hero is ${c.hero.name}, alias ${(c.extra() as Record<string, unknown>).alias}`);
         c.record({ beat: at, opt: i, seg, luck });
         at = res.next;
         // reload mid-Venture now and then: the replay must match exactly
@@ -107,6 +111,10 @@ if (a !== b) problems.push('the same seed and choices gave different runs');
 
 // random start dates work too
 for (let s = 1; s <= 20; s++) { const c = Campaign.begin(world, 'younger-son', s, null); const d = c.date(); if (d.year < 1719 || d.year > 1741) problems.push(`random start ${d.year}`); }
+
+// names vary between seeds
+const names = new Set(Array.from({ length: 30 }, (_, s) => Campaign.begin(world, 'younger-son', s + 1, world.settings.start).hero.name));
+if (names.size < 20) problems.push(`only ${names.size} different names in 30 runs`);
 
 const L = (p: number) => `£${(p / 240).toFixed(1)}`;
 console.log(`${runs} runs of 20 turns, ${replays} mid-Venture reloads replayed.`);

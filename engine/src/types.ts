@@ -1,3 +1,5 @@
+import type { NamePool, Names } from './names';
+
 // Shapes of the content as the engine sees it, after the build has read the YAML.
 // The YAML is checked against content/schema/venture.schema.json first; these types mirror it.
 
@@ -146,6 +148,8 @@ export interface Offer {
 export interface Venture {
   id: string;
   title: string;
+  /** The names its text uses ({given}, {alias}…) on the Venture's own page; a run supplies its own. */
+  names?: Names;
   /** Test content: placeholder Ventures written to exercise the engine, to be kept, rewritten or dropped. */
   test?: boolean;
   offer?: Offer;
@@ -189,11 +193,8 @@ export interface Origin {
   available: boolean;
   /** The rest is needed only for an available Origin. */
   hero?: {
-    name: string;
-    /** "Mr Byrne": how the Town addresses the hero under the true name. */
-    styled: string;
-    /** The History's title in the Story tab. */
-    history: string;
+    /** What the hero's and the Persona's names are drawn from, afresh for each run. */
+    names: NamePool;
     true_rank: Rank;
     claimed_rank: Rank;
     lodging: { district: string; room: Room };

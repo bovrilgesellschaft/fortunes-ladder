@@ -217,8 +217,8 @@ export class VentureView {
     sec.innerHTML = `<div class="dev devhead">storylet ${bt.sid} · beat ${this.beatCount} of 5\n${bt.dev ?? ''}</div>
    <h2><span class="phase">${bt.phase}</span><span class="num">${bt.num}.</span> ${bt.title}</h2>
    <div class="prose">${run.prose(bt.text)}</div>
-   <p class="ask">${bt.ask}</p>
-   <div class="choices" role="group" aria-label="${bt.ask}"></div>
+   <p class="ask">${run.inline(bt.ask)}</p>
+   <div class="choices" role="group" aria-label="${esc(run.inline(bt.ask).replace(/<[^>]+>/g, ''))}"></div>
    <div class="out"></div>
    ${bt.notes ? `<div class="notes prose">${bt.notes.map(n => `<p>${run.inline(n)}</p>`).join('')}</div>` : ''}`;
     const box = sec.querySelector('.choices')!;

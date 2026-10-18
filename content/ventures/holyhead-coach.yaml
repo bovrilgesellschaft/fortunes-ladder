@@ -5,12 +5,20 @@
 
 id: holyhead-coach
 title: The Holyhead Coach
+names:                     # on this page; a run draws its own
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
 test: true
 offer:
   district: Fleet Street and the Strand
   blurb: The arrival.
   arrival: true
-runhead: The Life &amp; Adventures of Mr Cornelius Byrne
+runhead: The Life &amp; Adventures of Mr {name}
 sub: Being an Arrival at Charing Cross, in five Beats
 prospectus: >-
   <b>A placeholder Venture,</b> written to exercise the run shell. The Younger son's arrival:
@@ -58,7 +66,7 @@ story:
   title: The History of Mr Cornelius Byrne
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
   preface:
-    sm: Mr Cornelius Byrne, the younger son of a squire in the county of Galway, came up to London in the new year with a sword that had been his father’s, a coat that was still the tailor’s, and five pounds, which were his own and would not long remain so.
+    sm: Mr {name}, the younger son of a squire in the county of {county}, came up to London in the new year with a sword that had been his father’s, a coat that was still the tailor’s, and five pounds, which were his own and would not long remain so.
     st: I have been asked, madam, why a younger son should come to London at all; — and I answer, that a younger son must go somewhere, and London is the only place large enough to hold his expectations.
   close:
     sm: Such was our hero’s first night in the capital; in which, if he made no fortune, he at least made a beginning, and learned the price of a bed, which is the first lesson London teaches.
@@ -76,7 +84,7 @@ reckoning:
     - when: not flags.withdrew
       say: You come home to the Strand at dawn, climb four pair of stairs to a garret with a bed, a chair and a window full of chimneys, and sleep till noon in your coat.
     - when: flags.captain
-      say: The landlady addresses you as Captain before you have reached the second landing. News travels faster in London than coaches.
+      say: The landlady addresses you as {alias_title} before you have reached the second landing. News travels faster in London than coaches.
   post:
     some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
     none: Nothing is in the post. London has not noticed you yet, which is the most it does for anyone.
@@ -133,10 +141,10 @@ beats:
             text: He is so very obliging. He carries the trunk, admires the sword, and shakes your hand at the door with real feeling. Two pounds go with the hand. You do not find out until the evening, by which time he has shaken several more.
         story:
           T:
-            sm: Our hero had scarce set foot in the yard before a gentleman in a bottle-green coat made him an offer of his services; but Mr Byrne, who had been raised among horse-copers, caught the obliging hand at his purse-strings, and the two parted the best friends in the world, each with a high opinion of the other’s talents.
-            st: — Sir, said the gentleman in green. — Sir, said Mr Byrne, holding his wrist. — And there, madam, was the foundation laid of a friendship which neither of them, to the end of his days, could account for.
+            sm: Our hero had scarce set foot in the yard before a gentleman in a bottle-green coat made him an offer of his services; but {styled}, who had been raised among horse-copers, caught the obliging hand at his purse-strings, and the two parted the best friends in the world, each with a high opinion of the other’s talents.
+            st: — Sir, said the gentleman in green. — Sir, said {styled}, holding his wrist. — And there, madam, was the foundation laid of a friendship which neither of them, to the end of his days, could account for.
           X:
-            sm: In the yard he fell in with a gentleman so obliging, so warm in his offers and so tender in his parting, that Mr Byrne went up to his garret two pounds the lighter, and spent the evening composing a letter of thanks to a man he would never see again.
+            sm: In the yard he fell in with a gentleman so obliging, so warm in his offers and so tender in his parting, that {styled} went up to his garret two pounds the lighter, and spent the evening composing a letter of thanks to a man he would never see again.
             st: Two pounds, madam. — I set it down plainly, for I find there is no way of setting it down that makes it less.
         next: dice
 
@@ -174,11 +182,11 @@ beats:
             text: You lose twenty-five shillings in a quarter of an hour, which is a week of living like a gentleman, and the stout man is so sorry for you that he buys you a glass of the usquebaugh. It does not help.
         story:
           T: &diceT
-            sm: Being invited to the dice, he threw such a run of mains that the company paid the reckoning among them with the faces of men at a funeral; and Mr Byrne went up to bed three pounds the richer, persuaded, as every young man is who wins on his first night, that he had a genius for play.
+            sm: Being invited to the dice, he threw such a run of mains that the company paid the reckoning among them with the faces of men at a funeral; and {styled} went up to bed three pounds the richer, persuaded, as every young man is who wins on his first night, that he had a genius for play.
             st: He won, madam. — I could wish he had lost; for a man who loses on his first night in London is cured, and a man who wins is merely postponed.
           X: &diceX
             sm: At the dice he lost five-and-twenty shillings in a quarter of an hour, with such good humour that the company swore he was the best-bred Irishman they had ever robbed.
-            st: — Seven, said the caster. — And I will spare the reader the rest of the arithmetic, as Fortune did not spare Mr Byrne.
+            st: — Seven, said the caster. — And I will spare the reader the rest of the arithmetic, as Fortune did not spare {styled}.
       - label: Stand the table a bowl of punch, to be thought a gentleman.
         cost: 3s
         dev: Costed · certain · Celebrity-adjacent goodwill
@@ -191,7 +199,7 @@ beats:
         dev: Gated (Address 3) · certain
         do:
           effects: [{ adj: purse, by: 2s, why: a room got cheap }]
-          text: You explain to the landlord, in the voice your father used to the tenantry, that you are expecting remittances from Galway. He gives you supper for nothing, on account. Nobody has ever been so polite to the expectation of a remittance.
+          text: You explain to the landlord, in the voice your father used to the tenantry, that you are expecting remittances from {county}. He gives you supper for nothing, on account. Nobody has ever been so polite to the expectation of a remittance.
         next: name
 
   - id: dice
@@ -230,27 +238,27 @@ beats:
     text: |-
       Late in the evening the landlord brings a pen and his book, to enter your name. The tap-room watches. A young man in a fine coat, with a sword and a brogue, may be anybody in London, and the next thing he writes will decide who.
 
-      Your father’s name is a good one in Galway. In London it is worth exactly what you owe on it.
+      Your father’s name is a good one in {county}. In London it is worth exactly what you owe on it.
     ask: What name do you give the landlord?
     options:
-      - label: Write “Captain O’Rourke, late of the Imperial service”, in a bold hand.
-        dev: Certain · milestone · takes up the Persona Capt. O’Rourke (Exposure 1) · Story M
+      - label: Write “{alias_long}, {alias_claim}”, in a bold hand.
+        dev: Certain · milestone · takes up the run’s Persona (Exposure 1) · Story M
         do:
           effects:
-            - { persona: Capt. O’Rourke, why: a name given to a landlord }
+            - { persona: "= alias", why: a name given to a landlord }
             - { set: captain }
-            - { adj: celebrity, by: 1, why: an officer of the Emperor’s in the tap-room }
-          text: You write it large. The landlord reads it upside down and stands a little straighter. Tozer raises his glass to the Emperor. Nobody asks which regiment, which is fortunate, because you have not yet decided.
+            - { adj: celebrity, by: 1, why: an officer in the tap-room }
+          text: You write it large. The landlord reads it upside down and stands a little straighter. Tozer raises his glass to your late master. Nobody asks which regiment, which is fortunate, because you have not yet decided.
         story:
           M:
-            sm: Being asked his name by the landlord, he wrote himself down Captain O’Rourke, late of the Imperial service; a commission which cost him nothing, which no army had granted, and which was to serve him better than most that are bought.
-            st: Captain O’Rourke. — Of what regiment? — Madam, of the regiment of younger sons, which is the largest in Europe, and the worst paid.
+            sm: Being asked his name by the landlord, he wrote himself down {alias_long}, {alias_claim}; a commission which cost him nothing, which no army had granted, and which was to serve him better than most that are bought.
+            st: "{alias_long}. — Of what regiment? — Madam, of the regiment of younger sons, which is the largest in Europe, and the worst paid."
         next: coffee
-      - label: Write your own name, plain Cornelius Byrne.
+      - label: Write your own name, plain {name}.
         dev: Certain · no Persona
         do:
           effects: [{ adj: hum.Melancholic, by: 1, why: an honest name in a dishonest town }]
-          text: You write your own name. The landlord reads it, nods, and enters you as “Mr Burn, Irish”. It is a start.
+          text: You write your own name. The landlord reads it, nods, and enters you as “{surname}, Irish, one trunk”. It is a start.
         next: coffee
 
   - id: coffee
@@ -267,20 +275,20 @@ beats:
     options:
       - label: "Press on: go with Tozer to the Covent Garden coffee houses, and show the coat."
         dev: Press on · Address against 4 · Celebrity, or a Tag, or a quarrel
-        check: { attr: Address, diff: 4, bonus: [{ when: has_persona("Capt"), by: 1, why: a captain’s bearing }] }
+        check: { attr: Address, diff: 4, bonus: [{ when: persona == alias, by: 1, why: an officer’s bearing }] }
         outcomes:
           T:
             effects: [{ set: coffee }, { adj: celebrity, by: 1, why: talked of in the Piazza }, { tag: "Agreeable (the Town)", why: a first night in Covent Garden }]
-            text: You are a success. You tell the story of the Holyhead road so well that a table of wits buys you a dish of coffee to hear it again, and an actress from Drury Lane asks whether all Irish gentlemen are so tall. By two you have been introduced to more people than you met in a year in Galway.
+            text: You are a success. You tell the story of the Holyhead road so well that a table of wits buys you a dish of coffee to hear it again, and an actress from Drury Lane asks whether all Irish gentlemen are so tall. By two you have been introduced to more people than you met in a year in {county}.
           S:
             effects: [{ set: coffee }, { adj: celebrity, by: 1, why: seen in the Piazza }]
             text: The coffee houses are hot, loud and full of people who know each other. By two o’clock some of them know you too, or at least your coat.
           C:
             effects: [{ set: coffee }, { adj: purse, by: -4s, why: "coffee, punch and a link-boy" }]
-            text: You are seen, admired a little, and charged a great deal. Coffee in Covent Garden at midnight costs what claret costs in Galway, and the link-boy who lights you home wants sixpence for every street.
+            text: You are seen, admired a little, and charged a great deal. Coffee in Covent Garden at midnight costs what claret costs in {county}, and the link-boy who lights you home wants sixpence for every street.
           R:
             effects: [{ set: coffee }, { adj: hum.Choleric, by: 1, why: laughed at }]
-            text: A wit at the next table asks, quite loudly, whether the Emperor dresses all his officers in Dublin. The table laughs. You find nothing to say until you are in bed, and then a great deal.
+            text: A wit at the next table asks, quite loudly, {if persona == alias}whether foreign armies dress all their officers in Dublin{else}whether every tailor in Ireland is blind{end}. The table laughs. You find nothing to say until you are in bed, and then a great deal.
           X:
             effects: [{ set: coffee }, { adj: hum.Choleric, by: 2, why: a quarrel in the Piazza }, { adj: notoriety, by: 1, why: a scuffle with the Watch }]
             text: There is a quarrel, then a scuffle, then the Watch. You never learn what it was about. You spend the rest of the night in the round-house, and come out at dawn with your coat torn and a reputation.

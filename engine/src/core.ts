@@ -6,6 +6,7 @@ import type {
   Amount, Beat, Content, Effect, GlossaryEntry, Option, Passage, Rumour, Segment, Venture,
 } from './types';
 import { SEGMENT_NAMES } from './types';
+import { nameVars } from './names';
 
 export interface Chip { t: string; tone: 'good' | 'bad' | 'neu' }
 
@@ -141,7 +142,7 @@ export class Run {
   // ----- expressions and text -----
 
   scope() {
-    const x = this.opts.extra ?? { year: this.v.year, week: this.v.week, turn: 0, origin: '' };
+    const x = this.opts.extra ?? { year: this.v.year, week: this.v.week, turn: 0, origin: '', ...(this.v.names ? nameVars(this.v.names) : {}) };
     return { ...x, ...this.S, start: this.START } as Record<string, unknown>;
   }
 
@@ -238,9 +239,11 @@ export class Run {
       }
       else if ('rumour' in e) this.rumour(e.rumour);
       else if ('persona' in e) {
-        if (S.persona !== e.persona) {
-          S.persona = e.persona; S.exposure = 1;
-          this.fx.push({ t: 'Persona: ' + e.persona, tone: 'neu' }); S.log.push(`Persona taken up: ${e.persona}, Exposure 1 — ${e.why ?? ''}`);
+        // "= alias": the run's drawn Persona name; otherwise the name as written
+        const p = e.persona.trim().startsWith('=') ? String(this.eval(e.persona.trim().slice(1))) : e.persona;
+        if (S.persona !== p) {
+          S.persona = p; S.exposure = 1;
+          this.fx.push({ t: 'Persona: ' + p, tone: 'neu' }); S.log.push(`Persona taken up: ${p}, Exposure 1 — ${e.why ?? ''}`);
         }
       }
       else if ('when' in e) this.apply(this.test(e.when) ? e.then : e.else);
@@ -256,7 +259,7 @@ export class Run {
     const S = this.S;
     if (S.rumours.some(x => x.id === r.id)) return;
     const week = r.week ?? (this.opts.at ?? this.v.week) + (r.delay ?? 1);
-    const q = { ...r, week, text: this.inline(r.text), persona: S.persona };
+    const q = { ...r, week, text: this.inline(r.text), effect: this.inline(r.effect), from: this.inline(r.from), persona: S.persona };
     S.rumours.push(q);
     this.fx.push({ t: 'A rumour is abroad', tone: 'bad' });
     S.log.push(`Rumour queued (week ${week}): ${r.from} — ${r.effect}`);
@@ -264,8 +267,9 @@ export class Run {
 
   addStory(p: Passage) {
     const S = this.S;
-    if (!S.story.length && this.v.story) S.story.push({ ...this.v.story.preface, fresh: true });
-    S.story.push({ ...p, fresh: true }); S.storyAdded = true;
+    const ink = (x: Passage) => ({ sm: this.inline(x.sm), st: this.inline(x.st), fresh: true });
+    if (!S.story.length && this.v.story) S.story.push(ink(this.v.story.preface));
+    S.story.push(ink(p)); S.storyAdded = true;
     this.fx.push({ t: '❧ The Story is enlarged', tone: 'neu' }); S.log.push('Story passage written');
   }
 
@@ -323,7 +327,7 @@ export class Run {
       if ('do' in s) this.apply(s.do);
       else lines.push(this.prose(s.say));
     }
-    if (this.v.story && this.S.story.length) this.S.story.push({ ...this.v.story.close, fresh: true });
+    if (this.v.story && this.S.story.length) this.S.story.push({ sm: this.inline(this.v.story.close.sm), st: this.inline(this.v.story.close.st), fresh: true });
     const chapter = this.chapter();
     for (const it of this.v.kit?.returned ?? []) {
       const i = this.S.items.indexOf(it);

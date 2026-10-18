@@ -5,13 +5,21 @@
 
 id: tom-kings
 title: Tom King’s after Midnight
+names:                     # on this page; a run draws its own
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
 test: true
 offer:
   district: Covent Garden
   blurb: When the playhouses empty, the Town goes on to Tom King’s in the Piazza, where anyone may sit down and nobody goes home. A man might make his name there, or have it made for him.
   repeat: true
   weight: 1
-runhead: The Life &amp; Adventures of Mr Cornelius Byrne
+runhead: The Life &amp; Adventures of Mr {name}
 sub: Being a Night among the Wits, in five Beats
 prospectus: >-
   <b>A placeholder Venture,</b> written to exercise the run shell: the Piazza after the play,
@@ -131,7 +139,7 @@ beats:
             sm: In the arcade two footpads fell upon him, and relieved him of ten shillings and his hat; leaving him, out of a delicacy for which he was afterwards grateful, the coat, it being too wet to be worth the trouble.
             st: — His hat, madam! — There are losses a man may laugh at, and losses he cannot; — and a hat in the rain, I find, is the second kind.
         next: wit
-      - label: Go in on Mr Tozer’s arm, as his friend from Galway.
+      - label: Go in on Mr Tozer’s arm, as his friend from {county}.
         gate: { when: has_hook("The stout traveller"), need: "Hook: Mr Tozer" }
         dev: Gated (the Hook from the Holyhead coach) · certain
         do:
@@ -153,7 +161,7 @@ beats:
     options:
       - label: Answer him in kind.
         dev: Risky · Wit against 4
-        check: { attr: Wit, diff: 4, bonus: [{ when: has_persona("Capt"), by: 1, why: a captain’s confidence }] }
+        check: { attr: Wit, diff: 4, bonus: [{ when: persona == alias, by: 1, why: an officer’s confidence }] }
         outcomes:
           T:
             effects: [{ set: riposte }, { tag: "Wit (the Wits)", why: a riposte at Tom King’s }, { adj: celebrity, by: 1, why: repeated in the morning }]
@@ -176,7 +184,7 @@ beats:
             st: — It was not, I own, a very good joke, madam; — but it was made at the right moment, which is the whole of wit, and to the right fool, which is the whole of fame.
           X:
             sm: To the laced young gentleman’s insult he returned an answer, which was answered again, and that again, until our hero found himself the butt of the whole table, and heard his own coat described, by noon next day, in four coffee houses and a newspaper.
-            st: The newspaper, madam. — I have looked for the paragraph, and cannot find it; — I am persuaded nonetheless that it exists, for Mr Byrne could recite it to the end of his life.
+            st: The newspaper, madam. — I have looked for the paragraph, and cannot find it; — I am persuaded nonetheless that it exists, for {styled} could recite it to the end of his life.
         next: wager
       - label: Laugh, as if the joke were on someone else.
         dev: Certain
@@ -226,10 +234,10 @@ beats:
             text: The next man is drunk, and the squire has a man posted in the street to see that he would be. You pay, and you know it, and he knows you know.
         story:
           T:
-            sm: A squire having laid a guinea that the next man through the door would be drunk, our hero took the bet at three to one; and the next man through the door was a Quaker chandler, come about the candles, and as sober as a judge ought to be; so that Mr Byrne won three guineas, and the squire, by way of revenge, offered the Quaker a bottle.
+            sm: A squire having laid a guinea that the next man through the door would be drunk, our hero took the bet at three to one; and the next man through the door was a Quaker chandler, come about the candles, and as sober as a judge ought to be; so that {styled} won three guineas, and the squire, by way of revenge, offered the Quaker a bottle.
             st: A Quaker, madam, at two in the morning, in Tom King’s! — I would not believe it myself, if I had not invented it.
           X:
-            sm: Our hero took the wager, and lost it, the squire having a confederate in the street whose business it was to send in a drunk man at need; which Mr Byrne discovered too late to object, and soon enough to be angry.
+            sm: Our hero took the wager, and lost it, the squire having a confederate in the street whose business it was to send in a drunk man at need; which {styled} discovered too late to object, and soon enough to be angry.
             st: — Sharp practice, madam. — But the guinea was gone; and I have observed that a man’s indignation is generally in proportion to the sum, and seldom to the wrong.
         next: meeting
       - label: Keep your money, and enjoy the argument.
@@ -272,7 +280,7 @@ beats:
             text: You are pinked in the arm in the second pass. It is not deep, but it bleeds a great deal on the grass, and on your coat, and on your opinion of yourself.
         story:
           T:
-            sm: At six in the morning, in the fields beyond Marylebone, his adversary, having looked upon our hero’s sword, and then upon his countenance, discovered that the insult had been a misunderstanding; and the two parted with bows, and the story went about the Town by dinner much to Mr Byrne’s advantage.
+            sm: At six in the morning, in the fields beyond Marylebone, his adversary, having looked upon our hero’s sword, and then upon his countenance, discovered that the insult had been a misunderstanding; and the two parted with bows, and the story went about the Town by dinner much to {styled}’s advantage.
             st: There was no duel, madam. — I am sorry for it, as a historian; as a Christian I rejoice; and as a man who has been to Marylebone at six in the morning, I am chiefly cold.
           X:
             sm: At the second pass he was pinked in the sword arm, not deeply, but with a great effusion of blood, which spoiled the grass, the coat and the morning; and he walked home to the Strand holding his arm, persuaded he was dying, and proved, by the evening, to be mistaken.

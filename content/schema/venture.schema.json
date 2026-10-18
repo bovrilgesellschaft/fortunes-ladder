@@ -177,6 +177,43 @@
           }
         }
       }
+    },
+    "names": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The names the text uses on the Venture's own page; in a run, the run's drawn names are used instead.",
+      "required": [
+        "given",
+        "surname",
+        "county",
+        "title",
+        "short_title",
+        "alias_surname",
+        "claim"
+      ],
+      "properties": {
+        "given": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "county": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "short_title": {
+          "type": "string"
+        },
+        "alias_surname": {
+          "type": "string"
+        },
+        "claim": {
+          "type": "string"
+        }
+      }
     }
   },
   "definitions": {

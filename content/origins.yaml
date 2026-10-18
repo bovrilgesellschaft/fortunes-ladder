@@ -13,9 +13,19 @@
   available: true
   arrival: holyhead-coach
   hero:
-    name: Cornelius Byrne
-    styled: Mr Byrne
-    history: The History of Mr Cornelius Byrne
+    # Drawn afresh for each run, or chosen by the player. Cornelius Byrne, alias Capt. O’Rourke,
+    # remains the canon sample hero of heath. Galway names lean on the Tribes of Galway.
+    names:
+      given: [Cornelius, Dermot, Terence, Hugh, Owen, Denis, Florence, Thady, Felix, Redmond, Ulick, Garret, Phelim, Lucius, Edmund, Brian]
+      surname: [Byrne, Daly, Kirwan, Lynch, Blake, Bodkin, Skerrett, Joyce, Martin, D’Arcy, Browne, Madden, Kelly, Burke, Molloy, Nugent]
+      county: [Galway, Mayo, Clare, Roscommon, Sligo, Tipperary, Limerick, Kerry]
+      alias:
+        title:
+          - { long: Captain, short: Capt. }
+          - { long: Captain, short: Capt. }
+          - { long: Major, short: Maj. }
+        surname: [O’Rourke, MacMahon, Fitzgerald, O’Connor, Macnamara, Plunkett, O’Brien, Kavanagh, Magennis, O’Neill, MacCarthy, O’Donnell]
+        claim: [late of the Imperial service, late of the French service, late of the Spanish service]
     true_rank: Gentleman
     claimed_rank: Gentleman
     lodging: { district: Fleet Street and the Strand, room: garret }

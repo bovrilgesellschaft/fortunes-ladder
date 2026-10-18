@@ -12,6 +12,7 @@ import Ajv from 'ajv';
 import * as esbuild from 'esbuild';
 import { compile, paths, calls } from '../engine/src/expr';
 import { parseMoney } from '../engine/src/core';
+import { NAME_ROOTS } from '../engine/src/names';
 import type { Content, Effect, GlossaryEntry, Option, Origin, Settings, Venture, World } from '../engine/src/types';
 import { SEGMENTS } from '../engine/src/types';
 
@@ -21,7 +22,7 @@ const C = (p: string) => path.join(ROOT, 'content', p);
 export const FACTIONS = ['the Quality', 'the Church', 'the Law', 'the Projectors', 'the Army & Navy', 'the Underworld', 'the Wits', 'the Trade', 'the Brethren & the Adepts', 'the Town'];
 export const DISTRICTS = ['St Giles', 'Southwark', 'The Savoy', 'Moorfields', 'Fleet Street and the Strand', 'Covent Garden', 'The City', "St James's", 'Mayfair', 'The Environs'];
 // names a condition may read: the hero's state, and in a run the calendar (year, week, turn) and Origin
-const ROOTS = new Set(['flags', 'attrs', 'hum', 'purse', 'debts', 'composure', 'luck', 'exposure', 'notoriety', 'celebrity', 'spoils', 'start', 'persona', 'year', 'week', 'turn', 'origin']);
+const ROOTS = new Set(['flags', 'attrs', 'hum', 'purse', 'debts', 'composure', 'luck', 'exposure', 'notoriety', 'celebrity', 'spoils', 'start', 'persona', 'year', 'week', 'turn', 'origin', ...NAME_ROOTS]);
 const FNS = new Set(['money', 'floor', 'ceil', 'min', 'max', 'if', 'has_item', 'has_item_like', 'has_hook', 'has_tag', 'has_condition', 'has_persona', 'played', 'rumour_says']);
 
 export interface Report { errors: string[]; warnings: string[] }
@@ -169,6 +170,7 @@ function checkVenture(v: Venture, glossary: Record<string, GlossaryEntry>, r: Re
 
   for (const b of v.beats) {
     text(b.text, `${b.id}.text`);
+    text(b.ask, `${b.id}.ask`);
     b.notes?.forEach((n, i) => text(n, `${b.id}.notes[${i}]`));
     b.options.forEach((o: Option, i) => {
       const w = `${b.id}.options[${i}]`;
@@ -181,7 +183,8 @@ function checkVenture(v: Venture, glossary: Record<string, GlossaryEntry>, r: Re
       if (!o.check && !o.do && !o.gate) r.warnings.push(at(`${w}: has no outcome and no gate, so it can never be chosen`));
       if (o.do) { effects(o.do.effects, `${w}.do`); text(o.do.text, `${w}.do.text`); }
       if (o.outcomes) for (const s of SEGMENTS) { effects(o.outcomes[s].effects, `${w}.outcomes.${s}`); text(o.outcomes[s].text, `${w}.outcomes.${s}.text`); }
-      if (o.story) for (const k of Object.keys(o.story)) {
+      if (o.story) for (const [k, ps] of Object.entries(o.story)) {
+        text(ps!.sm, `${w}.story.${k}.sm`); text(ps!.st, `${w}.story.${k}.st`);
         if (k === 'M' && o.check) r.errors.push(at(`${w}.story: M (milestone) is for certain options; a Wheel check uses T or X`));
         if (k !== 'M' && !o.check) r.errors.push(at(`${w}.story: ${k} needs a Wheel check; use M for a certain option`));
       }
@@ -200,6 +203,7 @@ function checkVenture(v: Venture, glossary: Record<string, GlossaryEntry>, r: Re
   for (const id of ids) if (!reached.has(id)) r.warnings.push(at(`beat “${id}” is never reached`));
   if (!reached.has('reckon')) r.errors.push(at(`no option leads to the Reckoning`));
 
+  if (v.story) for (const k of ['preface', 'close'] as const) { text(v.story[k].sm, `story.${k}.sm`); text(v.story[k].st, `story.${k}.st`); }
   const R = v.reckoning;
   R.steps.forEach((s, i) => { expr(s.when, `reckoning.steps[${i}]`); if ('do' in s) effects(s.do, `reckoning.steps[${i}]`); else text(s.say, `reckoning.steps[${i}]`); });
   text(R.upkeep, 'reckoning.upkeep');

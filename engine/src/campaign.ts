@@ -11,6 +11,7 @@ import { Run, money, parseMoney, type HeroSeed } from './core';
 import { compile, evaluate, type Fn } from './expr';
 import { Rng } from './rng';
 import type { Effect, Origin, Passage, Rank, Room, Segment, Venture, When, World } from './types';
+import { drawNames, nameVars, type Names } from './names';
 
 export const SAVE_VERSION = 1;
 const EPOCH = 1719;
@@ -39,6 +40,8 @@ export function dateLabel(a: number): string {
 
 export interface Hero {
   name: string; styled: string; origin: string; sex: 'man' | 'woman'; history: string;
+  /** This run's names, drawn or chosen at the start. */
+  names: Names;
   purse: number; debts: number; luck: number; notoriety: number; celebrity: number;
   attrs: Record<string, number>; hum: Record<string, number>;
   conditions: string[]; tags: string[]; items: string[]; hooks: string[];
@@ -98,19 +101,24 @@ export class Campaign {
     this.byId = Object.fromEntries(world.ventures.map(v => [v.id, v]));
   }
 
-  static begin(world: World, originId: string, seed: number, start?: When | null): Campaign {
+  /** Names are drawn from the seed unless the player chose them. */
+  static begin(world: World, originId: string, seed: number, start?: When | null, names?: Names): Campaign {
     const o = world.origins.find(x => x.id === originId);
     if (!o || !o.available || !o.hero) throw new Error(`Origin “${originId}” cannot be played yet`);
     const rng = new Rng(seed);
     const s = start ?? world.settings.start ?? null;
     const at = s ? abs(s) : abs({ year: rng.int(world.settings.start_range.from, world.settings.start_range.to), week: rng.int(1, 52) });
     const h = o.hero, x = h.start;
+    const sex = o.sex === 'woman' ? 'woman' : 'man';
+    // a separate generator for names, so choosing them does not change Fortune's sequence
+    const nm: Names = { ...(names ?? drawNames(h.names, new Rng(seed ^ 0x5bd1e995), sex)), sex };
+    const nv = nameVars(nm);
     const amt = (a: number | string) => (typeof a === 'number' ? a : parseMoney(a));
     const hero: Hero = {
-      name: h.name, styled: h.styled, origin: o.id, sex: o.sex === 'woman' ? 'woman' : 'man', history: h.history,
+      name: nv.name, styled: nv.styled, origin: o.id, sex, history: `The History of ${nv.styled.split(' ')[0]} ${nv.name}`, names: nm,
       purse: amt(x.purse), debts: amt(x.debts), luck: x.luck, notoriety: x.notoriety, celebrity: x.celebrity,
       attrs: { ...x.attrs }, hum: { ...x.hum }, conditions: [...(x.conditions ?? [])], tags: [...x.tags], items: [...x.items], hooks: [...x.hooks],
-      persona: h.styled, personas: { [h.styled]: x.exposure },
+      persona: nv.styled, personas: { [nv.styled]: x.exposure },
       trueRank: h.true_rank, claimedRank: h.claimed_rank, lodging: { ...h.lodging },
     };
     const st: CampaignState = {
@@ -148,7 +156,7 @@ export class Campaign {
 
   extra() {
     const d = this.date();
-    return { year: d.year, week: d.week, turn: this.st.turn, origin: this.hero.origin };
+    return { year: d.year, week: d.week, turn: this.st.turn, origin: this.hero.origin, ...nameVars(this.hero.names) };
   }
 
   test(src?: string): boolean {

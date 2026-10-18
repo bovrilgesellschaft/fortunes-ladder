@@ -5,36 +5,181 @@
   "items": {
     "type": "object",
     "additionalProperties": false,
-    "required": ["id", "name", "sex", "arrives", "strengths", "secret", "available"],
+    "required": [
+      "id",
+      "name",
+      "sex",
+      "arrives",
+      "strengths",
+      "secret",
+      "available"
+    ],
     "properties": {
-      "id": { "type": "string", "pattern": "^[a-z-]+$" },
-      "name": { "type": "string" },
-      "sex": { "enum": ["man", "woman", "either"] },
-      "arrives": { "type": "string" },
-      "strengths": { "type": "string" },
-      "secret": { "type": "string" },
-      "available": { "type": "boolean" },
-      "arrival": { "type": "string", "description": "The id of the arrival Venture, played in the first turn." },
+      "id": {
+        "type": "string",
+        "pattern": "^[a-z-]+$"
+      },
+      "name": {
+        "type": "string"
+      },
+      "sex": {
+        "enum": [
+          "man",
+          "woman",
+          "either"
+        ]
+      },
+      "arrives": {
+        "type": "string"
+      },
+      "strengths": {
+        "type": "string"
+      },
+      "secret": {
+        "type": "string"
+      },
+      "available": {
+        "type": "boolean"
+      },
+      "arrival": {
+        "type": "string",
+        "description": "The id of the arrival Venture, played in the first turn."
+      },
       "hero": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "styled", "history", "true_rank", "claimed_rank", "lodging", "start"],
+        "required": [
+          "names",
+          "true_rank",
+          "claimed_rank",
+          "lodging",
+          "start"
+        ],
         "properties": {
-          "name": { "type": "string" },
-          "styled": { "type": "string" },
-          "history": { "type": "string" },
-          "true_rank": { "$ref": "#/definitions/rank" },
-          "claimed_rank": { "$ref": "#/definitions/rank" },
-          "lodging": {
-            "type": "object", "additionalProperties": false, "required": ["district", "room"],
-            "properties": { "district": { "type": "string" }, "room": { "enum": ["garret", "room", "first floor"] } }
+          "true_rank": {
+            "$ref": "#/definitions/rank"
           },
-          "start": { "type": "object", "description": "As a Venture's start; checked against venture.schema.json's start." }
+          "claimed_rank": {
+            "$ref": "#/definitions/rank"
+          },
+          "lodging": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "district",
+              "room"
+            ],
+            "properties": {
+              "district": {
+                "type": "string"
+              },
+              "room": {
+                "enum": [
+                  "garret",
+                  "room",
+                  "first floor"
+                ]
+              }
+            }
+          },
+          "start": {
+            "type": "object",
+            "description": "As a Venture's start; checked against venture.schema.json's start."
+          },
+          "names": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "given",
+              "surname",
+              "county",
+              "alias"
+            ],
+            "description": "Drawn afresh for each run.",
+            "properties": {
+              "given": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "surname": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "county": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "alias": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "title",
+                  "surname",
+                  "claim"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "long",
+                        "short"
+                      ],
+                      "properties": {
+                        "long": {
+                          "type": "string"
+                        },
+                        "short": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "surname": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "claim": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
   },
   "definitions": {
-    "rank": { "enum": ["Vagabond", "Servant", "Tradesman", "Gentleman", "Esquire", "Baronet or Knight", "Peer"] }
+    "rank": {
+      "enum": [
+        "Vagabond",
+        "Servant",
+        "Tradesman",
+        "Gentleman",
+        "Esquire",
+        "Baronet or Knight",
+        "Peer"
+      ]
+    }
   }
 }

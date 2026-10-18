@@ -4,6 +4,7 @@
 import { money } from './core';
 import { Campaign, SAVE_VERSION, dateLabel, type CampaignState, type Letter } from './campaign';
 import { seedFrom } from './rng';
+import { drawNames, type Names } from './names';
 import type { Rank, Room, World } from './types';
 import { RANKS } from './types';
 import { $, Chrome, Ledger, VentureView, esc, ledgerFromRun, store, type LedgerData } from './view';
@@ -80,9 +81,14 @@ export function mountRun(world: World) {
     const chips = (r.done ?? []).map(t => `<span class="chip ${/\+/.test(t) && !/Celebrity|Luck|Purse/.test(t) ? 'bad' : 'neu'}">${t}</span>`).join('');
     return `<div class="letter"><span class="seal" aria-hidden="true">${seal}</span><div class="wk">${delivered ? 'Delivered' : 'To be delivered'} · ${dateLabel(r.at)}</div><div class="fr">${r.from}</div><div class="prose">${r.text}</div>${chips ? `<div class="done-chips">${chips}</div>` : ''}<div class="dev" style="margin-top:6px">${r.effect} · from ${r.venture}</div></div>`;
   }
+  /** "The History of Mr Dermot Kirwan, otherwise Major Plunkett", once the Persona is taken up. */
+  const history = () => {
+    const h = H(), n = h.names;
+    return h.persona !== h.styled ? `${h.history}, otherwise ${n.title} ${n.alias_surname}` : h.history;
+  };
   function header() {
-    $('#runheadText').innerHTML = c ? c.hero.history : 'Fortune’s Ladder';
-    $('#storyTitle').textContent = c ? c.hero.history : 'The History of an Adventurer';
+    $('#runheadText').innerHTML = c ? history() : 'Fortune’s Ladder';
+    $('#storyTitle').textContent = c ? history() : 'The History of an Adventurer';
   }
 
   // ---------- screens ----------
@@ -99,10 +105,13 @@ export function mountRun(world: World) {
     chapter(false);
     const saved = loadSaved();
     const s = world.settings;
+    const origin = world.origins.find(o => o.available)!;
+    const pool = origin.hero!.names;
+    const titles = pool.alias.title.filter((t, i, a) => a.findIndex(x => x.long === t.long) === i);
     const testStart = s.start ? dateLabel((s.start.year - 1719) * 52 + s.start.week - 1) : null;
     $('#ledger').innerHTML = '<p class="lead" style="margin:0">The Ledger opens when the hero arrives.</p>'; $('#ledSum').textContent = '';
     root.innerHTML = `
-      ${saved ? `<section class="screen"><h2><span class="phase">A run in progress</span>${esc(saved.hero.name)}, turn ${saved.st.turn}</h2>
+      ${saved ? `<section class="screen"><h2><span class="phase">A run in progress</span>${esc(saved.hero.name)}${saved.hero.persona !== saved.hero.styled ? `, otherwise ${esc(saved.hero.persona)}` : ''}, turn ${saved.st.turn}</h2>
         <p class="lead">It is ${dateLabel(saved.st.at)}. ${saved.st.story.length} chapter${saved.st.story.length === 1 ? '' : 's'} written.</p>
         <div class="actions"><button class="btn primary" type="button" id="cont">Continue the run</button></div></section>` : ''}
       <section class="screen">
@@ -113,8 +122,21 @@ export function mountRun(world: World) {
             <div class="cd">${o.sex === 'either' ? 'A man or a woman' : o.sex === 'man' ? 'A man' : 'A woman'}</div>
             <div class="ct">${esc(o.name)}</div>
             <div class="cb"><i>Arrives:</i> ${esc(o.arrives)}. <i>Strengths:</i> ${esc(o.strengths)}.</div>
-            <div class="cm">${o.available ? `You play ${esc(o.hero!.name)}` : 'Not yet written'}</div>
+            <div class="cm">${o.available ? 'Playable' : 'Not yet written'}</div>
           </div>`).join('')}</div>
+        <h2 style="margin-top:26px"><span class="phase">The hero</span><span id="whoLine"></span></h2>
+        <p class="lead">Drawn afresh for each run, so that one History may be told from another. Change any of it, or draw again.</p>
+        <div class="actions" style="align-items:flex-end">
+          <label class="field">Christian name <input id="nGiven" type="text" autocomplete="off"></label>
+          <label class="field">Surname <input id="nSur" type="text" autocomplete="off"></label>
+          <label class="field">County <select id="nCounty">${pool.county.map(x => `<option>${esc(x)}</option>`).join('')}</select></label>
+        </div>
+        <div class="actions" style="align-items:flex-end">
+          <label class="field">Will pass as <select id="nTitle">${titles.map((t, i) => `<option value="${i}">${esc(t.long)}</option>`).join('')}</select></label>
+          <label class="field">Surname <input id="nAlias" type="text" autocomplete="off"></label>
+          <label class="field">Claiming to be <select id="nClaim">${pool.alias.claim.map(x => `<option>${esc(x)}</option>`).join('')}</select></label>
+          <button class="btn" type="button" id="draw">Draw again</button>
+        </div>
         <div class="actions" style="align-items:flex-end">
           <label class="field">Seed <input id="seed" type="text" inputmode="text" placeholder="leave blank for chance" autocomplete="off"></label>
           <div class="field">The date<div class="radio">
@@ -126,12 +148,34 @@ export function mountRun(world: World) {
         ${saved ? '<div id="confirmBox"></div>' : ''}
       </section>`;
     $('#cont')?.addEventListener('click', () => { c = saved; render(); });
+    const val = (id: string) => ($<HTMLInputElement>(id).value || '').trim();
+    const show = () => {
+      const t = titles[+val('#nTitle')];
+      $('#whoLine').textContent = `${val('#nGiven') || '…'} ${val('#nSur') || '…'}, of the county of ${val('#nCounty')}, who will be ${t.long} ${val('#nAlias') || '…'}, ${val('#nClaim')}`;
+    };
+    const fill = (n: Names) => {
+      $<HTMLInputElement>('#nGiven').value = n.given; $<HTMLInputElement>('#nSur').value = n.surname;
+      $<HTMLSelectElement>('#nCounty').value = n.county; $<HTMLInputElement>('#nAlias').value = n.alias_surname;
+      $<HTMLSelectElement>('#nTitle').value = String(titles.findIndex(t => t.long === n.title)); $<HTMLSelectElement>('#nClaim').value = n.claim;
+      show();
+    };
+    const drawn = drawNames(pool, Math.random, origin.sex === 'woman' ? 'woman' : 'man');
+    fill(drawn);
+    $('#draw').onclick = () => fill(drawNames(pool, Math.random, origin.sex === 'woman' ? 'woman' : 'man'));
+    ['#nGiven', '#nSur', '#nCounty', '#nTitle', '#nAlias', '#nClaim'].forEach(id => $(id).addEventListener('input', show));
+    const chosen = (): Names => {
+      const t = titles[+val('#nTitle')];
+      return {
+        given: val('#nGiven') || drawn.given, surname: val('#nSur') || drawn.surname, county: val('#nCounty'),
+        title: t.long, short_title: t.short, alias_surname: val('#nAlias') || drawn.alias_surname, claim: val('#nClaim'),
+        sex: origin.sex === 'woman' ? 'woman' : 'man',
+      };
+    };
     const begin = () => {
       const typed = ($<HTMLInputElement>('#seed').value || '').trim();
       const seed = typed ? seedFrom(typed) : (Math.random() * 2 ** 32) >>> 0;
       const w = (document.querySelector<HTMLInputElement>('input[name=when]:checked')?.value) ?? 'random';
-      const origin = world.origins.find(o => o.available)!;
-      c = Campaign.begin(world, origin.id, seed, w === 'test' ? world.settings.start : null);
+      c = Campaign.begin(world, origin.id, seed, w === 'test' ? world.settings.start : null, chosen());
       save(); render(); top();
     };
     $('#go').onclick = () => {

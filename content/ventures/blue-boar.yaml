@@ -6,12 +6,20 @@
 
 id: blue-boar
 title: The Blue Boar
+names:                     # on this page; a run draws its own
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
 test: true
 offer:
   district: St Giles
   blurb: A tavern in St Giles where gentlemen of the road are said to drink. A man who wanted to learn the trade might learn it there, if he survived the gin.
   weight: 2
-runhead: The Life &amp; Adventures of Mr Cornelius Byrne
+runhead: The Life &amp; Adventures of Mr {name}
 sub: Being an Evening among the Gentlemen of the Road, in five Beats
 prospectus: >-
   <b>A placeholder Venture,</b> written to exercise the run shell: a flash tavern, an old
@@ -121,7 +129,7 @@ beats:
             text: You hold your gin, and somehow pay for a good deal of other people’s.
           R:
             effects: [{ set: drunk }, { adj: hum.Melancholic, by: 1, why: gin }]
-            text: The gin wins. You spend a quarter of an hour explaining to a coal-heaver that your father is a squire in Galway, and the coal-heaver says so is his, and you both weep.
+            text: The gin wins. You spend a quarter of an hour explaining to a coal-heaver that your father is a squire in {county}, and the coal-heaver says so is his, and you both weep.
           X:
             effects: [{ set: drunk }, { adj: purse, by: -10s, why: robbed while drunk }, { adj: hum.Melancholic, by: 1, why: gin }]
             text: You wake on the settle with your purse ten shillings lighter and a duchess’s garter in your hand. Nobody in the room has ever seen a duchess.
@@ -131,7 +139,7 @@ beats:
             st: He drank them all under the table, madam; — I do not commend it; — I record it, as a historian must, with the same face I would put upon a victory in Flanders.
           X:
             sm: The gin, which in that house was sold by the quartern and drunk by the pint, prevailed over him at last; and he woke upon the settle ten shillings the poorer, with a garter in his hand which nobody would own.
-            st: Of the garter, madam, I know nothing; — and I beg you will not ask Mr Byrne, who knows less.
+            st: Of the garter, madam, I know nothing; — and I beg you will not ask {styled}, who knows less.
         next: will
       - label: Take a stool in the corner, and listen.
         dev: Certain
@@ -181,9 +189,9 @@ beats:
         story:
           T:
             sm: He sat down to all-fours with an old highwayman called Will Gallow, and beat him six games in seven; at which the old man laughed aloud, a thing not heard in that house since the old Queen’s time, and declared that a gentleman who could count cards could count coaches.
-            st: Six games in seven, madam! — and from a man who had robbed the Bristol mail. I set it down to Mr Byrne’s credit, which, as the reader knows, stood in need of it.
+            st: Six games in seven, madam! — and from a man who had robbed the Bristol mail. I set it down to {styled}’s credit, which, as the reader knows, stood in need of it.
           X:
-            sm: Will Gallow won fifteen shillings off him at all-fours without once opening his mouth; and Mr Byrne learned afterwards that the old rogue had read every card in his hand in the bottom of a brass warming-pan which hung behind his chair.
+            sm: Will Gallow won fifteen shillings off him at all-fours without once opening his mouth; and {styled} learned afterwards that the old rogue had read every card in his hand in the bottom of a brass warming-pan which hung behind his chair.
             st: — The warming-pan, madam. — I mention it only as a warning to young persons of either sex, who are generally more careful of their cards than of what hangs behind them.
         next: pistols
       - label: Tell him you are already a gentleman of the road, and a bold one.
@@ -340,14 +348,14 @@ beats:
                   from: Mr Wild’s office, in the Old Bailey
                   text: Mr Wild’s people have the description of a young Irish gentleman who drinks at the Blue Boar, and would be glad of a word with him.
                   effect: Notoriety +1
-            text: He comes straight to your table, sits down without being asked, and talks for ten minutes about the weather in Galway, of which he seems to know a great deal. Then he goes. You do not sleep that night.
+            text: He comes straight to your table, sits down without being asked, and talks for ten minutes about the weather in {county}, of which he seems to know a great deal. Then he goes. You do not sleep that night.
         story:
           T:
             sm: At this juncture there entered one of the people of Mr Jonathan Wild, the thief-taker, who looked round the room as a farmer looks over a fold; but our hero met his eye, and yawned in his face, with so perfect an air of fashionable weariness that the fellow took him for a young lord upon a frolic, and passed on.
             st: He yawned, madam. — It is the most dangerous thing a man can do in the face of authority, and the most effective; — I have seen it done to a bishop.
           X:
-            sm: The thief-taker’s man, singling him out, sat down at his table uninvited, and discoursed for ten minutes upon the weather in the county of Galway, with a familiarity which our hero found more alarming than any threat.
-            st: The weather in Galway, madam! — He had never been there; — and that, I think, was the worst of it.
+            sm: The thief-taker’s man, singling him out, sat down at his table uninvited, and discoursed for ten minutes upon the weather in the county of {county}, with a familiarity which our hero found more alarming than any threat.
+            st: The weather in {county}, madam! — He had never been there; — and that, I think, was the worst of it.
         next: reckon
       - label: "Withdraw: up the back stairs, and out across the leads."
         withdraw: true
