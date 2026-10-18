@@ -17,6 +17,7 @@ names:                     # on this page; a run draws its own
 test: true
 offer:
   district: St Giles
+  circle: the Underworld
   blurb: A tavern in St Giles where gentlemen of the road are said to drink. A man who wanted to learn the trade might learn it there, if he survived the gin.
   weight: 2
 runhead: The Life &amp; Adventures of Mr {name}

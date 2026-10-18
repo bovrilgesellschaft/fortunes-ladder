@@ -43,3 +43,9 @@
 .notice{border-left:3px solid var(--rubric);padding:4px 10px;margin:8px 0 0;font-style:italic}
 .rowacts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
 .small{font-size:.88rem;color:var(--ink2)}
+/* the false self (Step 7) */
+.names tr.gone td{color:var(--ink2);text-decoration:line-through;text-decoration-thickness:1px}
+.names tr.gone td .small{text-decoration:none}
+.names .field{max-width:100%;min-width:0}
+.names select{font:inherit;font-family:var(--body);font-size:.92rem;color:var(--ink);background:var(--leaf);border:1px solid var(--ink2);padding:2px 4px;max-width:100%}
+.names td:first-child{min-width:9.5em}

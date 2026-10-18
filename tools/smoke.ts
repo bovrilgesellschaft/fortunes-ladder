@@ -62,7 +62,7 @@ async function playRun(seed: string, actions: number, reloadEvery: number) {
     const turn = doc.querySelector<HTMLButtonElement>('#turn');
     if (turn) { turn.click(); turns++; continue; }
     // now and then, the hero's affairs: shops, the pawnbroker, the lender, the debts, the prison side
-    const aff = [...doc.querySelectorAll<HTMLButtonElement>('[data-buy],[data-acct],[data-dismiss],[data-pawn],[data-redeem],[data-borrow],[data-trade],[data-repay],[data-note],#side,#payout')];
+    const aff = [...doc.querySelectorAll<HTMLButtonElement>('[data-buy],[data-acct],[data-dismiss],[data-pawn],[data-redeem],[data-borrow],[data-trade],[data-repay],[data-note],[data-retire],#takeup,#side,#payout')];
     if (aff.length && Math.random() < 0.3) { aff[Math.floor(Math.random() * aff.length)].click(); affairs++; continue; }
     const offers = [...doc.querySelectorAll<HTMLButtonElement>('[data-v]')];
     if (offers.length) { offers[Math.floor(Math.random() * offers.length)].click(); continue; }

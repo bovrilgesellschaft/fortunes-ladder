@@ -1,0 +1,276 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# PLACEHOLDER (Step 7): selling a Persona, written to exercise the false self. Pressing on sets
+# flags.sold_name, and the engine sells the name worn for its price ({sale_money}), its debts going
+# with it; flags.named means the buyer may one day name his seller, 4–12 weeks later. Offered in
+# the Savoy and in St Giles. Keep, rewrite or drop it in Step 10.
+
+id: name-buyer
+title: A Buyer for a Name
+names:                     # on this page; a run draws its own
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
+sample:
+  sale_money: £14 10s
+  circles_known: the Town, the Quality
+test: true
+offer:
+  district: The Savoy
+  circle: the Underworld
+  blurb: In the alehouse by the Savoy stairs there is a man who buys names, as other men buy old coats, and sells them on to people who need one.
+  when: persona != styled and (lodging_district == "The Savoy" or lodging_district == "St Giles")
+  repeat: true
+  weight: 2
+runhead: The Life &amp; Adventures of Mr {name}
+sub: Being a Bargain struck in the Liberty, in five Beats
+prospectus: >-
+  <b>A placeholder Venture,</b> written to exercise the false self: a dealer in names, a question
+  of proof, a price, and the risk that the buyer is a fool.
+year: 1725
+week: 20
+loot_flag: haggled
+persona: Capt. O’Rourke
+who:
+  name: Cornelius Byrne
+  as: passing as <i>Capt. O’Rourke</i>
+  origin: Younger son of an Irish squire · Book II
+
+start:
+  purse: 3s
+  debts: £34
+  luck: 1
+  exposure: 6
+  notoriety: 1
+  celebrity: 2
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 0, Choleric: 1, Melancholic: 3, Phlegmatic: 1 }
+  tags: []
+  items: [His father’s sword, A good broadcloth coat]
+  hooks: []
+
+first: alehouse
+
+chapter:
+  no: Chap. VII.
+  opening: In which our Hero meets a Dealer in Names
+  parts:
+    - { when: flags.pot, text: stands a Stranger a Pot }
+    - { when: flags.keen, text: makes his Name sound worth the having }
+    - { when: flags.haggled, text: drives a Bargain }
+    - { when: flags.sold_name, text: "sells himself, or one of himself" }
+  last:
+    when: flags.withdrew
+    text: keeps his Name, for want of a better
+    else: walks out of the Alehouse lighter by a Name
+
+story:
+  title: The History of Mr Cornelius Byrne
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface:
+    sm: "Among the trades of the Liberty there is one that no directory lists: that of the man who buys up the names of gentlemen who can no longer use them, and sells them to gentlemen who have none; and with such a man our hero now found himself drinking."
+    st: A name, madam, is the only property a man can sell and still have.
+  close:
+    sm: So ended the bargain; and our hero walked back through the precinct with the curious sensation, known to men who have sold a horse they were fond of, of having done well and done wrong at once.
+    st: — And whether he was the richer or the poorer for it, madam, I leave to the casuists; — they are paid to decide such things, and I am not.
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: The Savoy Stairs
+  sid: namebuyer.05.reckoning
+  dev: Placeholder · the engine reads flags.sold_name and flags.named
+  steps:
+    - say: The river is grey below the Savoy stairs, and the watermen are calling for fares. You stand a while and watch it.
+    - when: flags.sold_name
+      say: Somewhere a stranger is practising your bow, and will be {persona} by Sunday. You find you are curious how he will do it.
+    - when: flags.named
+      say: You did not like the look of him. A man who buys names in an alehouse is a man who may one day be asked, in a less comfortable room, where he bought them.
+  post:
+    some: Sealed, and in the post. The Liberty’s letters go out on Sundays.
+    none: Nothing is in the post. Nobody in the Savoy writes about anybody else; it would be ungentlemanly, and unwise.
+  upkeep: "Upkeep follows: the garret, the fire, and the pot you stood him."
+  again: Go back to the alehouse
+  finis: Finis.
+
+beats:
+  - id: alehouse
+    num: I
+    phase: The Approach
+    title: The Alehouse by the Stairs
+    sid: namebuyer.01.alehouse
+    dev: Placeholder · costed, risky and gated options
+    text: |-
+      The alehouse by the Savoy stairs is full of men who cannot go home: debtors, mostly, and a few who are owed. In the corner by the fire sits a neat, small man in a brown coat, who is said to buy names.{fn *}
+
+      He has seen you come in. He has, you suspect, been expecting you.
+    notes:
+      - "* The Editor must confess that the privilege of the Savoy had been abolished by Act of Parliament in 1697, a quarter of a century before this history. The game keeps the Liberty open, as the Design Document allows; the trade in names it shelters was carried on, in fact, wherever debtors gathered."
+    ask: How will you approach him?
+    options:
+      - label: Stand him a pot of beer, and sit down.
+        cost: 6d
+        dev: Costed · certain
+        do:
+          effects: [{ adj: purse, by: -6d, why: a pot for a stranger }, { set: pot }]
+          text: He accepts the beer as a matter of course, and moves his hat off the bench so that you may sit.
+        next: proof
+      - label: Find out who he is before you speak to him.
+        dev: Risky · Wit against 3
+        check: { attr: Wit, diff: 3 }
+        outcomes:
+          T:
+            effects: [{ set: keen }]
+            text: The potboy tells you, for nothing, that the small man sold a baronetcy last month to a Bristol sugar-baker, and was paid in sugar. You go over knowing exactly what he wants.
+          S:
+            effects: []
+            text: Nobody knows his name, which is a recommendation in his trade. You go over.
+          C:
+            effects: [{ adj: hum.Melancholic, by: 1, why: the company of the precinct }]
+            text: You spend an hour asking, and learn only that everyone in the alehouse has sold something, and is ashamed of it.
+          R:
+            effects: [{ adj: exposure, by: 1, why: asking too many questions }]
+            text: Your questions reach him before you do. He knows your name, and the name you pass under, before you have sat down.
+          X:
+            effects: [{ adj: exposure, by: 1, why: asking too many questions }, { adj: purse, by: -1s, why: a pot for the whole bench }]
+            text: You ask the wrong man, who tells the whole bench, who require beer before they will forget it.
+        next: proof
+      - label: Let him see that you are a name worth having.
+        gate: { when: celebrity >= 3, need: "Celebrity 3 · you have {celebrity}" }
+        dev: Gated · certain
+        do:
+          effects: [{ set: keen }]
+          text: You do nothing at all but let yourself be recognised. Two men at the bar nudge each other. The small man takes off his hat.
+        next: proof
+
+  - id: proof
+    num: II
+    phase: The Complication
+    title: A Question of Proof
+    sid: namebuyer.02.proof
+    dev: Placeholder · a gate on the circles where the name is known
+    text: |-
+      “A name, sir,” says the small man, “is worth what it will open. I do not buy names that open nothing.” He wants to know where {persona} is received, and on what terms, and with whom it has run up its debts, “so that my client is not surprised.”
+    ask: What will you tell him?
+    options:
+      - label: Name the houses where the name is known.
+        gate: { when: known_in("the Quality") or known_in("the City"), need: "known in the Quality or the City · {if circles_known}known only in {circles_known}{else}known nowhere yet{end}" }
+        dev: Gated (known in the Quality or the City) · certain
+        do:
+          effects: [{ set: keen }]
+          text: You name them. He writes nothing down, but his eyebrows go up at the second, and stay up.
+        next: price
+      - label: Make the name sound better than it is.
+        dev: Risky · Address against 4
+        check: { attr: Address, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: keen }]
+            text: You make it sound like a dukedom. He very nearly believes you, and is the more eager for not quite doing so.
+          S:
+            effects: [{ set: keen }]
+            text: He listens, and nods, and seems satisfied.
+          C:
+            effects: []
+            text: He listens, and is not impressed, and says so, politely.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: a dealer’s contempt }]
+            text: He hears you out, and then tells you, quite accurately, what the name is really worth.
+          X:
+            effects: [{ adj: hum.Choleric, by: 1, why: a dealer’s contempt }, { adj: exposure, by: 1, why: the name cried down }]
+            text: He laughs, and repeats a piece of your story to the bench, who laugh too.
+        next: price
+      - label: Tell him the plain truth.
+        dev: Certain
+        do:
+          effects: []
+          text: He seems surprised to hear it, and a little touched. “Nobody tells me the truth, sir,” he says. “It is very confusing.”
+        next: price
+
+  - id: price
+    num: III
+    phase: The Turn
+    title: The Price
+    sid: namebuyer.03.price
+    dev: Placeholder · the engine sets the price; haggling adds to it
+    text: |-
+      He names his price: {sale_money}, for the name of {persona}, its papers, its story, and its debts, which his client will take on with it. “Debts are the best part of a name, sir,” he says. “They prove it was believed.”
+    ask: Will you haggle?
+    options:
+      - label: Haggle him up.
+        dev: Risky · Address against 4 · a better price
+        check: { attr: Address, diff: 4, bonus: [{ when: flags.keen, by: 1, why: he wants it }] }
+        outcomes:
+          T:
+            effects: [{ loot: £3, why: a bargain well driven }]
+            text: You get three pounds more, and his respect, which he values at rather less.
+          S:
+            effects: [{ loot: £1, why: a bargain driven }]
+            text: You get a pound more, after a long argument about the price of sugar.
+          C:
+            effects: []
+            text: He will not move, and you cannot make him.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: beaten down }, { set: named }]
+            text: He comes down, not up, and grows careless and talkative, which you do not like.
+          X:
+            effects: [{ adj: hum.Choleric, by: 1, why: beaten down }, { set: named }, { adj: notoriety, by: 1, why: a quarrel in the alehouse }]
+            text: The argument grows loud enough to bring the landlord, and the whole room hears what is being sold.
+        next: bargain
+      - label: Take his price.
+        dev: Certain
+        do:
+          effects: []
+          text: You nod. He nods. It is the quietest bargain you have ever made.
+        next: bargain
+
+  - id: bargain
+    num: IV
+    phase: The Crisis
+    title: The Bargain
+    sid: namebuyer.04.bargain
+    dev: Placeholder · Press on (a Wheel on whether the buyer is a fool) or Withdraw (certain)
+    text: |-
+      He puts the money on the table and his hand beside it. His client, he says, is a young man from Norwich who will begin as {persona} on Monday, in Bath.
+
+      You do not know the young man from Norwich. You do not know whether he can keep a secret, or hold his drink, or tell a siege from a sermon.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: shake his hand, and give him the name."
+        dev: Press on · Wit against 4 (whether the buyer will hold his tongue) · the name is sold whatever the Wheel; from Success at a cost down, he may name you
+        check: { attr: Wit, diff: 4, bonus: [{ when: flags.pot, by: 1, why: you drank with him }] }
+        outcomes:
+          T:
+            effects: [{ set: sold_name }, { adj: hum.Sanguine, by: 1, why: a weight off }]
+            text: You shake his hand. Afterwards, in the street, you feel lighter than you have since you came to London, and are not sure whether it is relief or loss.
+          S:
+            effects: [{ set: sold_name }]
+            text: You shake his hand, and the name is his, and then the young man’s from Norwich, and no longer yours.
+          C:
+            effects: [{ set: sold_name }, { set: named }]
+            text: You shake his hand. As you leave he calls after you, quite loudly, to wish {persona} luck. You wish he had not.
+          R:
+            effects: [{ set: sold_name }, { set: named }, { adj: hum.Melancholic, by: 1, why: a name sold to a fool }]
+            text: You shake his hand, and learn as you go that the young man from Norwich is a notorious drunkard. The money is in your pocket. It does not feel like enough.
+          X:
+            effects: [{ set: sold_name }, { set: named }, { adj: notoriety, by: 1, why: a bargain in the Liberty }, { adj: hum.Melancholic, by: 1, why: a name sold to a fool }]
+            text: You shake his hand. The young man from Norwich, it turns out, is waiting outside, and drunk, and greets you by name, his and yours, in front of half the precinct.
+        story:
+          T:
+            sm: He shook the dealer’s hand, and walked out into the Liberty a lighter man by a name; and found, to his surprise, that he did not miss it, any more than a snake misses its skin.
+            st: — Sold! — and the purchaser a young man from Norwich. — I hope, madam, that he wore it better than its first owner; — I fear he wore it worse.
+          X:
+            sm: But the purchaser, a young man from Norwich, was waiting in the street, very drunk, and saluted him at the top of his voice by both their names; so that half the precinct learned in a moment what the bargain had been, and the other half by supper.
+            st: A secret, madam, shared between two men, is a secret; — between two men and a bottle, it is a proclamation.
+        next: reckon
+      - label: "Withdraw: take your hand back, and keep the name."
+        withdraw: true
+        dev: Withdraw · certain · keep the name
+        do:
+          effects: [{ set: withdrew }, { when: spoils > 0, then: [{ adj: purse, by: "= -spoils", why: the haggled pounds handed back }] }]
+          text: You take your hand away{if spoils > 0}, and give back the pounds you haggled out of him{end}. He shrugs, and pockets the money, and drinks your beer. “You will be back, sir,” he says. “They always come back.”
+        next: reckon

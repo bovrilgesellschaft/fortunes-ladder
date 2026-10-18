@@ -24,3 +24,6 @@ perruquier:   { dictionary: town, definition: "A wig-maker." }
 rout:         { dictionary: town, definition: "A large evening party, at which there is too little room and nothing to do but be seen." }
 usquebaugh:   { dictionary: town, definition: "Whisky. The name is the Irish for the water of life." }
 toast:        { dictionary: town, definition: "A lady whose health is drunk by the gentlemen; a reigning beauty." }
+Grecian:      { dictionary: town, definition: "The Grecian Coffee House, in Devereux Court off the Strand, by the Temple: much used by lawyers, and by Fellows of the Royal Society." }
+Irish mile:   { dictionary: town, definition: "Two thousand two hundred and forty yards, against the English mile's seventeen hundred and sixty; so that an Irish estate is always larger than it sounds, and an Irish bog more so." }
+vails:        { dictionary: town, definition: "Money given by a visitor to the servants of the house. A great man’s porter lived on his, and priced his door accordingly." }

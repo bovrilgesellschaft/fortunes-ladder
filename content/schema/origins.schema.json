@@ -280,6 +280,145 @@
                 }
               }
             }
+          },
+          "alias_kind": {
+            "type": "string",
+            "description": "The kind of Persona (settings.yaml personas.kinds) the Origin's drawn alias is."
+          },
+          "secret_out": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "letter",
+              "story"
+            ],
+            "description": "What the Origin's Secret costs when it comes out (Step 7).",
+            "properties": {
+              "credit_rank": {
+                "enum": [
+                  "Vagabond",
+                  "Servant",
+                  "Tradesman",
+                  "Gentleman",
+                  "Esquire",
+                  "Baronet or Knight",
+                  "Peer"
+                ]
+              },
+              "weeks": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "tag": {
+                "type": "string"
+              },
+              "hook": {
+                "type": "string"
+              },
+              "letter": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "from",
+                  "text"
+                ],
+                "properties": {
+                  "from": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                }
+              },
+              "story": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "heading",
+                  "sm",
+                  "st"
+                ],
+                "properties": {
+                  "heading": {
+                    "type": "string"
+                  },
+                  "sm": {
+                    "type": "string"
+                  },
+                  "st": {
+                    "type": "string"
+                  }
+                }
+              },
+              "reversal": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "hook",
+                  "chance",
+                  "letter",
+                  "story"
+                ],
+                "properties": {
+                  "hook": {
+                    "type": "string"
+                  },
+                  "chance": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "true_rank": {
+                    "enum": [
+                      "Vagabond",
+                      "Servant",
+                      "Tradesman",
+                      "Gentleman",
+                      "Esquire",
+                      "Baronet or Knight",
+                      "Peer"
+                    ]
+                  },
+                  "letter": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "from",
+                      "text"
+                    ],
+                    "properties": {
+                      "from": {
+                        "type": "string"
+                      },
+                      "text": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "story": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "heading",
+                      "sm",
+                      "st"
+                    ],
+                    "properties": {
+                      "heading": {
+                        "type": "string"
+                      },
+                      "sm": {
+                        "type": "string"
+                      },
+                      "st": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

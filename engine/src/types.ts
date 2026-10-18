@@ -49,6 +49,8 @@ export interface Rumour {
   /** What it does to the hero on delivery. If left out, the engine reads simple effects
    *  ("Exposure +3", "Notoriety +1", "Celebrity −1") from the effect text. */
   on_delivery?: Effect[];
+  /** Whose talk it is (Step 7); defaults to the Venture's circle. */
+  circle?: string;
 }
 
 export interface Passage { sm: string; st: string }
@@ -151,6 +153,10 @@ export interface Offer {
   to?: When;
   /** Not offered: played at once as this Origin's arrival. */
   arrival?: boolean;
+  /** The circle it is set in: playing it makes the Persona known there (Step 7). */
+  circle?: string;
+  /** The Claimed Rank it expects; below it, it is gate-crashed (Step 7). */
+  rank?: Rank;
 }
 
 export interface Venture {
@@ -212,9 +218,36 @@ export interface Origin {
     lodging: { district: string; room: Room };
     dress: Partial<Record<Slot, { tier: number; name: string }>>;
     start: HeroStart;
+    /** The kind of Persona the drawn alias is (Step 7). */
+    alias_kind?: string;
+    /** What the Secret costs when it comes out, and its late reversal (Step 7). */
+    secret_out?: SecretOut;
   };
   /** The arrival Venture, played in the first turn. */
   arrival?: string;
+}
+
+export interface Told { from: string; text: string }
+export interface Written { heading: string; sm: string; st: string }
+export interface SecretOut {
+  credit_rank?: Rank; weeks?: number; tag?: string; hook?: string;
+  letter: Told; story: Written;
+  reversal?: { hook: string; chance: number; true_rank?: Rank; letter: Told; story: Written };
+}
+
+/** A kind of Persona the hero may take up in town (Step 7). */
+export interface PersonaKind {
+  id: string; name: string; rank: Rank; sex: 'man' | 'woman' | 'either';
+  needs: string; test?: string; cost: Amount; home: string[];
+  titles: Partial<Record<'man' | 'woman', { long: string; short: string }[]>>;
+  surnames: string[]; claims: string[];
+}
+export interface PersonaSettings {
+  limit: number; circles: string[]; cool_weeks: number; closed_weeks: number;
+  blown_celebrity: number; secret_diff: number;
+  scandal: { celebrity: number; notoriety: number };
+  sale: { min: Amount; max: Amount; named_from: number; named_to: number; named_exposure: number };
+  kinds: PersonaKind[];
 }
 
 export interface Settings {
@@ -227,6 +260,7 @@ export interface Settings {
   start?: When | null;
   start_range: { from: number; to: number };
   economy: EconomySettings;
+  personas: PersonaSettings;
 }
 
 /** Everything a run page needs. */

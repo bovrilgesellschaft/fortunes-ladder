@@ -16,6 +16,7 @@ names:                     # on this page; a run draws its own
 test: true
 offer:
   district: Fleet Street and the Strand
+  circle: the Town
   blurb: The arrival.
   arrival: true
 runhead: The Life &amp; Adventures of Mr {name}

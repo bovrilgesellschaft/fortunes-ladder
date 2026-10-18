@@ -110,7 +110,7 @@ export function mountRun(world: World) {
   /** "The History of Mr Dermot Kirwan, otherwise Major Plunkett", once the Persona is taken up. */
   const history = () => {
     const h = H(), n = h.names;
-    return h.persona !== h.styled ? `${h.history}, otherwise ${n.title} ${n.alias_surname}` : h.history;
+    void n; return h.persona !== h.styled ? `${h.history}, otherwise ${h.persona}` : h.history;
   };
   function header() {
     $('#runheadText').innerHTML = c ? history() : 'Picaresque';
@@ -254,6 +254,51 @@ export function mountRun(world: World) {
   }
   const priceOf = (a: string | number) => (typeof a === 'number' ? a : parseMoney(a));
 
+  /** The false self (Step 7): the names the hero passes under, and new ones to take up. */
+  function namesHTML(): string {
+    const h = H(), P = world.settings.personas, now = c!.st.at;
+    const STATE: Record<string, string> = { own: 'your own name', live: '', retired: 'retired', sold: 'sold', dead: 'blown' };
+    const recs = Object.values(h.records).sort((a, b) => (a.state === 'own' ? -1 : b.state === 'own' ? 1 : a.since - b.since));
+    const rows = recs.map(r => {
+      const kind = P.kinds.find(k => k.id === r.kind);
+      const worn = r.name === h.persona;
+      const real = c!.isReal(r) && r.state !== 'own' ? ' · made real' : '';
+      const x = h.personas[r.name] ?? 0;
+      const acts = r.state === 'live' && !worn ? `<button class="btn" type="button" data-retire="${esc(r.name)}">Retire</button>` : '';
+      return `<tr${r.state === 'dead' || r.state === 'sold' ? ' class="gone"' : ''}><td>${worn ? '<b>' : ''}${esc(r.name)}${worn ? '</b> · worn' : ''}<div class="small">${kind ? esc(kind.name) : STATE[r.state] || 'a name of your own invention'}${STATE[r.state] && r.state !== 'own' ? ' · ' + STATE[r.state] : ''}</div></td><td class="small">${r.rank}${real}</td><td class="n">${r.state === 'sold' || r.state === 'dead' ? '—' : `${x}/10`}</td><td class="small">${r.circles.length ? esc(r.circles.join(', ')) : 'nowhere yet'}</td><td><div class="rowacts">${acts}</div></td></tr>`;
+    }).join('');
+    const closed = Object.entries(h.closed).filter(([, u]) => u > now).map(([k, u]) => `${k} until ${dateLabel(u)}`);
+    const kinds = c!.kinds().map(k => {
+      const why = c!.cannotTakeUp(k);
+      return `<option value="${k.id}">${esc(k.name)} (${k.rank}, ${money(priceOf(k.cost))}${c!.isHome(k) ? ', at home with your Origin' : ''})${why ? ' — not now' : ''}</option>`;
+    }).join('');
+    return `
+      <section class="screen names">
+        <h2><span class="phase">The false self</span>The names you pass under</h2>
+        <p class="lead">You pass as ${esc(h.persona)}, a ${h.claimedRank}${h.claimedRank !== h.trueRank ? `, though a ${h.trueRank} in truth` : ''}. You may keep up ${['no', 'one', 'two', 'three', 'four'][P.limit] ?? P.limit} false names besides your own. To change the name you wear, move to another district. Your Secret, <i>${esc(c!.origin.secret.toLowerCase())}</i>, is ${h.secret === 'out' ? '<b>out</b>' : 'kept'}.</p>
+        ${closed.length ? `<p class="small">Closed to you after a name was blown: ${esc(closed.join('; '))}.</p>` : ''}
+        ${h.lowCredit && h.lowCredit.until > now ? `<p class="small">While the Town digests your Secret, your Credit is reckoned as a ${h.lowCredit.rank}’s, until ${dateLabel(h.lowCredit.until)}.</p>` : ''}
+        <div class="tablewrap"><table class="account"><thead><tr><th>Name</th><th>Claims</th><th class="n">Exposure</th><th>Known in</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+        ${h.confined ? '' : `<div class="actions" style="align-items:flex-end;margin-top:10px">
+          <label class="field">Take up a new name <select id="kind">${kinds}</select></label>
+          <button class="btn" type="button" id="takeup">Take it up</button>
+        </div>
+        <p class="small" id="kindNeeds"></p>`}
+      </section>`;
+  }
+  function wireNames() {
+    root.querySelectorAll<HTMLButtonElement>('[data-retire]').forEach(b => (b.onclick = () => act(() => c!.retirePersona(b.dataset.retire!))));
+    const sel = document.querySelector<HTMLSelectElement>('#kind');
+    if (!sel) return;
+    const needs = () => {
+      const k = world.settings.personas.kinds.find(x => x.id === sel.value)!;
+      const why = c!.cannotTakeUp(k);
+      $('#kindNeeds').textContent = `Needs: ${k.needs.charAt(0).toLowerCase() + k.needs.slice(1)}; the Appearances of a ${k.rank}. ${why ?? 'You could take it up today.'}`;
+    };
+    sel.onchange = needs; needs();
+    $('#takeup').onclick = () => act(() => c!.takeUp(sel.value));
+  }
+
   function wireAffairs() {
     root.querySelectorAll<HTMLButtonElement>('[data-buy]').forEach(b => (b.onclick = () => { const sl = b.dataset.buy as Slot; act(() => c!.buy(sl, +$<HTMLSelectElement>(`[data-tier="${sl}"]`).value)); }));
     root.querySelectorAll<HTMLButtonElement>('[data-acct]').forEach(b => (b.onclick = () => { const sl = b.dataset.acct as Slot; act(() => c!.buy(sl, +$<HTMLSelectElement>(`[data-tier="${sl}"]`).value, true)); }));
@@ -323,7 +368,8 @@ export function mountRun(world: World) {
             <div class="cd">${esc(v.offer!.district)}</div>
             <div class="ct">${v.title}</div>
             <div class="cb">${v.offer!.blurb}</div>
-            ${v.test ? '<span class="test" title="Placeholder Venture written for Step 5">placeholder</span>' : ''}
+            ${c!.gateCrash(v) ? `<div class="cm">Gate-crashed: you are not yet a${/^[AEIOU]/.test(v.offer!.rank!) ? 'n' : ''} ${v.offer!.rank}, so every Exposure gain is one worse</div>` : ''}
+            ${v.test ? '<span class="test" title="Placeholder Venture written to exercise the engine">placeholder</span>' : ''}
             <button class="btn primary" type="button" data-v="${v.id}">Undertake it</button>
           </div>`).join('')}
           <div class="card off">
@@ -335,6 +381,7 @@ export function mountRun(world: World) {
         </div>
       </section>
       ${affairsHTML()}
+      ${namesHTML()}
       <section class="screen">
         <h2><span class="phase">Your lodging</span>A ${h.lodging.room} in ${h.lodging.district}</h2>
         <p class="lead">${c!.inSavoy()
@@ -343,6 +390,7 @@ export function mountRun(world: World) {
         <div class="actions" style="align-items:flex-end">
           <label class="field">District <select id="dist">${Object.keys(world.settings.lodging).map(d => `<option ${d === h.lodging.district ? 'selected' : ''}>${d}</option>`).join('')}</select></label>
           <label class="field">Room <select id="room">${ROOMS.map(r => `<option ${r === h.lodging.room ? 'selected' : ''}>${r}</option>`).join('')}</select></label>
+          <label class="field">Passing as <select id="as">${Object.values(h.records).filter(r => r.state === 'own' || r.state === 'live' || r.state === 'retired').map(r => `<option ${r.name === h.persona ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}</select></label>
           <button class="btn" type="button" id="move">Move lodgings</button>
         </div>
         ${c!.inSavoy() || rankBelow(h.claimedRank) === h.claimedRank ? '' : `<div class="field" style="margin-top:14px">Living<div class="radio">
@@ -360,7 +408,12 @@ export function mountRun(world: World) {
     chrome.applyLongS(root);
     root.querySelectorAll<HTMLButtonElement>('[data-v]').forEach(b => (b.onclick = () => { c!.startVenture(b.dataset.v!); save(); render(); top(); }));
     $('#idle').onclick = () => { c!.idle(); save(); render(); top(); };
-    $('#move').onclick = () => act(() => (c!.move($<HTMLSelectElement>('#dist').value, $<HTMLSelectElement>('#room').value as Room) ? null : 'The bailiffs are waiting at the gate. You cannot leave the Liberty until what you owe falls below your Credit outside.'));
+    $('#move').onclick = () => act(() => {
+      const d = $<HTMLSelectElement>('#dist').value, rm = $<HTMLSelectElement>('#room').value as Room, as = $<HTMLSelectElement>('#as').value;
+      if (as !== H().persona) return c!.wear(as, d, rm);
+      return c!.move(d, rm) ? null : 'The bailiffs are waiting at the gate. You cannot leave the Liberty until what you owe falls below your Credit outside.';
+    });
+    wireNames();
     root.querySelectorAll<HTMLInputElement>('input[name=living]').forEach(r => (r.onchange = () => act(() => c!.setLiving(r.value as 'claimed' | 'pinching'))));
     wireAffairs();
     $('#retire').onclick = () => {

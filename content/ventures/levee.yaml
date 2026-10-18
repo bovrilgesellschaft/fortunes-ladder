@@ -1,0 +1,303 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# PLACEHOLDER (Step 7): a taking-up, written to exercise the false self. A Success at the Crisis
+# sets flags.claim_up, and the engine raises the Claimed Rank of the name worn by one. Its rank
+# (Esquire) means a Gentleman gate-crashes it, at +1 on every Exposure gain. Keep, rewrite or
+# drop it in Step 10.
+
+id: levee
+title: A Great Man’s Levee
+names:                     # on this page; a run draws its own
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
+sample:
+  claimed_rank: Gentleman
+  appearances: 11
+  expected_next: 11
+  circles_known: the Town
+test: true
+offer:
+  district: St James's
+  circle: the Quality
+  rank: Esquire
+  blurb: His Grace receives on Tuesday mornings in St James’s Square. A man with a good coat and a better story might be taken up there, and come away a rank higher than he went in.
+  when: appearances >= expected_next and not rank_at_least("Baronet or Knight") and lodging_district != "The Savoy"
+  repeat: true
+  weight: 1
+runhead: The Life &amp; Adventures of Mr {name}
+sub: Being a Morning in a Great Man’s Anteroom, in five Beats
+prospectus: >-
+  <b>A placeholder Venture,</b> written to exercise the false self: a porter, a secretary who
+  asks questions, a patron who wants something, and a chance to be received a rank higher.
+year: 1725
+week: 6
+loot_flag: vailed
+persona: Capt. O’Rourke
+who:
+  name: Cornelius Byrne
+  as: passing as <i>Capt. O’Rourke</i>
+  origin: Younger son of an Irish squire · Book II
+
+start:
+  purse: £4
+  debts: £30
+  luck: 1
+  exposure: 2
+  notoriety: 0
+  celebrity: 2
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 1, Choleric: 1, Melancholic: 1, Phlegmatic: 0 }
+  tags: []
+  items: [His father’s sword, A good broadcloth coat]
+  hooks: []
+
+first: door
+
+chapter:
+  no: Chap. VI.
+  opening: In which our Hero waits upon a Great Man
+  parts:
+    - { when: flags.vailed, text: pays the Porter }
+    - { when: flags.letter, text: presents a Letter }
+    - { when: flags.parried, text: answers the Secretary }
+    - { when: flags.errand, text: undertakes an Errand }
+    - { when: flags.claim_up, text: is received a Rank higher }
+  last:
+    when: flags.withdrew
+    text: bows himself out as he came
+    else: walks down the steps a new Man
+
+story:
+  title: The History of Mr Cornelius Byrne
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface:
+    sm: There is no place in London where a man is looked at so closely, and seen so little, as in a great man’s anteroom on a Tuesday morning; and it was into such a room that our hero now made his way, in his best coat and his boldest story.
+    st: A levee, madam, is a crowd of men standing up in order to be told that they may sit down another day.
+  close:
+    sm: Such was our hero’s first levee; and he came down the steps into St James’s Square with the air of a man who has been noticed, which, in that square, is the next thing to having been paid.
+    st: — And so out into the Square; where the sun was shining, as it does upon the just and the unjust, and upon the Irish.
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: The Steps of the House
+  sid: levee.05.reckoning
+  dev: Placeholder · the engine reads flags.claim_up
+  steps:
+    - say: The porter opens the door for you as you leave, which he did not do when you came. In St James’s that is a kind of verdict.
+    - when: flags.claim_up
+      say: You are a rank higher than you were at breakfast. You will have to dress for it, and live for it, and pay for it; but for the length of the Square you simply enjoy it.
+  post:
+    some: Sealed, and in the post. The Quality writes a great many letters, and some of them are about you.
+    none: Nothing is in the post. You were one face among forty, which is safer than it sounds.
+  upkeep: "Upkeep follows: the coat must be kept up, now that it has been seen."
+  again: Wait upon His Grace again
+  finis: Finis.
+
+beats:
+  - id: door
+    num: I
+    phase: The Approach
+    title: The Porter’s Chair
+    sid: levee.01.door
+    dev: Placeholder · costed, risky and gated options
+    text: |-
+      His Grace’s house fills the north side of the Square, and at nine on a Tuesday morning the steps are already crowded: officers on half-pay, clergymen without livings, projectors with schemes, and a poet with a dedication rolled under his arm.{fn *}
+
+      The porter sits in a hooded leather chair inside the door, and decides who goes up.
+    notes:
+      - "* St James’s Square was laid out in the 1660s and was, through the eighteenth century, the most fashionable address in London; seven dukes and seven earls lived there in 1721. The Editor gives His Grace no name, out of discretion."
+    ask: How will you get past the porter?
+    options:
+      - label: Put a crown into his hand, as if you did it every day.
+        cost: 5s
+        dev: Costed · certain
+        do:
+          effects: [{ adj: purse, by: -5s, why: vails to the porter }, { set: vailed }]
+          text: The porter’s hand closes on the crown, the first of the morning’s [[vails]], without his eyes leaving your face. He finds that your name is, after all, on his list.
+        next: secretary
+      - label: Walk past him with the air of a man who is expected.
+        dev: Risky · Nerve against 4
+        check: { attr: Nerve, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ adj: celebrity, by: 1, why: walked in like a lord }]
+            text: You walk past him so certainly that he rises and bows. A gentleman on the stairs asks who you are. Nobody knows, which is the best kind of answer.
+          S:
+            effects: []
+            text: He looks at you, and at your coat, and lets you up.
+          C:
+            effects: [{ adj: hum.Choleric, by: 1, why: a porter’s look }]
+            text: He lets you up, but slowly, and with a look that tells the footman on the stairs exactly what he thinks of you.
+          R:
+            effects: [{ adj: purse, by: -10s, why: "vails, doubled" }, { set: vailed }]
+            text: He stops you with one hand, and keeps it out until it has had ten shillings. The price of the door has gone up, because you tried it.
+          X:
+            effects: [{ adj: exposure, by: 1, why: turned away at the door }, { adj: purse, by: -10s, why: "vails, doubled" }, { set: vailed }]
+            text: He stops you, loudly, and asks your name, loudly, and repeats it to the footman, loudly, before he takes your ten shillings. The officers on the steps will remember it.
+        story:
+          T:
+            sm: He walked past the porter with so perfect an assurance that the fellow rose out of his chair and bowed; and a gentleman upon the stairs, asking who that was, received for answer that nobody knew; which in St James’s Square is the beginning of a reputation.
+            st: Assurance, madam, is the only coin that porters do not count.
+          X:
+            sm: The porter stopped him upon the threshold, and demanded his name in a voice that carried to the Square, and repeated it to the footman, and the footman to the stairs; so that {persona} went up to His Grace the most announced man in London, and the least welcome.
+            st: — His name, madam, went up the stairs before him, like a herald; — and a herald, I may observe, is the last thing a man in his situation requires.
+        next: secretary
+      - label: Present a letter of introduction to His Grace.
+        gate: { when: has_item_like("letter of introduction") or has_hook("Lady Bellaston"), need: "a letter of introduction, or Lady Bellaston’s interest" }
+        dev: Gated · certain · letters of introduction arrive in Step 8
+        do:
+          effects: [{ set: letter }, { adj: celebrity, by: 1, why: introduced }]
+          text: The porter reads the direction on the letter and sends it up at once. A footman comes down for you himself.
+        next: secretary
+
+  - id: secretary
+    num: II
+    phase: The Complication
+    title: The Secretary
+    sid: levee.02.secretary
+    dev: Placeholder · the false self questioned · a gate on the circles where the name is known
+    text: |-
+      Upstairs the anteroom is hot and full. His Grace has not yet appeared. His secretary has: a pale, quiet man in black, who goes from one petitioner to the next with a little book, writing.
+
+      He comes to you. “{persona}?” he says, and writes it down. “Of what family, sir? I do not think I know it.”
+    ask: What do you tell him?
+    options:
+      - label: Tell him the story, with all its regiments.
+        dev: Risky · Address against 4
+        check: { attr: Address, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: parried }, { adj: celebrity, by: 1, why: a story well told }]
+            text: You tell it so well that he stops writing to listen. When you have finished he says that His Grace will certainly wish to hear it himself, and moves you to the front of the room.
+          S:
+            effects: [{ set: parried }]
+            text: He writes it all down, nodding. You have no idea whether he believes a word of it, and suspect that it does not matter to him either way.
+          C:
+            effects: [{ set: parried }, { rumour: { id: secretary, delay: 2, from: His Grace’s secretary, circle: the Quality, text: "His Grace’s secretary has written to a gentleman in the War Office, asking after {persona}.", effect: "Exposure +1 ({persona})" } }]
+            text: He writes it all down, and asks for the name of your colonel, and writes that down too, with a care you do not like.
+          R:
+            effects: [{ adj: exposure, by: 1, why: a story that did not hold }]
+            text: He asks one question too many, about a siege, and you give the wrong year. He writes that down, very small.
+          X:
+            effects: [{ adj: exposure, by: 1, why: caught in a lie }, { adj: hum.Melancholic, by: 1, why: found out by a clerk }, { rumour: { id: secretary, delay: 1, from: His Grace’s anteroom, circle: the Quality, text: "It is said in St James’s Square that {persona} does not know which year his own regiment was at Belgrade.", effect: "Exposure +2 ({persona})" } }]
+            text: He asks about Belgrade, and you place it in the wrong war. A clergyman beside you laughs, and then pretends he was coughing.
+        story:
+          T:
+            sm: To the secretary’s question he answered with his whole history, regiments and sieges and a wound at Belgrade, told with such spirit that the man forgot to write; and it was resolved upon the spot that His Grace should hear it himself.
+            st: The secretary stopped writing, madam. — I have it on good authority that he had not done so since the Peace of Utrecht.
+          X:
+            sm: But the secretary, asking after Belgrade, received an answer that placed the siege in the wrong war and the wrong decade; and a clergyman at his elbow was taken with a fit of coughing that lasted the rest of the morning.
+            st: — Belgrade, madam, has been besieged so often that I do not blame him; — but the secretary did.
+        next: patron
+      - label: Name the houses where you are known, and let him ask there.
+        gate: { when: known_in("the Quality"), need: "known in the Quality · {if circles_known}known only in {circles_known}{else}known nowhere yet{end}" }
+        dev: Gated (known in the Quality) · certain
+        do:
+          effects: [{ set: parried }]
+          text: You mention two drawing rooms where you have been received. The secretary knows both. He closes his little book, which is the most flattering thing he has done all morning.
+        next: patron
+      - label: Say that your family does not care to be known.
+        dev: Certain · Exposure +1
+        do:
+          effects: [{ adj: exposure, by: 1, why: a mystery is a question }]
+          text: He looks at you for a moment, and writes something short. You are fairly sure it is not a compliment.
+        next: patron
+
+  - id: patron
+    num: III
+    phase: The Turn
+    title: His Grace
+    sid: levee.03.patron
+    dev: Placeholder · an errand, costed or risky, or nothing
+    text: |-
+      At eleven the doors at the end of the room open, and His Grace comes through them in a dressing gown of flowered silk, with a cup of chocolate in his hand. He speaks to six men in a quarter of an hour, and to you for longer than to any of them.
+
+      He has, it seems, a nephew at Bath who owes money to the wrong people, and a gentleman of your evident experience might know how such things are managed.
+    ask: Will you take the errand?
+    options:
+      - label: Undertake it, and spend your own money on it.
+        cost: £1
+        dev: Costed · certain
+        do:
+          effects: [{ adj: purse, by: -£1, why: "His Grace’s nephew’s affairs" }, { set: errand }, { hook: "His Grace, whose nephew you obliged at Bath", why: an errand for a duke }]
+          text: You say it shall be done. It costs you a pound, two letters and a lie to a moneylender, and His Grace remembers your name.
+        next: received
+      - label: Promise more than you can do.
+        dev: Risky · Wit against 4
+        check: { attr: Wit, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: errand }, { hook: "His Grace, whose nephew you obliged at Bath", why: an errand for a duke }, { adj: celebrity, by: 1, why: His Grace’s notice }]
+            text: You promise everything, and by a stroke of luck the nephew’s creditor turns out to be a man you once drank with. His Grace is delighted.
+          S:
+            effects: [{ set: errand }]
+            text: You promise, and you manage most of it. His Grace is satisfied, which is more than most of his friends can say.
+          C:
+            effects: [{ set: errand }, { adj: hum.Melancholic, by: 1, why: a promise that weighs }]
+            text: You promise, and spend a fortnight making it nearly true.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: a promise broken }]
+            text: You promise, and fail, and His Grace’s secretary makes a note of it.
+          X:
+            effects: [{ adj: exposure, by: 1, why: a promise broken publicly }, { adj: celebrity, by: -1, why: His Grace displeased }]
+            text: You promise, and fail, and the nephew tells everyone in Bath whose fault it was.
+        next: received
+      - label: Bow, and say you would not presume.
+        dev: Certain
+        do:
+          effects: []
+          text: His Grace looks a little disappointed, and moves on to the poet, who has been waiting all morning to presume.
+        next: received
+
+  - id: received
+    num: IV
+    phase: The Crisis
+    title: Received
+    sid: levee.04.received
+    dev: Placeholder · Press on (risky; a Success raises the Claimed Rank) or Withdraw (certain)
+    text: |-
+      As the levee breaks up, His Grace says, in the hearing of the whole room, that he hopes to see you at dinner on Thursday. It is the kind of thing a great man says forty times a week, and means twice.
+
+      If you go on Thursday as what you have been, you will be one more {claimed_rank} at the bottom of the table. If you go as something more, and are not questioned, you will be that something more for good.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: go on Thursday, and let it be understood that you are rather more than you said."
+        dev: Press on · Address against 5 · a Success or better raises the Claimed Rank by one (flags.claim_up)
+        check: { attr: Address, diff: 5, bonus: [{ when: flags.errand, by: 1, why: His Grace obliged }, { when: flags.parried, by: 1, why: the secretary satisfied }] }
+        outcomes:
+          T:
+            effects: [{ set: claim_up }, { adj: celebrity, by: 2, why: received at a duke’s table }, { tag: "Man of Fashion (the Quality)", why: taken up by His Grace }]
+            text: You are seated three places from His Grace, and called by your new style twice before the fish. By the time the cloth is drawn, the table has quite forgotten you were ever anything less.
+          S:
+            effects: [{ set: claim_up }, { adj: celebrity, by: 1, why: received at a duke’s table }]
+            text: Nobody questions it. You are seated well, spoken to kindly, and given your new style by the footman as you leave, which settles the matter.
+          C:
+            effects: [{ set: claim_up }, { rumour: { id: dinner, delay: 2, from: A lady at His Grace’s table, circle: the Quality, text: "A lady who sat beside {persona} at His Grace’s has been asking what, precisely, he is.", effect: "Exposure +2 ({persona})" } }]
+            text: It passes. But the lady beside you asks three questions about your family, and listens to the answers in a way you will think about later.
+          R:
+            effects: [{ adj: exposure, by: 2, why: a claim that would not stand }, { adj: hum.Choleric, by: 1, why: put in your place }]
+            text: His Grace’s chaplain, who knows everybody’s pedigree, asks after yours over the soup. You are seated, by the second course, rather lower than you began.
+          X:
+            effects: [{ adj: exposure, by: 3, why: laughed at a duke’s table }, { adj: celebrity, by: -1, why: laughed at }, { rumour: { id: dinner, delay: 1, from: Every drawing room in St James’s, circle: the Quality, text: "{persona} claimed a rank at His Grace’s table, and His Grace laughed.", effect: "Exposure +2 ({persona})" } }]
+            text: You are announced by your new style, and His Grace, who has a better memory than you hoped, laughs aloud. It is not an unkind laugh. It is much worse than an unkind laugh.
+        story:
+          T:
+            sm: On the Thursday he dined with His Grace, and was seated three places from the head of the table, and called by his new style twice before the fish; so that by the time the cloth was drawn the company had forgotten he had ever been anything less, and so, very nearly, had he.
+            st: It is a curious thing, madam, that a man may be raised a rank between the soup and the fish; — and a more curious thing that he may be lowered again between the fish and the soup.
+          X:
+            sm: But His Grace, hearing him announced by a style that had grown since Tuesday, laughed aloud; not unkindly, for he was a good-natured man, but in such a manner that the whole table laughed with him, and {persona} was a byword in St James’s before the candles were lit.
+            st: — He laughed, madam. — Dukes do not need to do more.
+        next: reckon
+      - label: "Withdraw: go on Thursday as you are, and be glad of the dinner."
+        withdraw: true
+        dev: Withdraw · certain · no change of rank
+        do:
+          effects: [{ set: withdrew }]
+          text: You go as what you have been, and are seated at the bottom of the table, and eat very well. It is a dinner, and nobody asks you a single question.
+        next: reckon

@@ -94,3 +94,111 @@ economy:
     room: 2s 6d         # a prison room, a week; the common side is free (systems spec)
     fleet: the Fleet
     marshalsea: the Marshalsea
+
+# ---------- the false self (Step 7) ----------
+# Ruling, 18 October 2026 (the Step 7 rulings doc), except where marked Proposed.
+personas:
+  limit: 2                 # Personas held besides the hero's own name (Ruling)
+  # the five circles of Reputation (design document)
+  circles: [the Quality, the City, the Town, the Trade, the Underworld]
+  cool_weeks: 8            # Exposure −1 after this many weeks with no gain; not in the Savoy or prison
+  closed_weeks: 24         # a blown Persona's circles close to the next one for this long
+  blown_celebrity: 2
+  secret_diff: 5           # the Wheel on Nerve that decides the Secret
+  scandal: { celebrity: 2, notoriety: 1 }   # a Persona made real, at Exposure 10
+  sale:
+    min: £5
+    max: £20
+    named_from: 4          # weeks before the buyer, if taken, names his seller
+    named_to: 12
+    named_exposure: 2
+  # The eight kinds (Ruling). The price of the papers and props is Proposed.
+  # home: the Origins at home in the kind (Exposure −1 at the start, and the test waived).
+  # The Strolling player is at home in every kind.
+  kinds:
+    - id: captain
+      name: A captain late of a foreign service
+      rank: Gentleman
+      sex: man
+      needs: A sword, and a tale of a campaign
+      test: has_item_like("sword")
+      cost: £2
+      home: [younger-son, discharged-sailor, strolling-player]
+      titles: { man: [{ long: Captain, short: Capt. }] }
+      surnames: [Dillon, Lally, Sarsfield, Butler, Walsh, Fitzjames, Burke, Rooth]
+      claims: [late of the Imperial service, late of the French service, late of the Spanish service, late of the Sardinian service]
+    - id: widow
+      name: An officer's widow
+      rank: Gentleman
+      sex: woman
+      needs: Mourning, and a pension story
+      cost: £4
+      home: [curates-daughter, strolling-player]
+      titles: { woman: [{ long: Mrs, short: Mrs }] }
+      surnames: [Delacourt, Harcourt, Vane, Ormsby, Lisle, Fenwick, Carew, Stanhope]
+      claims: [widow of a colonel of dragoons, widow of a captain lost at Vigo, widow of a major of the Guards]
+    - id: clergyman
+      name: A clergyman without a living
+      rank: Gentleman
+      sex: man
+      needs: Gown and bands, and some Latin (Learning 2)
+      test: attrs.Learning >= 2
+      cost: £3
+      home: [curates-daughter, foundling, strolling-player]
+      titles: { man: [{ long: the Reverend Mr, short: the Rev. Mr }] }
+      surnames: [Ashby, Prideaux, Whitlock, Mayne, Thursby, Gell, Hoadly, Venn]
+      claims: [late chaplain to a regiment of foot, a Fellow of a college without a living, a clergyman waiting on a bishop]
+    - id: physician
+      name: A physician with a foreign degree
+      rank: Gentleman
+      sex: man
+      needs: A diploma, bought or forged
+      test: attrs.Learning >= 1
+      cost: £5
+      home: [barbers-apprentice, strolling-player]
+      titles: { man: [{ long: Doctor, short: Dr }] }
+      surnames: [Hollis, Rowley, Ingram, Petty, Lowther, Quincy, Sydall, Mead]
+      claims: [Doctor of Physic of Leiden, Doctor of Physic of Padua, Doctor of Physic of Rheims]
+    - id: heiress
+      name: A country heiress come to town
+      rank: Gentleman
+      sex: woman
+      needs: A trunk, a chaperone, and a rumoured fortune
+      cost: £6
+      home: [country-innocent, strolling-player]
+      titles: { woman: [{ long: Miss, short: Miss }] }
+      surnames: [Fairfax, Lumley, Wentworth, Trelawny, Hungerford, Pelham, Courtenay, Mordaunt]
+      claims: [heiress to an estate in Yorkshire, heiress to an estate in Cornwall, heiress to a Bristol fortune]
+    - id: natural-child
+      name: A great man's natural son or daughter
+      rank: Esquire
+      sex: either
+      needs: A ring or a letter, and a resemblance
+      test: attrs.Countenance >= 2
+      cost: £5
+      home: [foundling, younger-son, strolling-player]
+      titles: { man: [{ long: Mr, short: Mr }], woman: [{ long: Miss, short: Miss }] }
+      surnames: [FitzClarence, Fitzhardinge, Fitzwalter, Beauclair, Fitzosborne, Fitzgerald]
+      claims: [natural child of a duke, natural child of an earl, natural child of a late Lord Lieutenant]
+    - id: honourable
+      name: The Honourable Mr —, a lord's brother
+      rank: Esquire
+      sex: man
+      needs: The lord's papers and wardrobe
+      test: appearances >= 12
+      cost: £8
+      home: [valet, strolling-player]
+      titles: { man: [{ long: the Honourable Mr, short: the Hon. Mr }] }
+      surnames: [Tremayne, Darcy, Annesley, Villiers, Talbot, Savile]
+      claims: [brother to a lord in Ireland, brother to a Scotch lord, brother to a lord now abroad]
+    - id: count
+      name: A count of the Empire
+      rank: Baronet or Knight
+      sex: either
+      needs: A foreign accent, a patent, and an equipage
+      test: equipage >= 2            # a chair kept, or a chariot
+      cost: £15
+      home: [strolling-player]
+      titles: { man: [{ long: Count, short: Count }], woman: [{ long: Countess, short: Countess }] }
+      surnames: [Montalbano, Strahlenfels, Vorlenberg, Taliani, Brisacier, Rosental]
+      claims: [of the Holy Roman Empire, of the Empire, by a patent from Vienna]

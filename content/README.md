@@ -37,6 +37,8 @@ A Venture is offered in a run only if it has an `offer` block:
 ```yaml
 offer:
   district: Covent Garden        # one of the ten districts, shown on the card
+  circle: the Town               # optional: the Quality, the City, the Town, the Trade or the Underworld
+  rank: Esquire                  # optional: the Claimed Rank it expects; below it, it is gate-crashed
   blurb: When the playhouses empty, the Town goes on to Tom King’s…
   when: has_persona("Capt") and has_item_like("pistol")   # optional: who may be offered it
   from: { year: 1724, week: 41 }  # optional: only between these dates
@@ -50,7 +52,11 @@ kit:                             # optional: lent for this Venture only
 test: true                       # placeholder content, marked on the card
 ```
 
-Each turn the run draws three offers from the Ventures whose conditions hold. In a run the Venture
+Each turn the run draws three offers from the Ventures whose conditions hold. A Venture's
+`circle` is where it is set: playing it makes the name worn known there, its rumours are that
+circle's talk, and it is not offered while that circle is closed after a name was blown. A Venture
+with a `rank` can be played below it, but every Exposure gain in it is one worse, and its card
+says so. In a run the Venture
 starts from the hero as they are, not from its `start` block, which is used only on the Venture's
 own page. `who`, `persona` and `start` stay required for that page.
 
@@ -143,8 +149,8 @@ next:
 | `{ condition: "Wounded (a ball-graze, left arm)", why: … }` | A wound, disease or Affliction |
 | `{ item: …, why: … }` · `{ lose: …, why: … }` | Possessions; `lose_matching: pistol` loses the first item containing the word |
 | `{ hook: …, why: … }` · `{ unhook: Betty Slyfield, why: … }` | Hooks, written as a person or thing and why it matters; `unhook` spends the first that starts with the words given |
-| `rumour: { id, delay, from, text, effect }` | A rumour, delivered 1–3 weeks after the Venture. On delivery the run applies the simple effects it can read in `effect` (“Exposure +3”, “Notoriety +1”, “Celebrity −1”); for anything else, add `on_delivery:` with a list of effects |
-| `{ persona: Capt. O’Rourke, why: … }` | The hero takes up a Persona, with Exposure 1; Exposure is kept separately for each name |
+| `rumour: { id, delay, from, text, effect, circle }` | A rumour, delivered 1–3 weeks after the Venture (a week later if the Venture's district is not the hero's). Its `circle` defaults to the Venture's: from a circle where the name is unknown, it adds only 1 Exposure, and makes the name known there. On delivery the run applies the simple effects it can read in `effect` (“Exposure +3”, “Notoriety +1”, “Celebrity −1”); for anything else, add `on_delivery:` with a list of effects |
+| `{ persona: Capt. O’Rourke, why: … }` | The hero passes under this name. A new one starts at Exposure 1, +1 for each rank claimed above the truth; a name worn before keeps its Exposure. Exposure is kept separately for each name |
 | `{ pledge: His father’s sword, loan: £1, why: … }` | Pawns an item; the run keeps the ticket, redeemable in the town for a fifth more within 12 weeks |
 | `{ note: 15s, to: Mr Tozer, why: … }` | A note of hand: a debt of honour, which costs Celebrity once four weeks unpaid |
 | `{ when: …, then: [ … ], else: [ … ] }` | Effects that happen only if a condition holds |
@@ -167,6 +173,9 @@ has_hook("Will Gallow")      has_item("A borrowed fan")      has_tag("Brother")
 has_condition("Wounded")     rumour_says("Exposure")
 exposure > start.exposure    # start = the state at the Approach
 has_persona("Capt")          played("blue-boar")
+rank_at_least("Esquire")     known_in("the Quality")   # the Claimed Rank; the circles where the name worn is known
+appearances >= expected_next # in a run: also claimed_rank, true_rank, secret ("kept" or "out"),
+                             # lodging_district, equipage (its tier, 0–3), circles_known, sale_money
 year == 1724 and week >= 41  # in a run: the calendar, the turn, and the Origin's id
 ```
 
@@ -214,12 +223,33 @@ Capt. O’Rourke). A value that begins with a name needs quotes in YAML: `st: "{
 `{creditor}`, `{prison}` and `{debts_money}`; `sample:` gives those values on the Venture's own page.
 The shops, prices and rules of the economy are in `settings.yaml` under `economy:`.
 
+## The false self
+
+Each name the hero passes under has its own Exposure, claimed rank and circles where it is known;
+the town screen lists them. The kinds of Persona a hero can take up in town, with their ranks,
+needs and prices, are in `settings.yaml` under `personas:`, with the rules' numbers. An ordinary
+Venture can ask the engine for five things by setting a flag:
+
+| Flag | What the run does after the Reckoning |
+| --- | --- |
+| `claim_up` | The name worn is received a rank higher (levee) |
+| `sold_name` | The name worn is sold for `{sale_money}`, its debts going with it; the hero is himself again (name-buyer) |
+| `named` | With `sold_name`: the buyer may name his seller, in a letter 4–12 weeks later |
+| `secret_out` | The Origin's Secret comes out |
+| `made_real` | The thing the name claims has been acquired: it is made real, and the True Rank rises to it |
+
+At Exposure 10 a name is blown (debts fall due, Celebrity −2, the Book of the True Rank, its
+circles closed, and a Wheel on Nerve against 5 for the Secret); a name made real, or the hero's
+own, suffers a scandal instead.
+
 ## Origins
 
 `origins.yaml` lists the eight Origins. An Origin marked `available: true` needs a `hero` block (the pools its
 names are drawn from, ranks, first lodging, starting `dress` for the six Appearances slots, and a
 `start` like a Venture's) and an `arrival`
-Venture. The others appear on the start screen as “not yet written”.
+Venture. `alias_kind` names the kind of Persona its drawn alias is, and `secret_out` says what the
+Secret costs when it comes out (a letter, a chapter, a Tag, a Hook, Credit at a lower rank) and
+the late reversal its Hook may bring. The others appear on the start screen as “not yet written”.
 
 ## Checking your work
 

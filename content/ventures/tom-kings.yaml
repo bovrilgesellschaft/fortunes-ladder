@@ -16,6 +16,7 @@ names:                     # on this page; a run draws its own
 test: true
 offer:
   district: Covent Garden
+  circle: the Town
   blurb: When the playhouses empty, the Town goes on to Tom King’s in the Piazza, where anyone may sit down and nobody goes home. A man might make his name there, or have it made for him.
   repeat: true
   weight: 1

@@ -124,6 +124,148 @@
         "savoy",
         "prison"
       ]
+    },
+    "personas": {
+      "type": "object",
+      "description": "The false self (Step 7); checked by the build.",
+      "required": [
+        "limit",
+        "circles",
+        "cool_weeks",
+        "closed_weeks",
+        "blown_celebrity",
+        "secret_diff",
+        "scandal",
+        "sale",
+        "kinds"
+      ],
+      "properties": {
+        "kinds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "name",
+              "rank",
+              "sex",
+              "needs",
+              "cost",
+              "home",
+              "titles",
+              "surnames",
+              "claims"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z-]+$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "rank": {
+                "enum": [
+                  "Vagabond",
+                  "Servant",
+                  "Tradesman",
+                  "Gentleman",
+                  "Esquire",
+                  "Baronet or Knight",
+                  "Peer"
+                ]
+              },
+              "sex": {
+                "enum": [
+                  "man",
+                  "woman",
+                  "either"
+                ]
+              },
+              "needs": {
+                "type": "string"
+              },
+              "test": {
+                "type": "string",
+                "description": "A condition on the hero, waived for an Origin at home in the kind."
+              },
+              "cost": {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              },
+              "home": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "titles": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "man": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "long",
+                        "short"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "long": {
+                          "type": "string"
+                        },
+                        "short": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "woman": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "long",
+                        "short"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "long": {
+                          "type": "string"
+                        },
+                        "short": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "surnames": {
+                "type": "array",
+                "minItems": 3,
+                "items": {
+                  "type": "string"
+                }
+              },
+              "claims": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

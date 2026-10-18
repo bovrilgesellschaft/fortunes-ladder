@@ -7,17 +7,18 @@
 //   bills    four weeks of Upkeep, rumours delivered week by week, humours cool
 //   → town again, four weeks on.
 
-import { Run, money, parseMoney, type HeroSeed } from './core';
+import { Run, money, odds, parseMoney, type HeroSeed } from './core';
 import { compile, evaluate, type Fn } from './expr';
 import { Rng } from './rng';
-import type { Effect, Origin, Passage, Rank, Room, Segment, Venture, When, World } from './types';
+import type { Effect, Origin, Passage, PersonaKind, Rank, Room, Segment, Told, Venture, When, World, Written } from './types';
+import { RANKS, SEGMENTS, SEGMENT_NAMES } from './types';
 import { drawNames, nameVars, type Names } from './names';
 import {
   SLOTS, WEEKLY, amt, appearances, condition, credit, price, rankBelow, rankIndex, valueOf,
   type Confinement, type Dress, type Loan, type Note, type Pledge, type Slot, type Writ,
 } from './economy';
 
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 const EPOCH = 1719;
 const LIM: Record<string, [number, number]> = { exposure: [0, 10], luck: [0, 3], celebrity: [0, 10], notoriety: [0, 10] };
 
@@ -66,11 +67,45 @@ export interface Hero {
   confined?: Confinement;
   /** When the hero went into the Savoy. */
   savoySince?: number;
+  // ----- the false self (Step 7). `personas` above holds each name's Exposure. -----
+  /** Every name the hero has passed under, and what became of it. */
+  records: Record<string, PersonaRec>;
+  /** The Origin's Secret. */
+  secret: 'kept' | 'out';
+  /** Circles closed to the hero's next Persona after one was blown, until a week. */
+  closed: Record<string, number>;
+  /** While the Secret is fresh news, Credit is reckoned at a lower rank. */
+  lowCredit?: { rank: Rank; until: number };
+}
+
+/** A name the hero passes under (Step 7 rulings). */
+export interface PersonaRec {
+  name: string;
+  /** The kind (settings.yaml personas.kinds), when known. */
+  kind?: string;
+  /** The rank this name claims. */
+  rank: Rank;
+  /** own: the hero's true name. live: worn, or ready to be worn. */
+  state: 'own' | 'live' | 'retired' | 'sold' | 'dead';
+  /** The circles where it is known. */
+  circles: string[];
+  /** Weeks since its Exposure last rose, toward cooling. */
+  quiet: number;
+  /** The tradesmen's debts run up under this name, which go with it if it is sold. */
+  debts: number;
+  /** When it was taken up. */
+  since: number;
+  /** At Exposure 10 once already, until it falls below. */
+  spent?: boolean;
+  /** Made real: the thing claimed has been acquired (a commission, a title, an estate). */
+  real?: boolean;
 }
 
 export interface Letter {
   id: string; from: string; text: string; effect: string; persona: string;
   at: number; venture: string; on_delivery?: Effect[];
+  /** Whose talk it is (Step 7). A letter without a circle is felt in full. */
+  circle?: string;
   /** What it did, once delivered. */
   done?: string[];
 }
@@ -127,8 +162,23 @@ export class Campaign {
       for (const d of Object.values(H.dress)) if (d && !H.items.includes(d.name)) H.items.push(d.name);
       H.notes = []; H.loans = []; H.pledges = []; H.writs = []; H.living = 'claimed';
       if (st.bills) st.bills.events = [];
+      st.v = 2;
+    }
+    if (st.v === 2) {
+      // Step 7: the names the hero has passed under become records
+      const H = st.hero as Partial<Hero> & Hero, alias = nameVars(H.names).alias;
+      H.records = {};
+      H.records[H.styled] = this.newRec(H.styled, H.persona === H.styled ? H.claimedRank : H.trueRank, 'own', H.debts);
+      for (const p of Object.keys(H.personas)) if (p !== H.styled) {
+        H.records[p] = { ...this.newRec(p, H.claimedRank, 'live', 0), kind: p === alias ? this.origin.hero?.alias_kind : undefined };
+      }
+      H.secret = 'kept'; H.closed = {};
       st.v = SAVE_VERSION;
     }
+  }
+
+  private newRec(name: string, rank: Rank, state: PersonaRec['state'], debts = 0): PersonaRec {
+    return { name, rank, state, circles: [], quiet: 0, debts, since: this.st?.at ?? 0 };
   }
 
   private startingDress(o?: Origin): Partial<Record<Slot, Dress | null>> {
@@ -159,12 +209,14 @@ export class Campaign {
       persona: nv.styled, personas: { [nv.styled]: x.exposure },
       trueRank: h.true_rank, claimedRank: h.claimed_rank, lodging: { ...h.lodging },
       dress: {}, notes: [], loans: [], pledges: [], writs: [], living: 'claimed',
+      records: {}, secret: 'kept', closed: {},
     };
     const st: CampaignState = {
       v: SAVE_VERSION, seed, rng: rng.state, hero, at, turn: 1, phase: 'town', offers: [], played: {},
       post: [], news: [], story: [], raised: {}, log: [],
     };
     const c = new Campaign(world, st);
+    hero.records[nv.styled] = c.newRec(nv.styled, h.claimed_rank, 'own', hero.debts);
     hero.dress = c.startingDress(o);
     for (const d of Object.values(hero.dress)) if (d && !hero.items.includes(d.name)) hero.items.push(d.name);
     if (o.arrival && c.byId[o.arrival]) c.startVenture(o.arrival);
@@ -192,6 +244,8 @@ export class Campaign {
       has_persona: (p) => H.persona.startsWith(p as string),
       played: (id) => !!this.st.played[id as string],
       rumour_says: (w) => this.st.post.some(r => r.effect.includes(w as string)),
+      rank_at_least: (r) => rankIndex(H.claimedRank) >= rankIndex(r as Rank),
+      known_in: (k) => !!H.records[H.persona]?.circles.includes(k as string),
     };
   }
 
@@ -202,6 +256,11 @@ export class Campaign {
       // the bailiff's writ, and the prison, for their Ventures
       writ_amount: w ? this.writAmount(w) : 0, writ_money: w ? money(this.writAmount(w)) : 'nothing', creditor: w?.creditor ?? '',
       prison: this.hero.confined?.where ?? (this.hero.lodging.district === 'Southwark' ? this.econ.prison.marshalsea : this.econ.prison.fleet), debts_all: this.enforceable(), debts_money: money(this.enforceable()),
+      // the false self (Step 7)
+      claimed_rank: this.hero.claimedRank, true_rank: this.hero.trueRank, secret: this.hero.secret ?? 'kept',
+      appearances: this.appearances(), expected_next: this.expectedNext(), lodging_district: this.hero.lodging.district,
+      equipage: this.hero.dress.Equipage?.tier ?? 0, sale_price: this.salePrice(), sale_money: money(this.salePrice()),
+      circles_known: (this.hero.records?.[this.hero.persona]?.circles ?? []).join(', '),
     };
   }
 
@@ -222,6 +281,7 @@ export class Campaign {
       if (!o.repeat && this.st.played[v.id]) return false;
       if (o.from && now < abs(o.from)) return false;
       if (o.to && now > abs(o.to)) return false;
+      if (o.circle && (this.hero.closed?.[o.circle] ?? 0) > now) return false;
       return this.test(o.when);
     });
   }
@@ -250,9 +310,19 @@ export class Campaign {
       purse: H.purse, debts: H.debts, luck: H.luck, exposure: H.personas[H.persona] ?? 0, notoriety: H.notoriety, celebrity: H.celebrity,
       attrs: H.attrs, hum: H.hum, conditions: H.conditions, tags: H.tags, items: H.items, hooks: H.hooks, persona: H.persona,
     };
+    const xx = this.exposureExtra(), crash = this.gateCrash(v);
+    if (crash) { xx.by++; xx.why = xx.why ? `${xx.why}, ${crash}` : crash; }
     return new Run({ venture: v, glossary: this.world.glossary }, {
-      hero: seed, at: c.at, extra: this.extra(), played: (x) => !!this.st.played[x], exposureExtra: this.exposureExtra(),
+      hero: seed, at: c.at, extra: this.extra(), played: (x) => !!this.st.played[x], exposureExtra: xx,
+      exposureOf: (p) => (H.records[p] && !['sold', 'dead'].includes(H.records[p].state) ? H.personas[p] : undefined),
+      newExposure: this.startExposure(H.claimedRank, true),
     });
+  }
+
+  /** A Venture played below the Claimed Rank it expects is gate-crashed (Step 7). */
+  gateCrash(v: Venture): string {
+    const r = v.offer?.rank;
+    return r && rankIndex(this.hero.claimedRank) < rankIndex(r) ? `gate-crashing a ${r}’s company` : '';
   }
 
   /** A number in [0, 1) from the run's own generator, for the Wheel. */
@@ -291,9 +361,23 @@ export class Campaign {
       purse: S.purse, debts: Math.max(0, S.debts), luck: S.luck, notoriety: S.notoriety, celebrity: S.celebrity,
       attrs: { ...S.attrs }, hum: { ...S.hum }, conditions: [...S.conditions], tags: [...S.tags], items: [...S.items], hooks: [...S.hooks],
     });
+    const events: string[] = [];
+    // the name worn: a new one becomes a record; an old one brings back its claim
+    const was = c.hero.records[S.persona] ? c.hero.personas[S.persona] : this.startExposure(c.hero.claimedRank, true);
+    if (!H.records[S.persona]) {
+      const alias = nameVars(H.names).alias;
+      H.records[S.persona] = { ...this.newRec(S.persona, H.claimedRank, 'live'), kind: S.persona === alias ? this.origin.hero?.alias_kind : undefined };
+      this.st.log.push(`Turn ${this.st.turn}: took up the name ${S.persona}`);
+      this.trimPersonas(S.persona, events);
+    } else if (H.records[S.persona].state === 'retired') H.records[S.persona].state = 'live';
     H.persona = S.persona; H.personas[S.persona] = S.exposure;
+    const rec = H.records[S.persona];
+    H.claimedRank = rec.rank;
+    if (S.exposure > was) rec.quiet = 0;
+    if (v.offer?.circle && !rec.circles.includes(v.offer.circle)) rec.circles.push(v.offer.circle);
     // a purse spent below nothing (a Reversal can cost more than was carried) is owed to the tradesmen
     if (H.purse < 0) { H.debts += -H.purse; this.st.log.push(`Turn ${this.st.turn}: ${money(-H.purse)} overspent, owed`); H.purse = 0; }
+    if (H.debts > c.hero.debts) rec.debts += H.debts - c.hero.debts;
     for (const p of S.pledges) {
       const slot = SLOTS.find(sl => H.dress[sl]?.name === p.item);
       const pl: Pledge = { item: p.item, loan: p.loan, at: this.st.at };
@@ -304,8 +388,15 @@ export class Campaign {
     // clothes lost in the Venture leave their slots
     for (const sl of SLOTS) { const d = H.dress[sl]; if (d && !WEEKLY.includes(sl) && !H.items.includes(d.name)) H.dress[sl] = null; }
     if (v.system) this.afterSystem(v.id, S.flags);
+    // what a Venture can ask of the false self (Step 7): flags the engine reads
+    if (S.flags.claim_up) this.raiseClaim(events);
+    if (S.flags.sold_name && H.persona !== H.styled) this.sellPersona(H.persona, !!S.flags.named, events);
+    if (S.flags.secret_out) this.secretOut(events);
+    if (S.flags.made_real) this.makeReal(H.persona, events);
     for (const r of S.rumours) {
-      this.st.post.push({ id: r.id, from: r.from, text: r.text, effect: r.effect, persona: r.persona, at: r.week, venture: v.id, on_delivery: r.on_delivery });
+      // talk from another district takes a week longer to reach the hero's lodging
+      const far = v.offer?.district && v.offer.district !== H.lodging.district ? 1 : 0;
+      this.st.post.push({ id: r.id, from: r.from, text: r.text, effect: r.effect, persona: r.persona, at: r.week + far, venture: v.id, on_delivery: r.on_delivery, circle: r.circle ?? v.offer?.circle });
     }
     if (S.story.length) {
       this.st.story.push({ no: this.st.story.length + 1, venture: v.id, title: v.title, heading: chapterHeading, passages: S.story.map(p => ({ sm: p.sm, st: p.st })) });
@@ -313,7 +404,7 @@ export class Campaign {
     this.st.played[v.id] = (this.st.played[v.id] ?? 0) + 1;
     this.st.log.push(`Turn ${this.st.turn}: ${v.title}${S.story.length ? ' (a chapter)' : ''}`);
     this.st.current = undefined;
-    this.settle();
+    this.settle(events);
   }
 
   /** Idle the month: no Venture, no spin. */
@@ -333,7 +424,9 @@ export class Campaign {
   /** Credit is nothing inside the Savoy or a prison, unless reckoned as it would stand outside. */
   credit(outside = false) {
     if (!outside && (this.inSavoy() || this.hero.confined)) return 0;
-    return credit(this.appearances(), this.hero.claimedRank, this.econ);
+    const H = this.hero, low = H.lowCredit && H.lowCredit.until > this.st.at ? H.lowCredit.rank : null;
+    const r = low && rankIndex(low) < rankIndex(H.claimedRank) ? low : H.claimedRank;
+    return credit(this.appearances(), r, this.econ);
   }
   /** What the law can recover: the tradesmen and the moneylender. Notes of hand cannot be sued for. */
   enforceable() { return this.hero.debts + this.hero.loans.reduce((a, l) => a + l.owed, 0); }
@@ -368,14 +461,18 @@ export class Campaign {
     return living + room + wages;
   }
 
-  private settle() {
-    const H = this.hero, s = this.world.settings, e = this.econ, weeks: WeekBill[] = [], events: string[] = [];
+  private settle(events: string[] = []) {
+    const H = this.hero, s = this.world.settings, e = this.econ, weeks: WeekBill[] = [];
     let total = 0, owedAll = 0;
+    this.checkPersonas(this.st.at, events);
     for (let i = 0; i < s.turn_weeks; i++) {
       const at = this.st.at + i;
+      if (when(at).week === 1) this.newYear(at, events);
+      this.cool(events);
       const up = this.weeklyUpkeep();
       const paid = Math.min(up, Math.max(0, H.purse)), owed = up - paid;
       H.purse -= paid; H.debts += owed; total += up; owedAll += owed;
+      if (owed) H.records[H.persona].debts += owed;
       if (H.confined?.stage === 'sponging-house') {
         H.confined.stage = 'prison';
         events.push(`After a week in the sponging-house, you are carried to ${H.confined.where}.`);
@@ -401,6 +498,8 @@ export class Campaign {
       const due = this.st.post.filter(r => r.at <= at);
       this.st.post = this.st.post.filter(r => r.at > at);
       for (const r of due) r.done = this.deliver(r, events);
+      this.checkPersonas(at, events);
+      due.push(...this.lettersNow.splice(0));
       // the moneylender sends for the bailiff when a loan is long overdue
       H.loans.forEach((l, k) => {
         if (at > l.due + e.lender.grace && !H.writs.some(w => w.kind === 'loan' && w.loan === k) && !H.confined) {
@@ -429,6 +528,7 @@ export class Campaign {
       if (!this.st.raised[k] && H.hum[k] > 1) { H.hum[k]--; cooled.push(k); }
     }
     this.st.raised = {};
+    this.syncDebts();
     this.st.news = weeks.flatMap(w => w.letters);
     this.st.bills = { weeks, cooled, total, owed: owedAll, events };
     this.st.phase = 'bills';
@@ -439,8 +539,16 @@ export class Campaign {
     const H = this.hero, done: string[] = [];
     const bump = (k: string, d: number) => {
       if (k === 'exposure') {
-        const p = r.persona; const [lo, hi] = LIM.exposure;
-        if (d > 0) d += this.exposureExtra().by;
+        const p = r.persona === '*' ? H.persona : r.persona; const [lo, hi] = LIM.exposure;
+        const rec = H.records[p];
+        // a name sold or dead is beyond the reach of talk
+        if (rec && (rec.state === 'sold' || rec.state === 'dead')) { done.push(`${p} is past caring`); return; }
+        if (d > 0) {
+          // talk from a circle where the name is unknown does less harm, but makes it known there
+          if (rec && r.circle && !rec.circles.includes(r.circle)) { d = 1; rec.circles.push(r.circle); done.push(`Now known in ${r.circle}`); }
+          else d += this.exposureExtra().by;
+          if (rec) rec.quiet = 0;
+        }
         H.personas[p] = Math.max(lo, Math.min(hi, (H.personas[p] ?? 0) + d));
         // a damaging rumour, while the tradesmen are owed more than Credit, brings a writ (systems spec)
         if (d > 0 && H.debts > this.credit() && !this.inSavoy() && !H.confined && !H.writs.some(w => w.kind === 'tradesmen')) {
@@ -556,6 +664,254 @@ export class Campaign {
     H.lodging = { district: was.district, room: 'garret' };
     this.st.news = [{ id: 'released', from: 'The turnkey', text: why, effect: '', persona: H.persona, at: this.st.at, venture: 'fleet' }, ...this.st.news];
     this.st.log.push(`Turn ${this.st.turn}: released`);
+  }
+
+  // ----- the false self (Step 7) -----
+
+  get pset() { return this.world.settings.personas; }
+  /** What the next rank up expects of Appearances; out of reach for a Peer. */
+  expectedNext(): number {
+    const i = rankIndex(this.hero.claimedRank);
+    return i >= RANKS.length - 1 ? 99 : this.econ.expected[RANKS[i + 1]];
+  }
+  /** Exposure 1 for a new name, +1 per rank claimed above the truth, −1 for a kind at home with the Origin. */
+  startExposure(rank: Rank, home: boolean): number {
+    return Math.max(0, 1 + Math.max(0, rankIndex(rank) - rankIndex(this.hero.trueRank)) - (home ? 1 : 0));
+  }
+  /** The hero's own name is true while it claims no more than the True Rank. A false name is made
+   *  real only when the thing claimed is acquired (a Venture's flags.made_real), and the True Rank
+   *  has caught up with it: a captain who claims no more than a gentleman's rank is still no captain. */
+  isReal(r: PersonaRec) {
+    const caught = rankIndex(r.rank) <= rankIndex(this.hero.trueRank);
+    return r.state === 'own' ? caught : !!r.real && caught;
+  }
+  /** Personas that count against the limit: live, and not yet made real. */
+  liveCount(except?: string) {
+    return Object.values(this.hero.records).filter(r => r.state === 'live' && r.name !== except && !this.isReal(r)).length;
+  }
+  /** Over the limit, the oldest Persona not worn is retired. */
+  private trimPersonas(keep: string, events: string[]) {
+    const H = this.hero;
+    while (this.liveCount() > this.pset.limit) {
+      const old = Object.values(H.records).filter(r => r.state === 'live' && r.name !== keep && r.name !== H.persona && !this.isReal(r)).sort((a, b) => a.since - b.since)[0];
+      if (!old) break;
+      old.state = 'retired'; events.push(`You cannot be everybody at once: ${old.name} is retired.`);
+    }
+  }
+  kinds(): PersonaKind[] {
+    const sex = this.hero.sex;
+    return this.pset.kinds.filter(k => k.sex === 'either' || k.sex === sex);
+  }
+  isHome(k: PersonaKind) { return k.home.includes(this.hero.origin); }
+  /** Why a kind cannot be taken up now, or null. */
+  cannotTakeUp(k: PersonaKind): string | null {
+    const H = this.hero, cost = amt(k.cost);
+    if (H.confined) return 'Not from prison.';
+    if (this.liveCount() >= this.pset.limit) return `You already keep up ${this.pset.limit} false names; retire one first.`;
+    if (H.purse < cost) return `The papers and props cost ${money(cost)}; you have ${money(H.purse)}.`;
+    if (this.appearances() < this.econ.expected[k.rank]) return `A ${k.rank} is expected to show Appearances of ${this.econ.expected[k.rank]}; you show ${this.appearances()}.`;
+    if (k.test && !this.isHome(k) && !this.test(k.test)) return `It needs ${k.needs.charAt(0).toLowerCase() + k.needs.slice(1)}.`;
+    return null;
+  }
+  /** Take up a new Persona of a kind. It is not worn until the hero moves (Ruling 1). */
+  takeUp(id: string): string | null {
+    const H = this.hero, k = this.pset.kinds.find(x => x.id === id);
+    if (!k) return 'No such kind.';
+    const why = this.cannotTakeUp(k); if (why) return why;
+    const rng = new Rng(this.st.rng), pick = <T>(a: T[]) => a[rng.int(0, a.length - 1)];
+    const t = pick(k.titles[H.sex] ?? k.titles.man ?? [{ long: 'Mr', short: 'Mr' }]);
+    let name = '';
+    for (let i = 0; i < 30 && (!name || H.records[name]); i++) name = `${t.short} ${pick(k.surnames)}`;
+    if (H.records[name]) return 'No name could be found that you have not used.';
+    const claim = pick(k.claims);
+    this.st.rng = rng.state;
+    H.purse -= amt(k.cost);
+    H.records[name] = { ...this.newRec(name, k.rank, 'live'), kind: k.id };
+    H.personas[name] = this.startExposure(k.rank, this.isHome(k));
+    this.st.log.push(`Turn ${this.st.turn}: took up ${name}, ${claim} (${k.rank}, Exposure ${H.personas[name]})`);
+    return null;
+  }
+  /** Change the name worn: the same landlady cannot know you by two, so it needs a move (Ruling 1). */
+  wear(name: string, district: string, room: Room): string | null {
+    const H = this.hero, r = H.records[name];
+    if (!r || r.state === 'sold' || r.state === 'dead') return 'That name is not yours to wear.';
+    if (name === H.persona) return null;
+    if (district === H.lodging.district) return 'To change your name you must change your district: the same landlady cannot know you by two.';
+    if (r.state === 'retired' && !this.isReal(r) && this.liveCount() >= this.pset.limit) return `You already keep up ${this.pset.limit} false names; retire one first.`;
+    if (!this.move(district, room)) return 'The bailiffs are waiting at the gate. You cannot leave the Liberty until what you owe falls below your Credit outside.';
+    if (r.state === 'retired') r.state = 'live';
+    H.persona = name; H.claimedRank = r.rank;
+    this.st.log.push(`Turn ${this.st.turn}: now passing as ${name}`);
+    return null;
+  }
+  retirePersona(name: string): string | null {
+    const r = this.hero.records[name];
+    if (!r || r.state !== 'live') return 'Nothing to retire.';
+    if (name === this.hero.persona) return 'Change to another name first; then this one may be retired.';
+    r.state = 'retired'; this.st.log.push(`Turn ${this.st.turn}: retired ${name}`);
+    return null;
+  }
+  /** What another rogue will give for the name worn: more for a high claim, less for a known one. */
+  salePrice(name = this.hero.persona): number {
+    const sale = this.pset.sale, lo = amt(sale.min), hi = amt(sale.max), r = this.hero.records?.[name];
+    if (!r) return lo;
+    const x = hi - (hi - lo) * (this.hero.personas[name] ?? 0) / 10 + 480 * Math.max(0, rankIndex(r.rank) - rankIndex('Gentleman'));
+    return Math.round(Math.max(lo, Math.min(hi, x)) / 12) * 12;
+  }
+  /** Sold, with its debts; the hero goes back to his own name. The buyer may one day name his seller. */
+  private sellPersona(name: string, named: boolean, events: string[]) {
+    this.syncDebts();
+    const H = this.hero, r = H.records[name], price = this.salePrice(name), sale = this.pset.sale;
+    H.purse += price;
+    const off = Math.min(r.debts, H.debts); H.debts -= off; r.debts = 0;
+    r.state = 'sold';
+    const own = H.records[H.styled];
+    H.persona = H.styled; H.claimedRank = own.rank;
+    events.push(`${name} is sold for ${money(price)}${off ? `, and ${money(off)} of debts go with the name` : ''}. You are ${H.styled} again.`);
+    if (named) {
+      const rng = new Rng(this.st.rng), delay = rng.int(sale.named_from, sale.named_to); this.st.rng = rng.state;
+      this.st.post.push({
+        id: 'named-' + name, from: 'A turnkey at Newgate', persona: '*', at: this.st.at + delay, venture: 'sale',
+        text: `The man who bought the name of ${name} has been taken, and is telling the Ordinary everything, including where he had it.`,
+        effect: `Exposure +${sale.named_exposure}`,
+      });
+    }
+    this.st.log.push(`Turn ${this.st.turn}: sold ${name} for ${money(price)}`);
+  }
+  /** The thing claimed is acquired: the name is made real, and the True Rank rises to its claim (Ruling 3). */
+  private makeReal(name: string, events: string[]) {
+    const H = this.hero, r = H.records[name];
+    if (!r || r.state !== 'live') return;
+    r.real = true;
+    if (rankIndex(H.trueRank) < rankIndex(r.rank)) H.trueRank = r.rank;
+    events.push(`${name} is made real: what was claimed is now true, and the name no longer counts among your false ones.`);
+    this.st.log.push(`Turn ${this.st.turn}: ${name} made real`);
+  }
+  /** A taking-up: the claim rises a rank (Ruling 3). */
+  private raiseClaim(events: string[]) {
+    const H = this.hero, r = H.records[H.persona], i = rankIndex(r.rank);
+    if (i >= RANKS.length - 1) return;
+    r.rank = RANKS[i + 1]; H.claimedRank = r.rank;
+    events.push(`You are received as a ${r.rank}. The Town will expect you to live like one.`);
+    this.st.log.push(`Turn ${this.st.turn}: ${H.persona} raised to ${r.rank}`);
+  }
+  /** Talk dies down: −1 after every so many weeks with no gain, but not in the Savoy or prison. */
+  private cool(events: string[]) {
+    const H = this.hero; if (this.inSavoy() || H.confined) return;
+    for (const r of Object.values(H.records)) {
+      if (r.state === 'sold' || r.state === 'dead' || !(H.personas[r.name] > 0)) continue;
+      if (++r.quiet >= this.pset.cool_weeks) {
+        r.quiet = 0; H.personas[r.name]--;
+        events.push(`The Town has stopped talking about ${r.name}: Exposure −1.`);
+      }
+    }
+  }
+  /** At Exposure 10: a name made real suffers a scandal; any other is blown. */
+  private checkPersonas(at: number, events: string[]) {
+    const H = this.hero;
+    for (const r of Object.values(H.records)) {
+      const x = H.personas[r.name] ?? 0;
+      if (r.state === 'sold' || r.state === 'dead') continue;
+      if (x < 10) { r.spent = false; continue; }
+      if (r.spent) continue;
+      r.spent = true;
+      if (this.isReal(r)) {
+        const k = this.pset.scandal;
+        H.celebrity = Math.max(0, H.celebrity - k.celebrity); H.notoriety = Math.min(10, H.notoriety + k.notoriety);
+        events.push(`A scandal: the Town talks of nothing but ${r.name}. Celebrity −${k.celebrity}, Notoriety +${k.notoriety}. But what is claimed is true, and nothing falls due.`);
+        this.st.log.push(`Turn ${this.st.turn}: a scandal (${r.name})`);
+      } else this.blow(r, at, events);
+    }
+  }
+  /** The Persona is blown (Ruling 4). */
+  private blow(r: PersonaRec, at: number, events: string[]) {
+    const H = this.hero, P = this.pset, twice = H.tags.some(t => t.startsWith('Brother')) && r.circles.length ? 2 : 1;
+    events.push(`<b>${r.name} is blown.</b> The whole Town knows the name for a lie.`);
+    // the hero falls to the Book of the True Rank
+    if (H.persona === r.name || r.state === 'own') {
+      const own = H.records[H.styled];
+      own.rank = H.trueRank;
+      H.persona = H.styled; H.claimedRank = H.trueRank;
+      events.push(`You are ${H.styled} again, and a ${H.trueRank}, as you always were.`);
+    }
+    if (r.state !== 'own') r.state = 'dead';
+    H.celebrity = Math.max(0, H.celebrity - P.blown_celebrity * twice);
+    events.push(`Celebrity −${P.blown_celebrity * twice}.`);
+    // every tradesman's debt falls due at once
+    if (H.debts > 0) {
+      const pay = Math.min(H.debts, Math.max(0, H.purse));
+      if (pay) { H.purse -= pay; H.debts -= pay; events.push(`The tradesmen come with their bills at once: you pay ${money(pay)}.`); }
+      if (H.debts > this.credit() && !this.inSavoy() && !H.confined && !H.writs.some(w => w.kind === 'tradesmen')) {
+        H.writs.push({ kind: 'tradesmen', amount: H.debts, creditor: this.econ.tradesman, at });
+        events.push(`${this.econ.tradesman[0].toUpperCase() + this.econ.tradesman.slice(1)} has taken out a writ for ${money(H.debts)}.`);
+      }
+    }
+    for (const k of r.circles) H.closed[k] = Math.max(H.closed[k] ?? 0, at + P.closed_weeks * twice);
+    if (r.circles.length) events.push(`${r.circles.join(', ').replace(/^./, x => x.toUpperCase())} will not receive you for ${P.closed_weeks * twice} weeks, whatever you call yourself.`);
+    this.st.log.push(`Turn ${this.st.turn}: ${r.name} blown`);
+    // a Wheel on Nerve decides the Secret
+    if (H.secret === 'kept') {
+      const m = Math.max(-3, Math.min(4, H.attrs.Nerve - P.secret_diff));
+      const p = odds(m), x = this.random();
+      let k = 0, acc = 0; for (; k < 4; k++) { acc += p[k]; if (x < acc) break; }
+      const seg = SEGMENTS[k];
+      const out = seg === 'R' || seg === 'X';
+      events.push(`Fortune’s Wheel, Nerve ${H.attrs.Nerve} against ${P.secret_diff}: ${SEGMENT_NAMES[seg]}. ${out ? 'The Secret is out.' : 'The Secret, for now, is kept.'}`);
+      if (out) this.secretOut(events, at);
+    }
+  }
+  /** The Origin's Secret comes out (Ruling 5): its cost, a letter, a chapter, and the Hook for a late reversal. */
+  secretOut(events: string[], at = this.st.at) {
+    const H = this.hero, so = this.origin.hero?.secret_out;
+    if (H.secret === 'out') return;
+    H.secret = 'out';
+    this.st.log.push(`Turn ${this.st.turn}: the Secret is out`);
+    if (!so) return;
+    const chips: string[] = [];
+    if (so.credit_rank && so.weeks) { H.lowCredit = { rank: so.credit_rank, until: at + so.weeks }; chips.push(`Credit as a ${so.credit_rank}, ${so.weeks} weeks`); }
+    if (so.tag && !H.tags.includes(so.tag)) { H.tags.push(so.tag); chips.push('Tag: ' + so.tag); }
+    if (so.hook) { H.hooks.push(this.fill(so.hook)); chips.push('New hook'); }
+    this.tell(so.letter, so.story, at, 'secret', chips, events);
+  }
+  /** Each new year, the Hook a Secret left may pay off. */
+  private newYear(at: number, events: string[]) {
+    const H = this.hero, rv = this.origin.hero?.secret_out?.reversal;
+    if (!rv) return;
+    const i = H.hooks.findIndex(h => h.startsWith(rv.hook)); if (i < 0) return;
+    if (this.random() >= rv.chance) return;
+    H.hooks.splice(i, 1);
+    const chips = ['Hook spent'];
+    if (rv.true_rank && rankIndex(rv.true_rank) > rankIndex(H.trueRank)) {
+      H.trueRank = rv.true_rank; chips.push(`True Rank: ${rv.true_rank}`);
+      const own = H.records[H.styled];
+      if (rankIndex(own.rank) < rankIndex(rv.true_rank)) own.rank = rv.true_rank;
+      if (H.persona === H.styled) H.claimedRank = own.rank;
+    }
+    this.tell(rv.letter, rv.story, at, 'reversal', chips, events);
+    this.st.log.push(`Turn ${this.st.turn}: the reversal`);
+  }
+  /** A letter delivered at once, and a chapter of the Story. */
+  private tell(l: Told, w: Written, at: number, id: string, chips: string[], events: string[]) {
+    const letter: Letter = { id, from: this.fill(l.from), text: this.fill(l.text), effect: chips.join(' · '), persona: this.hero.persona, at, venture: id, done: chips };
+    this.lettersNow.push(letter);
+    events.push(`A letter from ${letter.from.replace(/^The /, 'the ')}.`);
+    this.st.story.push({ no: this.st.story.length + 1, venture: id, title: w.heading, heading: w.heading, passages: [{ sm: this.fill(w.sm), st: this.fill(w.st) }] });
+  }
+  /** Letters written by the engine this month, shown with the post. */
+  private lettersNow: Letter[] = [];
+  /** {name}-style slots, and [[glossary]] terms, in text the engine writes itself. */
+  fill(src: string): string {
+    const v: Record<string, unknown> = { ...nameVars(this.hero.names) };
+    return src.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, t: string, sh?: string) => `<span class="cant" tabindex="0" role="button" data-t="${t.trim()}">${(sh ?? t).trim()}</span>`)
+      .replace(/\{(\w+)\}/g, (m, k: string) => (k in v ? String(v[k]) : m));
+  }
+  /** The debts run up under each name never total more than the books hold. */
+  private syncDebts() {
+    const H = this.hero, recs = Object.values(H.records).filter(r => r.state !== 'sold');
+    const total = recs.reduce((a, r) => a + r.debts, 0);
+    if (total <= H.debts) return;
+    let left = H.debts;
+    recs.forEach((r, i) => { r.debts = i === recs.length - 1 ? left : Math.floor(r.debts * H.debts / total); left -= r.debts; });
   }
 
   // ----- in the town -----

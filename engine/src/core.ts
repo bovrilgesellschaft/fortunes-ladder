@@ -5,7 +5,7 @@ import { compile, evaluate, type Fn } from './expr';
 import type {
   Amount, Beat, Content, Effect, GlossaryEntry, Option, Passage, Rumour, Segment, Venture,
 } from './types';
-import { SEGMENT_NAMES } from './types';
+import { RANKS, SEGMENT_NAMES, type Rank } from './types';
 import { nameVars } from './names';
 
 export interface Chip { t: string; tone: 'good' | 'bad' | 'neu' }
@@ -42,6 +42,10 @@ export interface RunOpts {
   played?: (id: string) => boolean;
   /** Added to every Exposure gain, with the reasons (shabby, pinching, a claim far above the truth). */
   exposureExtra?: { by: number; why: string };
+  /** In a run: the Exposure a Persona already has, if the hero has worn it before (Step 7). */
+  exposureOf?: (persona: string) => number | undefined;
+  /** In a run: the Exposure a new Persona starts at (1, +1 per rank claimed above the truth). */
+  newExposure?: number;
 }
 
 const LIM: Record<string, [number, number]> = { composure: [0, 8], exposure: [0, 10], luck: [0, 3], celebrity: [0, 10], notoriety: [0, 10] };
@@ -119,6 +123,9 @@ export class Run {
       rumour_says: (w) => S().rumours.some(r => r.effect.includes(w as string)),
       has_persona: (p) => S().persona.startsWith(p as string),
       played: (id) => !!this.opts.played?.(id as string),
+      // the false self (Step 7): read from the run's values, or the Venture's sample on its own page
+      rank_at_least: (r) => RANKS.indexOf(String(this.scope().claimed_rank ?? 'Gentleman') as Rank) >= RANKS.indexOf(r as Rank),
+      known_in: (k) => String(this.scope().circles_known ?? '').split(', ').includes(k as string),
     };
     this.start();
   }
@@ -263,8 +270,8 @@ export class Run {
         // "= alias": the run's drawn Persona name; otherwise the name as written
         const p = e.persona.trim().startsWith('=') ? String(this.eval(e.persona.trim().slice(1))) : e.persona;
         if (S.persona !== p) {
-          S.persona = p; S.exposure = 1;
-          this.fx.push({ t: 'Persona: ' + p, tone: 'neu' }); S.log.push(`Persona taken up: ${p}, Exposure 1 — ${e.why ?? ''}`);
+          S.persona = p; S.exposure = this.opts.exposureOf?.(p) ?? this.opts.newExposure ?? 1;
+          this.fx.push({ t: 'Persona: ' + p, tone: 'neu' }); S.log.push(`Persona taken up: ${p}, Exposure ${S.exposure} — ${e.why ?? ''}`);
         }
       }
       else if ('when' in e) this.apply(this.test(e.when) ? e.then : e.else);

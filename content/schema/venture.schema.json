@@ -153,6 +153,28 @@
         "arrival": {
           "type": "boolean",
           "description": "Not offered: played in the first turn as an Origin's arrival."
+        },
+        "circle": {
+          "enum": [
+            "the Quality",
+            "the City",
+            "the Town",
+            "the Trade",
+            "the Underworld"
+          ],
+          "description": "The circle the Venture is set in: playing it makes the Persona known there, and its rumours are that circle's talk."
+        },
+        "rank": {
+          "enum": [
+            "Vagabond",
+            "Servant",
+            "Tradesman",
+            "Gentleman",
+            "Esquire",
+            "Baronet or Knight",
+            "Peer"
+          ],
+          "description": "The Claimed Rank the Venture expects; below it, it is gate-crashed, at +1 on every Exposure gain."
         }
       }
     },
@@ -865,6 +887,16 @@
         },
         "on_delivery": {
           "$ref": "#/definitions/effects"
+        },
+        "circle": {
+          "enum": [
+            "the Quality",
+            "the City",
+            "the Town",
+            "the Trade",
+            "the Underworld"
+          ],
+          "description": "Whose talk it is; defaults to the Venture's circle."
         }
       }
     },

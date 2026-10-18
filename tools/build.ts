@@ -22,8 +22,10 @@ const C = (p: string) => path.join(ROOT, 'content', p);
 export const FACTIONS = ['the Quality', 'the Church', 'the Law', 'the Projectors', 'the Army & Navy', 'the Underworld', 'the Wits', 'the Trade', 'the Brethren & the Adepts', 'the Town'];
 export const DISTRICTS = ['St Giles', 'Southwark', 'The Savoy', 'Moorfields', 'Fleet Street and the Strand', 'Covent Garden', 'The City', "St James's", 'Mayfair', 'The Environs'];
 // names a condition may read: the hero's state, and in a run the calendar (year, week, turn) and Origin
-const ROOTS = new Set(['flags', 'attrs', 'hum', 'purse', 'debts', 'composure', 'luck', 'exposure', 'notoriety', 'celebrity', 'spoils', 'start', 'persona', 'year', 'week', 'turn', 'origin', ...NAME_ROOTS, 'writ_amount', 'writ_money', 'creditor', 'prison', 'debts_all', 'debts_money']);
-const FNS = new Set(['money', 'floor', 'ceil', 'min', 'max', 'if', 'has_item', 'has_item_like', 'has_hook', 'has_tag', 'has_condition', 'has_persona', 'played', 'rumour_says']);
+const ROOTS = new Set(['flags', 'attrs', 'hum', 'purse', 'debts', 'composure', 'luck', 'exposure', 'notoriety', 'celebrity', 'spoils', 'start', 'persona', 'year', 'week', 'turn', 'origin', ...NAME_ROOTS, 'writ_amount', 'writ_money', 'creditor', 'prison', 'debts_all', 'debts_money',
+  // the false self (Step 7)
+  'claimed_rank', 'true_rank', 'secret', 'appearances', 'expected_next', 'lodging_district', 'equipage', 'sale_price', 'sale_money', 'circles_known']);
+const FNS = new Set(['money', 'floor', 'ceil', 'min', 'max', 'if', 'has_item', 'has_item_like', 'has_hook', 'has_tag', 'has_condition', 'has_persona', 'played', 'rumour_says', 'rank_at_least', 'known_in']);
 
 export interface Report { errors: string[]; warnings: string[] }
 
@@ -90,7 +92,24 @@ function checkRun(origins: Origin[], settings: Settings, ventures: Venture[], st
       else if (!v.offer?.arrival) r.errors.push(`${at}: “${o.arrival}” should have offer.arrival: true`);
     }
   }
+  // the false self (Step 7)
+  const P = settings.personas, circles = new Set(P?.circles ?? []);
+  const kinds = new Set((P?.kinds ?? []).map(k => k.id));
+  for (const k of P?.kinds ?? []) {
+    const at = `settings.yaml personas.kinds ${k.id}`;
+    for (const h of k.home) if (!origins.some(o => o.id === h)) r.errors.push(`${at}: home “${h}” is not an Origin`);
+    if (k.sex !== 'woman' && !k.titles.man) r.errors.push(`${at}: a kind for men needs titles.man`);
+    if (k.sex !== 'man' && !k.titles.woman) r.errors.push(`${at}: a kind for women needs titles.woman`);
+    if (k.test) try { const n = compile(k.test); for (const p of paths(n)) if (!ROOTS.has(p[0])) r.errors.push(`${at}: unknown name “${p.join('.')}” in its test`); for (const c of calls(n)) if (!FNS.has(c)) r.errors.push(`${at}: unknown function ${c}()`); } catch (e) { r.errors.push(`${at}: ${(e as Error).message}`); }
+    try { parseMoney(String(k.cost)); } catch (e) { r.errors.push(`${at} cost: ${(e as Error).message}`); }
+  }
+  for (const c of P?.circles ?? []) if (!FACTIONS.includes(c) && c !== 'the City') r.warnings.push(`settings.yaml personas.circles: “${c}” is not a faction`);
+  for (const o of origins ?? []) {
+    if (o.hero?.alias_kind && !kinds.has(o.hero.alias_kind)) r.errors.push(`origins.yaml ${o.id}: alias_kind “${o.hero.alias_kind}” is not a kind of Persona`);
+    if (o.available && !o.hero?.secret_out) r.warnings.push(`origins.yaml ${o.id}: no secret_out, so its Secret costs nothing when it comes out`);
+  }
   for (const v of ventures) {
+    if (v.offer?.circle && !circles.has(v.offer.circle)) r.errors.push(`${v.id}.yaml offer.circle: “${v.offer.circle}” is not a circle`);
     if (!v.offer) continue;
     if (!DISTRICTS.includes(v.offer.district)) r.errors.push(`${v.id}.yaml offer.district: “${v.offer.district}” is not one of the ten districts`);
     if (v.test) r.warnings.push(`${v.id}.yaml: placeholder test content (Step 5)`);

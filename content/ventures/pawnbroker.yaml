@@ -16,6 +16,7 @@ names:                     # on this page; a run draws its own
 test: true
 offer:
   district: Fleet Street and the Strand
+  circle: the Trade
   blurb: When the purse is light and the tailor is not, there is always a shop off Fleet Street with three gilt balls over the door, and a man inside who lends at a third of the value.
   repeat: true
   weight: 1
