@@ -1,7 +1,7 @@
 {
-  "name": "fortunes-ladder",
+  "name": "picaresque",
   "version": "1.0.0",
-  "description": "Fortune's Ladder: a text-based picaresque roguelike set in London, 1719–1745",
+  "description": "Picaresque: a text-based picaresque roguelike set in London, 1719–1745",
   "scripts": {
     "build": "node tools/run.mjs build build",
     "check": "node tools/run.mjs build check",

@@ -9,7 +9,8 @@ import type { Rank, Room, World } from './types';
 import { RANKS } from './types';
 import { $, Chrome, Ledger, VentureView, esc, ledgerFromRun, store, type LedgerData } from './view';
 
-const KEY = 'fortunes-ladder-run';
+const KEY = 'picaresque-run';
+const OLD_KEY = 'fortunes-ladder-run'; // runs saved before the game was renamed
 const ROOMS: Room[] = ['garret', 'room', 'first floor'];
 
 export function roman(n: number): string {
@@ -29,7 +30,7 @@ export function mountRun(world: World) {
   // ---------- saving ----------
   const save = () => { if (c) store.set(KEY, JSON.stringify(c.st)); };
   function loadSaved(): Campaign | null {
-    const raw = store.get(KEY); if (!raw) return null;
+    const raw = store.get(KEY) ?? store.get(OLD_KEY); if (!raw) return null;
     try {
       const st = JSON.parse(raw) as CampaignState;
       if (st.v !== SAVE_VERSION) return null;
@@ -87,7 +88,7 @@ export function mountRun(world: World) {
     return h.persona !== h.styled ? `${h.history}, otherwise ${n.title} ${n.alias_surname}` : h.history;
   };
   function header() {
-    $('#runheadText').innerHTML = c ? history() : 'Fortune’s Ladder';
+    $('#runheadText').innerHTML = c ? history() : 'Picaresque';
     $('#storyTitle').textContent = c ? history() : 'The History of an Adventurer';
   }
 

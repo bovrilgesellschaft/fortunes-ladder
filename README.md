@@ -1,4 +1,4 @@
-# Fortune's Ladder
+# Picaresque
 
 A text-based picaresque roguelike set in London, 1719–1745. The player is a social-climbing
 adventurer who arrives unknown and tries to make a fortune; each run is a picaresque novel,
