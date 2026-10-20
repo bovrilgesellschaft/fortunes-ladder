@@ -1,0 +1,336 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# Step 10, batch 1 (St Giles). A dram-shop: cheap relief for the Melancholic, at a cost. Can be played
+# again. Altered after the Gin Act of 1736 (in force at Michaelmas, week 39). The famous sign is
+# first reported about the 1736 Act, so it is not quoted. The poor are never the butt.
+# New canon: Mrs Prue Hackett's dram-shop in Dyot Street.
+
+id: geneva
+title: A Quartern of Geneva
+names:                     # on this page; a run draws its own
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
+offer:
+  district: St Giles
+  circle: the Town
+  blurb: Under a chandler’s in Dyot Street, Mrs Hackett sells [[geneva]] by the dram and the quartern to anyone with a penny and a reason. The penny is easier to come by than the reason is to lose.
+  repeat: true
+  weight: 1
+  weight_when:
+    - { when: hum.Melancholic >= 3, by: 3 }
+    - { when: lodging_district == "St Giles", by: 2 }
+    - { when: played("geneva"), by: 0.5 }
+    - { when: 'rank_at_least("Esquire")', by: 0.25 }
+runhead: The Life &amp; Adventures of Mr {name}
+sub: Being an Evening with Madam Geneva, in five Beats
+prospectus: >-
+  A cellar in Dyot Street; a slate on the wall; a company on the benches that has come to forget
+  something, and mostly does; and the question, at two in the morning, of one more.
+year: 1724
+week: 6
+loot_flag: paid
+persona: Mr Byrne
+who:
+  name: Cornelius Byrne
+  as: under his own name
+  origin: Younger son of an Irish squire · Book I
+
+start:
+  purse: 9s
+  debts: £24
+  luck: 1
+  exposure: 0
+  notoriety: 0
+  celebrity: 0
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 0, Choleric: 1, Melancholic: 4, Phlegmatic: 1 }
+  tags: []
+  items: [His father’s sword, "A fine coat, made in Dublin and not paid for"]
+  hooks: []
+
+first: cellar
+
+chapter:
+  no: Chap. II.
+  opening: In which our Hero seeks Consolation
+  parts:
+    - { when: flags.round, text: stands a Round }
+    - { when: flags.slate, text: drinks upon the Slate }
+    - { when: flags.complained, text: complains of the Liquor }
+    - { when: flags.forgot, text: "forgets {his} Troubles" }
+    - { when: flags.listened, text: hears the News of the Parish }
+    - { when: flags.sang, text: sings }
+    - { when: flags.shoes, text: "loses {his} Shoes" }
+  last:
+    when: flags.withdrew or flags.left
+    text: goes Home while he can find it
+    else: is put out at Dawn
+
+story:
+  title: The History of Mr Cornelius Byrne
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface: There is a physician in St Giles who attends every patient in the parish, charges a penny, and never fails to relieve the symptoms for an hour; and it was to this practitioner, whose name is Geneva, that {hero}, finding {his} spirits very low, applied at about this time.
+  close: "{Hero} came up the cellar steps into the grey of the morning, very much relieved, and not at all cured; which is the common experience of that physician’s patients, and the reason they return."
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: Up the Cellar Steps
+  sid: geneva.05.reckoning
+  dev: Relief is in the humours already · nothing further to settle
+  steps:
+    - when: flags.left
+      say: You are up the steps and into Dyot Street with your purse and your melancholy both intact. It is not clear that you have the better of the bargain.
+    - when: not flags.left
+      say: Dyot Street at dawn is full of people going to work who look exactly like the people coming home. You are one of the second sort, and the first sort know it.
+    - when: flags.shoes
+      say: You walk home in your stockings. Nobody in St Giles remarks on it. Several people in Covent Garden do.
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
+    none: Nothing is in the post. Nobody in Mrs Hackett’s cellar remembers anything, which is what they were paying for.
+  upkeep: "Upkeep follows: the lodging, and the ordinary expense of having been somewhere you would not care to describe."
+  again: Go back down the steps
+  notes:
+    - The Middlesex justices reported on the spirit trade in 1726, and petitioned Parliament against it in 1736. Gin was then drunk chiefly by the London poor, and blamed for everything that befell them.
+  finis: Finis.
+
+beats:
+  - id: cellar
+    num: I
+    phase: The Approach
+    title: Under the Chandler’s
+    sid: geneva.01.cellar
+    dev: Approach · costed (a dram), costed (a round), gated (the slate) · post-1736 variant
+    text: |-
+      {if year > 1736 or (year == 1736 and week >= 39)}Mrs Hackett’s cellar in Dyot Street sells no gin, Parliament having forbidden it at Michaelmas 1736 to anyone without a fifty-pound licence. It sells instead a cordial, a colic-water and a thing she calls Parliament brandy, all from the same barrel.{fn †}{else}Mrs Hackett’s cellar in Dyot Street is under a chandler’s, down six steps worn hollow in the middle. It has two barrels, a bench along each wall, a slate by the door, and a smell that reaches the street before you do.{end}
+
+      Mrs Hackett is a large, calm woman who has seen everything twice. A dram is a penny, a [[quartern]] twopence. On the benches sit a porter, two chairmen between fares, a woman mending a shirt by the light of the one candle, and a sailor asleep with his mouth open.
+    notes:
+      - "† The Gin Act of 1736 required a licence of £50 to retail spirits, and came into force at Michaelmas. Almost none were taken out; the trade went on under other names, and under informers."
+    ask: What will you have?
+    options:
+      - label: A quartern, and a place on the bench.
+        cost: 2d
+        dev: Costed · certain
+        do:
+          effects: [{ adj: purse, by: -2d, why: a quartern of geneva }, { adj: hum.Melancholic, by: -1, why: the first quartern }]
+          text: The geneva is warm and oily and tastes of juniper and something underneath that does not bear thinking about. It goes down like a lit match. The bench makes room for you without anyone appearing to move.
+        next: liquor
+      - label: Stand the whole cellar a quartern apiece.
+        cost: 1s 2d
+        dev: Costed · certain · company
+        do:
+          effects: [{ adj: purse, by: -1s 2d, why: a round for the cellar }, { set: round }, { adj: hum.Melancholic, by: -1, why: company }, { adj: hum.Sanguine, by: 1, why: open-handed }]
+          text: The cellar drinks your health with real feeling. The woman with the shirt puts hers by for later, wrapped in a rag. The sailor wakes up, drinks his, and goes back to sleep, having apparently known it would come.
+        next: liquor
+      - label: Sit down on the end of the bench, and wait for someone to stand a round.
+        dev: Certain · free · Phlegmatic +1
+        do:
+          effects: [{ adj: hum.Phlegmatic, by: 1, why: waiting on charity }]
+          text: You sit at the end of the bench with your hands in your empty pockets. Nobody stands a round. But after half an hour the porter pushes the last inch of his own glass along the bench to you without a word, which in Dyot Street is a sacrament.
+        next: liquor
+      - label: Ask Mrs Hackett to put it on the slate, as a neighbour.
+        gate: { when: lodging_district == "St Giles", need: "a lodging in St Giles · you lodge in {lodging_district}" }
+        dev: Gated (lodging in St Giles) · certain · on credit
+        do:
+          effects: [{ set: slate }, { adj: debts, by: 6d, why: Mrs Hackett’s slate }, { adj: hum.Melancholic, by: -1, why: the first quartern }]
+          text: She chalks you a stroke on the slate without looking round, as if you had been doing it for years. Above your stroke are a great many others, some of them, you observe, very old.
+        next: liquor
+
+  - id: liquor
+    num: II
+    phase: The Complication
+    title: Not What It Was
+    sid: geneva.02.liquor
+    dev: Complication · a Withdraw, a risky complaint, a risky swallow
+    text: |-
+      The second glass is not like the first. It has been helped along with something that burns the back of the throat like a farrier’s iron, and leaves a taste of the pitch on a ship’s side.{fn *}
+
+      Mrs Hackett, filling the porter’s glass from the same jug, catches your eye and holds it, pleasantly, the way a dog holds a bone.
+    notes:
+      - "* Gin was commonly adulterated: with oil of turpentine for the flavour, with oil of vitriol for the bite, and with water for the profit."
+    ask: What will you do about the liquor?
+    options:
+      - label: "Withdraw: set the glass down, pay, and go up the steps."
+        withdraw: true
+        dev: Withdraw · certain · ends the Venture
+        do:
+          effects: [{ set: left }]
+          text: You set the glass down, put a penny beside it, and go. The porter drinks your glass before you are up the steps. Nobody in the cellar thinks any the worse of you, or of the glass.
+        next: reckon
+      - label: Complain to Mrs Hackett of her liquor, as a customer of standing.
+        dev: Risky · Address against 4
+        check: { attr: Address, diff: 4, bonus: [{ when: flags.round, by: 1, why: you stood the round }] }
+        outcomes:
+          T:
+            effects: [{ set: complained }, { adj: hum.Melancholic, by: -1, why: the good barrel }]
+            text: Mrs Hackett hears you out, nods, and fills you a glass from a small barrel under the counter that nobody has mentioned. It is the real thing, or as near as Dyot Street comes. The porter looks at you as at a man who has been made a burgess.
+          S:
+            effects: [{ set: complained }]
+            text: She takes the glass back without argument and gives you another, from the same jug, with great ceremony. It is a little better. Ceremony improves most things.
+          C:
+            effects: [{ set: complained }, { adj: purse, by: -1d, why: "a better glass, at a price" }]
+            text: There is better, she says, for those that pay better. You pay a penny more. It is better by about a penny.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: a complaint ignored }]
+            text: She says it is the same as everyone has. The bench agrees with her, loyally. It is the same as everyone has, which is the complaint.
+          X:
+            effects: [{ adj: hum.Choleric, by: 1, why: put out }, { set: left }]
+            text: Mrs Hackett does not argue. She comes round the counter, takes you by the collar and the seat of the breeches, and puts you up the steps into Dyot Street, where you sit for some time considering the justice of your case.
+        story:
+          T: Complaining of the liquor, which was a geneva helped along with turpentine, {hero} so far won upon the mistress of the house that she drew {him} a glass from a private cask under the counter; at which the whole cellar regarded {him} as a man of influence, and the porter in particular, as a dog regards the one who is let into the kitchen.
+          X: Complaining of the liquor, {hero} was answered by the mistress of the house without a word, she taking {him} by the collar and the breeches together and depositing {him} at the top of her steps in Dyot Street, where {he} sat some time upon the stones, reflecting on the rights of the customer.
+        next:
+          - { when: flags.left, go: reckon }
+          - { go: forget }
+      - label: Drink it down, as the porter does, and think no more about it.
+        dev: Risky · Constitution against 4
+        check: { attr: Constitution, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ adj: hum.Melancholic, by: -1, why: the second quartern }, { adj: composure, by: 1, why: a cast-iron stomach }]
+            text: You drink it down without a blink. The porter, who has been watching, nods to you with the respect of one professional for another.
+          S:
+            effects: []
+            text: It goes down. It stays down. That is the most that can be said, and in Dyot Street it is a great deal.
+          C:
+            effects: [{ adj: hum.Phlegmatic, by: 1, why: a heavy head }]
+            text: It goes down, and settles somewhere behind your eyes like a cat on a cushion, and declines to move.
+          R:
+            effects: [{ adj: hum.Melancholic, by: 1, why: a sick stomach }]
+            text: It comes up again, in the yard, rather quickly. When you come back the bench has moved up, and you are now at the end nearest the door.
+          X:
+            effects: [{ adj: hum.Melancholic, by: 1, why: a very sick stomach }, { adj: hum.Phlegmatic, by: 1, why: laid out on the bench }]
+            text: The cellar tilts like a ship in a cross sea, and you lie down on the bench to steady it. The sailor wakes, looks at you with sympathy, and puts his own coat over you.
+        story:
+          T: The second glass was turpentine as much as juniper; but {hero} drank it off without a blink, to the admiration of a porter who had drunk at that cellar twenty years and seen few gentlefolk stand it.
+          X: The second glass, which was compounded of geneva, turpentine and the mistress’s own judgement, laid {hero} upon the bench like a ship upon her beam-ends; where a sailor, who had himself been laid there oftener than he could count, covered {him} with his coat, and went back to sleep.
+        next: forget
+
+  - id: forget
+    num: III
+    phase: The Turn
+    title: Madam Geneva
+    sid: geneva.03.forget
+    dev: Turn · drink to forget (risky, the relief), listen (certain, a Hook), or sing (risky, Celebrity in St Giles)
+    text: |-
+      By midnight the cellar is full and warm and very kind. The chairmen have given up their fares. The woman with the shirt has finished it, and is telling the porter about her husband, who is at sea, or in Newgate; the story allows for either.
+
+      Everyone here has come to put something down for an hour. The geneva is very willing to hold it.
+    ask: What will you do with the night?
+    options:
+      - label: Drink steadily until whatever is troubling you has stopped.
+        cost: 6d
+        dev: Costed and risky · Constitution against 4 · the relief, and its price
+        check: { attr: Constitution, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: forgot }, { adj: purse, by: -6d, why: three quarterns more }, { adj: hum.Melancholic, by: -2, why: forgotten }]
+            text: Somewhere about the third quartern the trouble goes, quite quietly, like a creditor who has been kept waiting too long and decides to call another day. You are fond of everybody. Everybody, for the moment, is fond of you.
+          S:
+            effects: [{ set: forgot }, { adj: purse, by: -6d, why: three quarterns more }, { adj: hum.Melancholic, by: -1, why: forgotten }]
+            text: The trouble goes. It will come back in the morning, but it goes, and you are allowed to sit with the others in the warm and not think.
+          C:
+            effects: [{ set: forgot }, { adj: purse, by: -6d, why: three quarterns more }, { adj: hum.Melancholic, by: -1, why: forgotten }, { adj: hum.Phlegmatic, by: 1, why: dull with drink }]
+            text: The trouble goes, and so does most of your understanding. For two hours you think very slowly about a cart-wheel.
+          R:
+            effects: [{ adj: purse, by: -6d, why: three quarterns more }, { adj: hum.Melancholic, by: 1, why: "the trouble, louder" }]
+            text: The trouble does not go. It sits down beside you on the bench and has a quartern of its own, and talks more freely than before.
+          X:
+            effects: [{ adj: purse, by: "= -min(purse, 30)", why: drinking on }, { adj: hum.Melancholic, by: 1, why: "the trouble, louder" }, { adj: hum.Choleric, by: 1, why: a quarrel you do not remember }]
+            text: You drink until you weep, and then until you quarrel with the porter about the Duke of Marlborough, of whom neither of you knows anything. He wins. Mrs Hackett takes half a crown off you for the glass you broke, which you do not remember either.
+        story:
+          T: About the third quartern {his} troubles departed, as quietly as a dun who has waited too long upon the stairs and resolves to call another day; and {hero} sat among the porters and the chairmen in a warmth of universal benevolence, which was very sincere, and lasted until morning.
+          X: "{Hero} drank until {he} wept, and wept until {he} quarrelled, and quarrelled with a porter upon the merits of the Duke of Marlborough, a subject on which neither had any information; and was charged half a crown, at the end, for a glass {he} could not remember breaking, by a hostess who could not forget it."
+        next: more
+      - label: Nurse one glass, and listen to the parish.
+        dev: Certain · a Hook from the talk of St Giles
+        do:
+          effects:
+            - { set: listened }
+            - { adj: hum.Phlegmatic, by: 1, why: a long sitting }
+            - { hook: "A kind countryman who stands treat in the alehouses of St Giles, and whom the cellar warns you against", why: the talk at Mrs Hackett’s }
+          text: You hear about the price of coals, a fire in Church Lane, a constable who can be squared and one who cannot. And you hear, twice, about a kind countryman who stands treat to strangers in the alehouses, and whose new friends are never seen in the parish again.
+        next: more
+      - label: Get up on the bench and give the cellar a song.
+        dev: Risky · Wit against 3
+        check: { attr: Wit, diff: 3, bonus: [{ when: flags.round, by: 1, why: a grateful audience }] }
+        outcomes:
+          T:
+            effects: [{ set: sang }, { adj: hum.Melancholic, by: -1, why: applause }, { tag: "Agreeable (the Town)", why: a song in Dyot Street }]
+            text: You give them a song about a squire and a milkmaid with eleven verses, and they join in from the fourth. The chairmen beat time on the barrels. When you get down, Mrs Hackett gives you a dram on the house, which has not happened in Dyot Street since the Peace of Utrecht.
+          S:
+            effects: [{ set: sang }, { adj: hum.Melancholic, by: -1, why: applause }]
+            text: They like it. They like the next one better, which is one of theirs, and which you are taught, verse by verse, with great patience.
+          C:
+            effects: [{ set: sang }]
+            text: You sing very well, but the sailor wakes up during the second verse and sings a different song at the same time, and the cellar takes his side.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: a song refused }]
+            text: The cellar listens politely through two verses and then asks, quite kindly, if you know anything else. You do not.
+          X:
+            effects: [{ adj: hum.Melancholic, by: 1, why: a song gone wrong }, { adj: celebrity, by: -1, why: "your song, repeated in St Giles" }]
+            text: You choose a sad song by mistake. Halfway through the woman with the shirt begins to cry, and then the porter, and you have to stop, and the cellar is quieter than it was before you started.
+        story:
+          T: Mounting the bench, {hero} gave the company a ballad of a squire and a milkmaid in eleven verses, the cellar joining in from the fourth, and the chairmen beating time upon the barrels; so that the mistress of the house, for the first time since the Peace of Utrecht, drew a dram that she did not chalk up.
+          X: Mounting the bench to cheer the company, {hero} chose, by an unlucky recollection, a ballad of a sailor drowned; and before the third verse the whole cellar was in tears, the porter loudest; so that {he} was obliged to get down in the middle, having relieved nobody’s melancholy but added generously to everyone’s.
+        next: more
+
+  - id: more
+    num: IV
+    phase: The Crisis
+    title: One More
+    sid: geneva.04.more
+    dev: Crisis · Press on (risky) or Withdraw (certain) · an informer after 1736
+    text: |-
+      {if (year > 1736 or (year == 1736 and week >= 39)) and year < 1739}At two in the morning a quiet man in a brown coat, who has bought nothing, gets up and goes out, and the chairmen look at each other. Informers are paid out of the fines of every unlicensed seller they swear against, and Mrs Hackett has started putting the glasses away.{fn *}{else}At two in the morning Mrs Hackett begins putting up the shutters on the inside, which in Dyot Street means that the cellar is closing to everyone except the people already in it.{end}
+
+      There is one more glass on the counter with your name on it, and the night is not over yet. The steps are just there.
+    notes:
+      - "* Under the Act of 1736 informers were rewarded out of the fines they procured. In 1737 and 1738 they were mobbed in the streets, and some, it is said, were killed."
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: one more, and then another, until the shutters come down."
+        dev: Press on · Constitution against 5
+        check: { attr: Constitution, diff: 5 }
+        outcomes:
+          T:
+            effects: [{ adj: hum.Melancholic, by: -1, why: "a long night, well spent" }, { adj: purse, by: "= -min(purse, 4)", why: the last quarterns }]
+            text: You see the night out on the bench, warm and easy, among people who have stopped asking anything of each other. At dawn Mrs Hackett lets you all out into the street like a hen-wife letting out the hens.
+          S:
+            effects: [{ adj: purse, by: "= -min(purse, 4)", why: the last quarterns }]
+            text: You see the night out. It is not a very good end to it, but it is an end, and you are there for it.
+          C:
+            effects: [{ set: shoes }, { adj: purse, by: "= -min(purse, 4)", why: the last quarterns }]
+            text: You see the night out, and somewhere near the end of it someone sees out with your shoes. They were not good shoes, but they were the only ones you had.
+          R:
+            effects: [{ adj: hum.Melancholic, by: 1, why: the grey of the morning }, { adj: purse, by: "= -min(purse, 12)", why: "the last quarterns, and a shilling’s worth more" }]
+            text: The last glass does what the first ones did not. You see, very clearly, everything you came down the steps to stop seeing, and the shutters come down on you seeing it.
+          X:
+            effects:
+              - { adj: hum.Melancholic, by: 1, why: the kennel at dawn }
+              - { adj: purse, by: "= -floor(purse / 2)", why: robbed in the kennel }
+              - { adj: notoriety, by: 1, why: taken up drunk }
+              - rumour:
+                  id: geneva-watch
+                  delay: 1
+                  from: The watch-house of St Giles
+                  text: The Watch found a {gent} asleep in the kennel in Dyot Street at five this morning, with a good coat and an empty purse, and took a name that may or may not have been the true one.
+                  effect: Notoriety +1
+            text: You wake in the kennel of Dyot Street with the Watch’s lantern in your face and your purse half empty. The watchman is very kind about it, and writes your name in his book.
+        story:
+          T: "{Hero} saw the night out upon the bench, in that warm and easy company which asks nothing of anyone, and at dawn was let out into the street with the rest, as a hen-wife lets out the hens, blinking and very well disposed towards the world."
+          X: Pressing on beyond the counsel of {his} constitution, {hero} was found at five in the morning in the kennel of Dyot Street, with the Watch’s lantern in {his} face and {his} purse half emptied by some earlier visitor; and the watchman, who had found a great many gentlefolk in that kennel, was very civil, and wrote {his} name down.
+        next: reckon
+      - label: "Withdraw: go home while you can still find the way."
+        withdraw: true
+        dev: Withdraw · certain
+        do:
+          effects: [{ set: withdrew }]
+          text: You leave the last glass on the counter. The porter has it before you are on the second step. Outside the air is cold and clean, or at least cold, and you find the way home by the third attempt.
+        next: reckon

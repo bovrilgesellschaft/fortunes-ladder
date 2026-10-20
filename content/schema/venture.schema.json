@@ -180,6 +180,35 @@
             "Peer"
           ],
           "description": "The Claimed Rank the Venture expects; below it, it is gate-crashed, at +1 on every Exposure gain."
+        },
+        "weight_when": {
+          "type": "array",
+          "description": "Weight multipliers while a condition holds (Step 10).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "when",
+              "by"
+            ],
+            "properties": {
+              "when": {
+                "$ref": "#/definitions/expr"
+              },
+              "by": {
+                "type": "number",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "prophecy": {
+          "type": "string",
+          "description": "For a dated Venture: how the Cunning Man foretells it."
+        },
+        "prophecy_when": {
+          "$ref": "#/definitions/expr",
+          "description": "Who the prophecy is for."
         }
       }
     },

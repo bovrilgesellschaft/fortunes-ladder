@@ -219,9 +219,27 @@ humours:
   # the engine's own rises, once per humour per turn
   rises: { spoils: £10, loss: £10 }
   relief:
-    vice: { by: 2, notoriety: 0.25 }
+    vice:
+      by: 2
+      notoriety: 0.25
+      # lodging in a low district, vice is had at its price (Step 10, Proposed)
+      by_district: { St Giles: 4d, The Savoy: 6d, Southwark: 1s }
+      words:
+        St Giles: A night in the dram-shops of St Giles, where oblivion is sold by the quartern and nobody asks your name.
+        The Savoy: A night at the Savoy’s one alehouse, among men who have also run out of places to go.
+        Southwark: A night on Bankside, among watermen and worse, of which the less said the better.
     religion: { by: 2, tag: Pious (the Church), moorfields: { year: 1739, week: 17 } }
     physician: { by: 1, fee: 1 guinea, attr: Constitution, diff: 3, condition: Physicked (bled and purged), weeks: 4 }
+
+# The Cunning Man's stock readings, when no dated Venture is coming (Step 10). Each is vague in the
+# way of the trade; the Editor's note on the Venture supplies the rational account.
+prophecies:
+  - Beware a man who calls you cousin, for he means to borrow, or to lend, and either will cost you.
+  - Venus is in the house of debt. A woman will ask you for money, or a tailor will, and you will not tell the difference until too late.
+  - A letter is coming from the west. Do not open it before dinner.
+  - Saturn frowns on your linen. Change it, and change your luck.
+  - You will be robbed before Lady Day, or will rob someone; the stars are not particular which.
+  - A great man will take your hand. Count your rings afterwards.
 
 tags:
   limit: 3                     # Tags per faction; a fourth pushes out the oldest
@@ -250,6 +268,7 @@ tags:
     Fortune-hunter: { valence: bad, lasts: 24 }
     Savoyard:       { valence: bad, lasts: for good }
     Brother:        { valence: good, lasts: for good }
+    Informer:       { valence: bad, except: [the Law] }      # Step 10
 
 # ---------- the score (systems spec, Ruling; Step 9) ----------
 score:

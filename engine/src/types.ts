@@ -160,6 +160,12 @@ export interface Offer {
   circle?: string;
   /** The Claimed Rank it expects; below it, it is gate-crashed (Step 7). */
   rank?: Rank;
+  /** Weight multipliers while a condition holds (Step 10): a purse under £1, a dated window, played before. */
+  weight_when?: { when: string; by: number }[];
+  /** For a dated Venture: how the Cunning Man foretells it (Step 10). */
+  prophecy?: string;
+  /** Who the prophecy is for (an Origin, a sex); the offer's own `when` may not hold yet. */
+  prophecy_when?: string;
 }
 
 export interface Venture {
@@ -260,7 +266,7 @@ export interface HumourSettings {
   prodigal_upkeep: number; torpid_offers: number; quarrel: string;
   rises: { spoils: Amount; loss: Amount };
   relief: {
-    vice: { by: number; notoriety: number };
+    vice: { by: number; notoriety: number; by_district?: Record<string, Amount>; words?: Record<string, string> };
     religion: { by: number; tag: string; moorfields: When };
     physician: { by: number; fee: Amount; attr: string; diff: number; condition: string; weeks: number };
   };
@@ -283,6 +289,8 @@ export interface Settings {
   factions: string[];
   humours: HumourSettings;
   tags: TagSettings;
+  /** The Cunning Man's stock readings, when no dated Venture is coming (Step 10). */
+  prophecies?: string[];
   score: { celebrity: number; climbed: number; fallen: number; altered: number; endings: Record<Ending, number>; ruin_weeks: number; last_year: number };
 }
 

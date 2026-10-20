@@ -21,6 +21,8 @@ offer:
   to: { year: 1724, week: 46 }
   when: persona == alias and has_item_like("pistol") and has_item("A crape mask")
   weight: 3
+  prophecy: The Moon will stand over a high road, and a stout man will ride under her with a thing he values more than his life. A pale woman sits beside him who remembers everything. One of them will be your fortune, and the other your enemy, and the stars do not say which.
+  prophecy_when: origin == "younger-son"
 kit:
   items: [A hired grey prancer, from the Bell in Holborn]
   returned: [A hired grey prancer, from the Bell in Holborn]

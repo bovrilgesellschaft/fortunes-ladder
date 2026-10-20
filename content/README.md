@@ -44,6 +44,11 @@ offer:
   from: { year: 1724, week: 41 }  # optional: only between these dates
   to: { year: 1724, week: 46 }
   weight: 3                      # optional: relative chance of being drawn (default 1)
+  weight_when:                   # optional: multiply the weight while a condition holds (Step 10)
+    - { when: purse < 240, by: 3 }           # poor heroes are drawn to St Giles
+    - { when: played("geneva"), by: 0.5 }    # less often once played
+  prophecy: The Moon will stand over a high road…   # optional, for a dated Venture: the Cunning Man's reading
+  prophecy_when: origin == "younger-son"           # optional: whom the prophecy is for
   repeat: true                   # optional: may be offered again after it is played
   arrival: true                  # instead: played in the first turn, as an Origin's arrival
 kit:                             # optional: lent for this Venture only
@@ -221,6 +226,21 @@ so text never writes them out. Use these instead:
 | `{alias_title}` · `{alias_title_lc}` · `{alias_surname}` · `{alias_claim}` | Major · major · Plunkett · late of the French service |
 
 To take up the Persona, write `{ persona: "= alias" }`; to test for it, `persona == alias`.
+
+The hero may be a man or a woman (Step 10). Play text is in the second person, so it rarely
+matters; where the world addresses the hero, use these:
+
+| Write | A man | A woman |
+| --- | --- | --- |
+| `{sir}` · `{Sir}` | sir · Sir | madam · Madam |
+| `{gent}` · `{fellow}` | gentleman · man | lady · woman |
+| `{hero}` · `{Hero}` | our hero · Our hero | our heroine · Our heroine |
+| `{he}` `{his}` `{him}` `{himself}` · `{He}` `{His}` | he his him himself | she her her herself |
+
+Test with `hero_sex == "woman"`. Story passages use `{hero}` and the pronouns. Chapter headings may
+use the pronoun slots (quote them in YAML: `text: "loses {his} Shoes"`), and “our Hero” in a
+heading becomes “our Heroine” by itself. A value that *begins* with a slot needs quotes in YAML:
+`T: "{Hero} drank it off…"`. In a run, `{prophecy}` is the Cunning Man's reading.
 A Venture's `names:` block gives the names on its own page (heath's are Cornelius Byrne and
 Capt. O’Rourke). A value that begins with a name needs quotes in YAML: `st: "{alias_long}. — Of what regiment?"`.
 

@@ -24,7 +24,7 @@ export const DISTRICTS = ['St Giles', 'Southwark', 'The Savoy', 'Moorfields', 'F
 // names a condition may read: the hero's state, and in a run the calendar (year, week, turn) and Origin
 const ROOTS = new Set(['flags', 'attrs', 'hum', 'purse', 'debts', 'composure', 'luck', 'exposure', 'notoriety', 'celebrity', 'spoils', 'start', 'persona', 'year', 'week', 'turn', 'origin', ...NAME_ROOTS, 'writ_amount', 'writ_money', 'creditor', 'prison', 'debts_all', 'debts_money',
   // the false self (Step 7)
-  'claimed_rank', 'true_rank', 'secret', 'appearances', 'expected_next', 'lodging_district', 'equipage', 'sale_price', 'sale_money', 'circles_known']);
+  'claimed_rank', 'true_rank', 'secret', 'appearances', 'expected_next', 'lodging_district', 'equipage', 'sale_price', 'sale_money', 'circles_known', 'sex', 'prophecy']);
 const FNS = new Set(['money', 'floor', 'ceil', 'min', 'max', 'if', 'has_item', 'has_item_like', 'has_hook', 'has_tag', 'has_condition', 'has_persona', 'played', 'rumour_says', 'rank_at_least', 'known_in', 'has_tag_in', 'standing']);
 
 export interface Report { errors: string[]; warnings: string[] }

@@ -1,0 +1,327 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# Step 10, batch 1 (St Giles). Taken up by the Watch; a night in the parish roundhouse; a trading justice
+# in the morning. In the spring of 1724 (weeks 10-20) the young housebreaker in the roundhouse is
+# Jack Sheppard, whose first escape (from St Giles's Roundhouse, through the ceiling, within three
+# hours) fell then; the month is not certain, so the window is wide and the Editor says "spring".
+# New canon: Mr Justice Tallow, a trading justice of Bloomsbury.
+
+id: roundhouse
+title: A Night in the Roundhouse
+names:                     # on this page; a run draws its own
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
+offer:
+  district: St Giles
+  circle: the Law
+  blurb: The Watch of St Giles takes up whoever is abroad after midnight and looks as if they might be worth a fee. A night in the roundhouse is a great leveller, and a justice in the morning a great expense.
+  weight: 1
+  weight_when:
+    - { when: notoriety >= 2, by: 2 }
+    - { when: lodging_district == "St Giles", by: 1.5 }
+    - { when: year == 1724 and week >= 10 and week <= 20, by: 3 }
+    - { when: 'rank_at_least("Esquire")', by: 0.25 }
+runhead: The Life &amp; Adventures of Mr {name}
+sub: Being a Night in the Custody of the Parish, in five Beats
+prospectus: >-
+  The Watch at one in the morning; the roundhouse of St Giles and its customs; a slight young
+  carpenter who does not mean to stay; and Mr Justice Tallow, who sits at nine and charges by the word.
+year: 1724
+week: 15
+loot_flag: paid
+persona: Mr Byrne
+who:
+  name: Cornelius Byrne
+  as: under his own name
+  origin: Younger son of an Irish squire · Book II
+
+start:
+  purse: £1 4s
+  debts: £24
+  luck: 1
+  exposure: 0
+  notoriety: 1
+  celebrity: 0
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 1, Choleric: 2, Melancholic: 1, Phlegmatic: 0 }
+  tags: []
+  items: [His father’s sword, "A fine coat, made in Dublin and not paid for"]
+  hooks: []
+
+first: watch
+
+chapter:
+  no: Chap. VII.
+  opening: In which our Hero is taken into the Care of the Parish
+  parts:
+    - { when: flags.quiet, text: goes quietly }
+    - { when: flags.fought, text: fights the Watch }
+    - { when: flags.garnish, text: "pays {his} Garnish" }
+    - { when: flags.stood, text: "stands upon {his} Dignity" }
+    - { when: flags.legup, text: lends a Hand to a Housebreaker }
+    - { when: flags.roof, text: goes out through the Roof }
+    - { when: flags.peached, text: calls the Constable }
+    - { when: flags.discharged, text: is discharged with Apologies }
+    - { when: flags.bound, text: is bound over }
+  last:
+    when: flags.withdrew or flags.left or flags.roof
+    text: is not there in the Morning
+    else: pays the Fees
+
+story:
+  title: The History of Mr Cornelius Byrne
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface: The parish of St Giles, which could not keep its poor fed, its streets clean or its gin-shops shut, kept at least a roundhouse, and a watch to fill it; and it was into this institution that {hero}, being abroad at an hour when only rogues and gentlefolk are abroad, and being taken by the Watch for the commoner of the two, was now received.
+  close: So ended {his} night in the care of the parish, which had cost {him} a night’s sleep, a good deal of money and some part of {his} good opinion of the constitution; and had taught {him}, what the rest of St Giles learned in the cradle, that the law is a shop like any other, and opens at nine.
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: Nine O’Clock in Bloomsbury
+  sid: roundhouse.05.reckoning
+  dev: Fees are taken in the beats · the Sheppard Hook and hindsight if he was helped
+  steps:
+    - when: flags.left
+      say: The constable of the night lets you out at three, with your crown in his pocket and his lantern in your face, and wishes you a good night as if he meant it. Nothing has been written down. That, you understand, is what the crown was for.
+    - when: flags.roof
+      say: You come down off the roof into Lewknor’s Lane at four in the morning, and walk home as the sky greys, with plaster in your hair and the distinct sense of having been part of something.
+    - when: not flags.left and not flags.roof
+      say: You come out of Mr Justice Tallow’s office into Bloomsbury at ten, lighter in the purse and a good deal wiser in the ways of the law, which are long, and cost sixpence a step.
+    - when: (year == 1724 and week >= 10 and week <= 20) and (flags.legup or flags.roof)
+      do: [{ hook: "Jack Sheppard, a young housebreaker you helped out of St Giles’s Roundhouse", why: a night in the roundhouse }]
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
+    none: Nothing is in the post. The roundhouse keeps no records worth the name, which is its one mercy.
+  upkeep: "Upkeep follows: the lodging you did not sleep in, and the fees of a justice you did not wish to meet."
+  again: Walk home late again
+  notes:
+    - Each parish kept a roundhouse, where the Watch lodged those it took up in the night until a justice could see them in the morning. Justices who lived on their fees were called trading justices, and were not, as a rule, in a hurry to discharge anyone.
+  finis: Finis.
+
+beats:
+  - id: watch
+    num: I
+    phase: The Approach
+    title: The Watch Calls One
+    sid: roundhouse.01.watch
+    dev: Approach · certain (go quietly), costed (a shilling), risky (fight)
+    text: |-
+      “Past one o’clock, and a fine night!” calls the watchman, and then, holding up his lantern to your face, “and who are you, at this hour?”
+
+      There are three of them, old men with staffs and lanterns and the steady, reasonable look of those who are paid by the head. In St Giles after midnight, they explain, a person abroad is either a rogue or a witness to one, and either way the constable of the night will want to see them.
+    ask: How will you go?
+    options:
+      - label: Go quietly, as a respectable person with nothing to fear.
+        dev: Certain · Composure +1
+        do:
+          effects: [{ set: quiet }, { adj: composure, by: 1, why: going quietly }]
+          text: You go quietly. The watchmen are pleased with you, as farmers are pleased with a beast that walks to market, and one of them lends you his arm over the worst of the kennel.
+        next: roundhouse
+      - label: Give the eldest a shilling to have mistaken you for someone else.
+        cost: 1s
+        dev: Costed · certain · they take you anyway, but kindly
+        do:
+          effects: [{ adj: purse, by: -1s, why: a shilling for the Watch }, { set: greased }]
+          text: He takes the shilling, bites it, and thanks you. Then he takes you to the roundhouse all the same, but by a cleaner street, and puts in a good word with the constable, which, he gives you to understand, is a separate article.
+        next: roundhouse
+      - label: Knock the lantern out of his hand and run for it.
+        dev: Risky · Nerve against 4
+        check: { attr: Nerve, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: fought }, { tag: "Game (the Underworld)", why: fought the Watch }]
+            text: You knock down the first, dodge the second, and are halfway to Holborn before the third catches you, being by some distance the youngest and fastest man of seventy in the parish. He is very much out of breath, and very civil about it. The street, which has watched from its windows, is delighted.
+          S:
+            effects: [{ set: fought }]
+            text: You get a dozen yards before a staff catches you behind the knees. They take you to the roundhouse without rancour. Everyone runs, they say. It is expected.
+          C:
+            effects: [{ set: fought }, { adj: hum.Choleric, by: 1, why: a staff across the shoulders }]
+            text: You get a dozen yards, and then a staff across the shoulders, and then the roundhouse, in that order.
+          R:
+            effects: [{ set: fought }, { adj: notoriety, by: 1, why: assaulting the Watch }]
+            text: The lantern goes out, and so do you, over a watchman’s foot. They are much less friendly now. One of them writes something down by the light of the other’s lantern.
+          X:
+            effects: [{ set: fought }, { adj: notoriety, by: 1, why: assaulting the Watch }, { condition: "Wounded (a watchman’s staff, the head)", why: fought the Watch }]
+            text: The lantern goes out. A staff comes down out of the dark. You wake on a bench in the roundhouse with a lump on your head like a hen’s egg, and are told you went down like a sack of meal.
+        story:
+          T: Taken up by the Watch, {hero} knocked the lantern from the eldest’s hand, laid the second in the kennel, and was within a street of Holborn before {he} was overtaken by the third, who, though seventy years of age, was by much the youngest and nimblest of the parish’s defenders, and took {him} with great courtesy, and with no breath at all.
+          X: "{Hero} struck out at the Watch, extinguished their lantern, and in the darkness that followed received from some unseen staff a blow upon the crown that laid {him} in the kennel like a sack of meal; from which {he} was carried, insensible, to the roundhouse, to the great satisfaction of the street, which had watched from every window."
+        next: roundhouse
+
+  - id: roundhouse
+    num: II
+    phase: The Complication
+    title: Garnish
+    sid: roundhouse.02.garnish
+    dev: Complication · costed (garnish), risky (stand on dignity), Withdraw (bribe the constable)
+    text: |-
+      The roundhouse of St Giles is a squat brick drum with one door and a grating. Inside, by the light of a rushlight, are a dozen people on the benches and the floor: a coal-heaver, two women in silk taken up for night-walkers, a drunk gentleman in a bag wig, a slight young man with his wrists tied, and a large person who says he is the steward of the room.
+
+      The steward explains the custom. Every newcomer pays garnish: a shilling, for drink for the company. It is pay or strip, he says, and smiles, and you see that he has very few teeth and has kept them for this.{fn *}
+    notes:
+      - "* Garnish was the fee new prisoners paid to old ones, on pain of being stripped of their clothes to pay it; ‘pay or strip’ was the rule in every gaol in London."
+    ask: Will you pay your garnish?
+    options:
+      - label: Pay the shilling, like a gentleman.
+        cost: 1s
+        dev: Costed · certain
+        do:
+          effects: [{ adj: purse, by: -1s, why: garnish }, { set: garnish }, { adj: composure, by: 1, why: a place on the bench }]
+          text: The shilling goes out through the grating to a potboy who has been waiting there since midnight for this very purpose, and comes back as gin. The company drinks your health. The coal-heaver makes room for you on the bench, and the steward calls you ‘your worship’.
+        next: carpenter
+      - label: Tell the steward you are a {gent}, and do not pay garnish to coal-heavers.
+        dev: Risky · Nerve against 4
+        check: { attr: Nerve, diff: 4, bonus: [{ when: flags.fought, by: 1, why: they saw you fight the Watch }] }
+        outcomes:
+          T:
+            effects: [{ set: stood }, { adj: composure, by: 1, why: carried it off }]
+            text: The steward looks at you for a long time, and then laughs, and says that a person with that much brass will be needing it for the justice, and lets you be. The room thinks you very fine.
+          S:
+            effects: [{ set: stood }]
+            text: The steward considers you, and the size of your fists, and decides to collect from the drunk gentleman instead, who pays for both.
+          C:
+            effects: [{ set: stood }, { adj: purse, by: "= -min(purse, 12)", why: "garnish, collected" }]
+            text: The steward does not argue. He simply waits until you sit down, and then two of the company sit down on either side of you, and you find your shilling has paid itself.
+          R:
+            effects: [{ adj: purse, by: "= -min(purse, 24)", why: "garnish, doubled" }, { adj: hum.Choleric, by: 1, why: shaken down }]
+            text: The steward is very sorry to hear it. The garnish for gentlemen, he says, is two shillings, and he takes it from your pocket himself, very gently, while the coal-heaver holds your arms.
+          X:
+            effects: [{ adj: purse, by: "= -min(purse, 24)", why: "garnish, taken" }, { adj: hum.Choleric, by: 1, why: stripped of your hat and stock }, { adj: hum.Melancholic, by: 1, why: the corner by the bucket }]
+            text: "Pay or strip, the steward says, and they strip you: your hat, your stock, two shillings and your dignity, and you spend the night in the corner by the bucket, which is where the dignity has gone."
+        story:
+          T: The steward of the roundhouse demanding garnish, {hero} replied that {he} paid no tribute to coal-heavers, with such an air that the fellow, after long consideration, laughed and let {him} be; and {he} sat out the night upon the best bench, with all the company’s respect and none of its gin.
+          X: Refusing garnish, {hero} was answered with the rule of every gaol in London, which is pay or strip; and was stripped accordingly of {his} hat, {his} stock and two shillings, and spent the rest of the night in the corner by the bucket, where the company directed {his} attention to the error of {his} principles.
+        next: carpenter
+      - label: "Withdraw: buy the constable of the night, and be out of here by three."
+        withdraw: true
+        cost: 5s
+        gate: { when: purse >= 60, need: "a crown · you have {money(purse)}" }
+        dev: Withdraw · costed · certain · ends the Venture before the justice
+        do:
+          effects: [{ adj: purse, by: -5s, why: the constable of the night }, { set: left }]
+          text: You speak to the constable through the grating, low, and something passes between you. At three the door opens, and a voice says you are free to go, there being no charge, as nobody can now remember what it was.
+        next: reckon
+
+  - id: carpenter
+    num: III
+    phase: The Turn
+    title: The Slight Young Man
+    sid: roundhouse.03.carpenter
+    dev: Turn · help him (certain), go with him (risky), call the constable (certain, an informer), or sleep
+    text: |-
+      Towards two, when the rushlight is low, the slight young man with tied wrists sits down beside you. He has got his wrists untied somehow. {if (year == 1724 and week >= 10 and week <= 20)}He is a carpenter, he says, by trade, and his name is Jack; his brother peached on him, and he does not mean to be here when the justice sits.{fn *}{else}He is a housebreaker, he says, quite frankly, and does not mean to be here when the justice sits.{end}
+
+      The ceiling, he points out, is only boards and plaster. He wants a leg up, and something to make a rope of, and the room’s discretion.
+    notes:
+      - "* Jack Sheppard, a carpenter’s apprentice turned housebreaker, was put in St Giles’s Roundhouse in the spring of 1724 and was out of it within three hours, through the ceiling. It was the first of his four escapes that year."
+    ask: What will you do about the young man?
+    options:
+      - label: Give him a leg up, and your neckcloth for a rope.
+        dev: Certain · a kindness to a rogue
+        do:
+          effects: [{ set: legup }, { lose_matching: neckcloth, why: lent to a housebreaker }, { tag: "Game (the Underworld)", why: helped a prisoner out }]
+          text: You make a step of your hands. He goes up through the boards like a cat through a hedge, and your neckcloth goes after him, knotted to the coal-heaver’s blanket. A little plaster comes down, and then nothing. Nobody in the room says anything. The steward goes on snoring with great care.
+        next: justice
+      - label: Go up after him, and out through the roof.
+        dev: Risky · Constitution against 5
+        check: { attr: Constitution, diff: 5, bonus: [{ when: (year == 1724 and week >= 10 and week <= 20), by: 1, why: he hauls you up }] }
+        outcomes:
+          T:
+            effects: [{ set: legup }, { set: roof }, { tag: "Game (the Underworld)", why: out through the roof }, { adj: hum.Sanguine, by: 1, why: over the rooftops }]
+            text: He hauls you up through the hole like a sack of oats, and you go out together over the roofs of St Giles in the dark, from one gutter to the next, with the whole parish asleep below. At the end of Lewknor’s Lane he shakes your hand, says you are a good one, and is gone.
+          S:
+            effects: [{ set: legup }, { set: roof }]
+            text: You get up through the hole with a great deal of plaster and very little grace, and out over the roofs, and down a drainpipe into a lane. He is already gone.
+          C:
+            effects: [{ set: legup }, { set: roof }, { condition: "Wounded (a sprained ankle, from a gutter)", why: out through the roof }]
+            text: You get out, but the last gutter gives way, and you come down into Lewknor’s Lane rather faster than you meant, on one foot.
+          R:
+            effects: [{ set: legup }, { adj: hum.Choleric, by: 1, why: stuck in the ceiling }]
+            text: He gets out. You get halfway, and stick at the hips, and hang there, half a prisoner and half not, until the coal-heaver pulls you down by the legs. In the morning the constable finds a hole in his ceiling and one fewer housebreaker, and looks at you.
+          X:
+            effects: [{ set: legup }, { adj: notoriety, by: 1, why: caught in the ceiling }, { condition: "Wounded (a fall from the roof, the ribs)", why: out through the roof }]
+            text: You get out through the hole, and onto the roof, and onto a slate that is not fixed to anything. You come down in the constable’s own yard, and he comes out in his nightcap to see what it is.
+        story:
+          T: "{Hero}, being invited by the young housebreaker to see the parish from above, went up after him through the ceiling, and out over the roofs of St Giles, from gutter to gutter, the whole parish snoring beneath them; and at the end of Lewknor’s Lane the young fellow shook {his} hand, declared {him} a good one, and vanished{if (year == 1724 and week >= 10 and week <= 20)}, to become within the year the most famous man in England{end}."
+          X: Attempting to follow the young housebreaker over the roofs, {hero} trusted {his} weight to a slate that had no great opinion of it, and descended, with the slate, into the constable’s own yard; where that officer, coming out in his nightcap to discover the cause, discovered it, and wrote it down.
+        next: justice
+      - label: Call the constable through the grating.
+        dev: Certain · the Law's good opinion, and the room's bad one
+        do:
+          effects:
+            - { set: peached }
+            - { tag: "Informer (the Underworld)", why: called the constable on a prisoner }
+            - { adj: hum.Melancholic, by: 1, why: the room’s silence }
+          text: The constable comes in with a lantern and a cudgel, and ties the young man’s wrists again, tighter. The young man does not look at you at all. Nor, for the rest of the night, does anyone else in the room.
+        next: justice
+      - label: Turn your face to the wall and see nothing.
+        dev: Certain
+        do:
+          effects: [{ adj: hum.Phlegmatic, by: 1, why: seeing nothing }]
+          text: You turn to the wall. Behind you there is a creaking, and a little plaster falls on your hat, and a cold draught comes down from somewhere it did not come from before. In the morning there is one prisoner fewer, and a hole in the ceiling, and the constable asks everybody what they saw, and everybody saw nothing.
+        next: justice
+
+  - id: justice
+    num: IV
+    phase: The Crisis
+    title: Mr Justice Tallow
+    sid: roundhouse.04.justice
+    dev: Crisis · Press on (risky, argue) or Withdraw (certain, pay the fees)
+    text: |-
+      {if flags.roof}You are not in the roundhouse at nine, but Mr Justice Tallow’s clerk has your description from the steward, and the steward’s price was very low. A runner finds you in Lewknor’s Lane before you have washed off the plaster.{else}At nine the Watch brings the night’s takings round to Mr Justice Tallow, who lives in Bloomsbury and sits in his own parlour, with his breakfast.{end} He is a trading justice. He looks at your coat and does a sum.
+
+      There is a fee for the warrant, a fee for the commitment, a fee for the discharge and a fee for the clerk who writes them, and he would be glad, he says, to hear what you have to say before he decides which.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: argue your case, and demand to be discharged without fees."
+        dev: Press on · Address against 5
+        check:
+          attr: Address
+          diff: 5
+          bonus:
+            - { when: 'rank_at_least("Gentleman")', by: 1, why: a gentleman before a justice }
+            - { when: flags.peached, by: 1, why: the constable speaks for you }
+            - { when: flags.roof, by: -1, why: plaster in your hair }
+        outcomes:
+          T:
+            effects: [{ set: discharged }, { tag: "Man of Honour (the Law)", why: discharged with apologies }]
+            text: You speak of Magna Carta, the rights of an English subject and your uncle, a bencher of Gray’s Inn whom you invent on the spot. Mr Justice Tallow, who cannot afford to be wrong about uncles, discharges you with apologies and no fees, and blames the Watch.
+          S:
+            effects: [{ set: discharged }, { adj: purse, by: "= -min(purse, 30)", why: the clerk’s fee alone }]
+            text: He discharges you, there being no charge he can name, and makes it up on the clerk, who charges you half a crown for writing down that there was no charge.
+          C:
+            effects: [{ set: discharged }, { adj: purse, by: "= -min(purse, 80)", why: the justice’s fees }]
+            text: He hears you out, agrees with every word, and discharges you on payment of the fees, which come to six and eightpence, the same as they would have done if you had said nothing.
+          R:
+            effects: [{ set: bound }, { adj: purse, by: "= -min(purse, 80)", why: the justice’s fees }, { adj: debts, by: £1, why: the cost of sureties }]
+            text: He hears you out, and finds that anyone who argues so well is a danger to the peace, and binds you over to keep it, with sureties. You pay the fees, and the sureties, whom the clerk provides at a pound, are added to your bill.
+          X:
+            effects:
+              - { set: bound }
+              - { adj: purse, by: "= -min(purse, 80)", why: the justice’s fees }
+              - { adj: debts, by: £2, why: sureties and costs }
+              - { adj: notoriety, by: 1, why: bound over }
+              - rumour:
+                  id: tallow
+                  delay: 2
+                  from: A Middlesex justice
+                  text: Mr Justice Tallow of Bloomsbury has bound over a {gent} of St Giles to keep the peace, after a night in the roundhouse and a speech about Magna Carta that the clerk wrote down for the amusement of the bench.
+                  effect: Notoriety +1 · Celebrity −1
+            text: You mention Magna Carta. Mr Justice Tallow, who has heard of it, binds you over in two pounds, with costs, and has the clerk write down your speech, which he says he will read to his wife.
+        story:
+          T: Brought before a trading justice at nine in the morning, {hero} spoke so warmly of Magna Carta, the rights of the subject and an uncle at Gray’s Inn, whom {he} created upon the spot for the purpose, that the magistrate, who could not afford to be mistaken in an uncle, discharged {him} with apologies, and without fees, an event not recorded in that parlour before or since.
+          X: "{Hero} addressed the justice upon Magna Carta, a document of which that magistrate had heard, and which he therefore resented; and was bound over to keep the peace in two pounds, with costs, and {his} speech taken down by the clerk, to be read aloud at the justice’s dinner table for a month."
+        next: reckon
+      - label: "Withdraw: pay the fees, and say nothing."
+        withdraw: true
+        cost: 6s 8d
+        dev: Withdraw · costed · certain
+        do:
+          effects: [{ set: withdrew }, { adj: purse, by: "= -min(purse, 80)", why: the justice’s fees }]
+          text: You pay the fees, which come to six and eightpence, and say nothing. Mr Justice Tallow discharges you with a look of great approval. A person who pays and says nothing, he observes to his clerk, is the backbone of the law.
+        next: reckon

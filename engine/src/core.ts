@@ -410,7 +410,10 @@ export class Run {
       for (const x of c.parts) if (this.test(x.when)) p.push(x.text);
       p.push(this.test(c.last.when) ? c.last.text : c.last.else);
     }
-    return p.length > 1 ? p.slice(0, -1).join('; ') + '; and ' + p.at(-1) + '.' : p[0] + '.';
+    const h = p.length > 1 ? p.slice(0, -1).join('; ') + '; and ' + p.at(-1) + '.' : p[0] + '.';
+    // slots ({his}) are filled, and a heroine is called one (Step 10)
+    const out = this.inline(h);
+    return this.scope().hero_sex === 'woman' ? out.replace(/\bour Hero\b/g, 'our Heroine') : out;
   }
 
   segmentName(s: Segment) { return SEGMENT_NAMES[s]; }

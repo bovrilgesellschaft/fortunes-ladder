@@ -344,6 +344,13 @@
         "ruin_weeks",
         "last_year"
       ]
+    },
+    "prophecies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "The Cunning Man's stock readings (Step 10)."
     }
   }
 }

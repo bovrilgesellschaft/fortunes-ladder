@@ -1,0 +1,329 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# Step 10, batch 1 (St Giles). "A Night in the Rookery" in the slate: renamed, because "rookery" for a
+# slum is first attested in 1792. Learning the cant is the Book I goal the design document names.
+# New canon: Corporal Tapp; the fence in Monmouth Street (a Hook).
+
+id: penny-lodging
+title: A Penny Lodging in St Giles
+names:                     # on this page; a run draws its own
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
+offer:
+  district: St Giles
+  circle: the Underworld
+  blurb: In the lanes behind St Giles church a bed can be had for twopence, a share of one for less, and an education in the language of thieves for the price of a dram.
+  weight: 1
+  weight_when:
+    - { when: purse < 240, by: 3 }
+    - { when: lodging_district == "St Giles", by: 2 }
+    - { when: 'rank_at_least("Esquire")', by: 0.25 }
+runhead: The Life &amp; Adventures of Mr {name}
+sub: Being a Night upon the Straw, in five Beats
+prospectus: >-
+  A twopenny lodging in Church Lane; an old soldier who has every word of the cant and none of its
+  morals; and a bundle of linen that wants carrying to Monmouth Street before it is missed.
+year: 1724
+week: 8
+loot_flag: paid
+persona: Mr Byrne
+who:
+  name: Cornelius Byrne
+  as: under his own name
+  origin: Younger son of an Irish squire · Book I
+
+start:
+  purse: 1s 4d
+  debts: £24
+  luck: 1
+  exposure: 0
+  notoriety: 0
+  celebrity: 0
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 0, Choleric: 1, Melancholic: 2, Phlegmatic: 1 }
+  tags: []
+  items: [His father’s sword, "A fine coat, made in Dublin and not paid for"]
+  hooks: []
+
+first: door
+
+chapter:
+  no: Chap. III.
+  opening: In which our Hero goes to School in St Giles
+  parts:
+    - { when: flags.talked, text: is admitted on Credit }
+    - { when: flags.thrown, text: sleeps in the Kennel }
+    - { when: flags.supper, text: "shares {his} Supper with a Veteran" }
+    - { when: flags.cant, text: learns a new Language }
+    - { when: flags.carried, text: carries a Bundle to Monmouth Street }
+    - { when: flags.taken, text: meets the Watch }
+  last:
+    when: flags.left
+    text: leaves before Morning
+    else: rises with the Sparrows
+
+story:
+  title: The History of Mr Cornelius Byrne
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface: There is no school in England so thorough as poverty, nor any where the fees are lower; and it was at about this time that {hero}, having come down in the world as far as the lanes behind St Giles church, was entered at it.
+  close: He came out into the lane at sunrise smelling of the straw and the company, and somewhat better furnished in his vocabulary than in his pockets; which, as the old soldier told him, was the right way round for a beginner.
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: Sunrise in Church Lane
+  sid: lodging.05.reckoning
+  dev: Notes the cant as an item · the fence as a Hook · the Watch's rumour if taken
+  steps:
+    - when: flags.left
+      say: You spend what is left of the night in the porch of St Giles church, with your coat buttoned to the chin and your purse in your stocking. The Watch passes twice and takes you for a drunk gentleman, which is what you are dressed as.
+    - when: not flags.left
+      say: At sunrise the house empties into the lane like a cart tipped out. Nobody says good morning. Corporal Tapp is already gone, and so is the man who was asleep on your left, and so, you find on counting, is nothing of yours{if flags.robbed}, except what you have already missed{end}.
+    - when: flags.cant
+      say: You walk home saying the new words under your breath, as a schoolboy says his Latin, and catch yourself calling a fishwife a [[mort]] before you can stop.
+    - when: flags.carried and not flags.taken and not flags.withdrew
+      say: The dealer in Monmouth Street will know you again. You are not yet sure whether that is an asset.
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
+    none: Nothing is in the post. Nobody in St Giles saw you, which is the one courtesy the parish extends to everyone.
+  upkeep: "Upkeep follows: the garret you could not quite afford to sleep in last night, and the coat you could not afford at all."
+  again: Go back to Church Lane
+  notes:
+    - Monmouth Street, by Seven Dials, was London’s market for second-hand clothes through the eighteenth century; what was sold there was not always second-hand by consent.
+  finis: Finis.
+
+beats:
+  - id: door
+    num: I
+    phase: The Approach
+    title: Twopence, with a Blanket
+    sid: lodging.01.door
+    dev: Approach · costed, cheaper-costed and risky
+    text: |-
+      Church Lane runs behind St Giles church like a crack behind a mirror. Halfway down, a man with a candle-end sits on the cellar steps of a house whose upper floors appear to be holding each other up. Below him, by the smell, are a great many people and some straw.{fn *}
+
+      A bed is twopence, he says, and you will share it. For sixpence you may have one to yourself, which he describes as the gentry’s bed, and which you suspect is his.
+    notes:
+      - "* A generation later Henry Fielding, as a Westminster justice, described lodging-houses in St Giles where men and women lay together on straw at twopence a night, with gin sold below stairs (An Enquiry into the Causes of the Late Increase of Robbers, 1751)."
+    ask: How will you get a bed?
+    options:
+      - label: Pay your twopence, and take your share.
+        cost: 2d
+        dev: Costed · certain
+        do:
+          effects: [{ adj: purse, by: -2d, why: a share of a bed }, { adj: hum.Melancholic, by: 1, why: the straw }]
+          text: He takes the two pennies, bites one, and lights you down into a room where nine or ten sleepers lie in rows on straw, like herrings in a barrel that has been left in the sun. Your share is a yard of straw between a carter and a man in a bishop’s wig.
+        next: tapp
+      - label: Pay sixpence for the gentry’s bed.
+        cost: 6d
+        dev: Costed · certain · Composure +1
+        do:
+          effects: [{ adj: purse, by: -6d, why: the gentry’s bed }, { adj: composure, by: 1, why: a bed to yourself }]
+          text: The gentry’s bed is a frame with a mattress in it, against the far wall, under the only window. It has a blanket. You are given to understand that you are a person of consequence, and you lie down in your coat to keep it so.
+        next: tapp
+      - label: Tell him you are a gentleman who has mislaid his key, and will pay in the morning.
+        dev: Risky · Address against 4
+        check: { attr: Address, diff: 4, bonus: [{ when: 'has_tag("Agreeable")', by: 1, why: agreeable }] }
+        outcomes:
+          T:
+            effects: [{ set: talked }, { adj: composure, by: 1, why: "the gentry’s bed, on credit" }]
+            text: He is so charmed by a gentleman who admits to having no money that he gives you the gentry’s bed on trust, and a pull from his own bottle, and calls you ‘your honour’ until you are asleep.
+          S:
+            effects: [{ set: talked }]
+            text: He looks at your coat, and at your face, and decides that either will be good for twopence by the morning. You are lit down to the straw.
+          C:
+            effects: [{ set: talked }, { adj: hum.Melancholic, by: 1, why: the floor nearest the door }]
+            text: He lets you in, on the understanding that you sleep nearest the door, where the draught is and where everyone treads.
+          R:
+            effects: [{ adj: purse, by: -2d, why: paid after all }, { adj: hum.Choleric, by: 1, why: seen through }]
+            text: He hears you out with great patience and holds out his hand. You find twopence after all, in a pocket you had forgotten. He knew you would.
+          X:
+            effects: [{ set: thrown }, { adj: hum.Melancholic, by: 1, why: the kennel }, { adj: hum.Choleric, by: 1, why: thrown out }]
+            text: He laughs, puts his foot in the middle of your coat, and pushes. You sit down in the [[kennel]]. An hour later, very cold, you pay him twopence through the railings and are let in by a side door, which he points out you could have used in the first place.
+        story:
+          T: Having no money, {hero} applied to the keeper of the house in the character of a gentleman who had mislaid his key; and so engaging did the fellow find a man who owned to being penniless, a thing rarely confessed in that lane, that he gave him the best bed in the cellar on trust, and a pull from his own bottle into the bargain.
+          X: The keeper of the house, having heard out his tale of the mislaid key, answered it with his foot; insomuch that {hero} sat down in the kennel of Church Lane in the only coat he had, and was let in an hour afterwards, at the usual price, by a side door which had been open the whole time.
+        next: tapp
+
+  - id: tapp
+    num: II
+    phase: The Complication
+    title: An Old Soldier upon the Straw
+    sid: lodging.02.tapp
+    dev: Complication · a Withdraw, a costed kindness, a risky vigil, a lure (the cant)
+    text: |-
+      On the straw beside you lies a one-eyed old man in the ruins of a red coat, who introduces himself as Corporal Tapp, late of the Duke of Marlborough’s wars, wounded at Malplaquet.{fn *} He has a heel of bread, a great deal of conversation and no teeth to speak of.
+
+      He also has, you notice, a remarkable interest in your coat. He feels the cloth between finger and thumb, as a grazier feels a bullock, and names a price for it to nobody in particular.
+    notes:
+      - "* Malplaquet, 11 September 1709, the bloodiest of Marlborough’s battles: the allies lost about twenty thousand men to win the field."
+    ask: What will you do about the corporal?
+    options:
+      - label: "Withdraw: take your coat and your purse, and go and sleep in the church porch."
+        withdraw: true
+        dev: Withdraw · certain · ends the Venture
+        do:
+          effects: [{ set: left }]
+          text: You get up, step over the carter, and go up the cellar steps. The keeper does not offer your twopence back. The corporal calls after you that the porch is very damp at this season, in the tone of a man who has slept in it.
+        next: reckon
+      - label: Share your supper with him, and buy him a dram from the keeper.
+        cost: 2d
+        dev: Costed · certain · makes a friend of Tapp
+        do:
+          effects: [{ adj: purse, by: -2d, why: a dram for the corporal }, { set: supper }, { adj: hum.Melancholic, by: -1, why: company }]
+          text: The corporal drinks his dram in one swallow and becomes, upon the instant, your friend and protector. He tells you about Malplaquet. He tells you about it again, with the order of the regiments changed. Nobody touches your coat.
+        next: lesson
+      - label: Lie awake all night with one hand on your purse.
+        dev: Risky · Constitution against 4
+        check: { attr: Constitution, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ adj: composure, by: 1, why: wide awake }]
+            text: At about two a hand comes sliding under your coat like a ferret into a warren. You take hold of the wrist and hold it, without a word, until it is withdrawn. In the morning the corporal congratulates you on your vigilance, and does not say whose hand it was.
+          S:
+            effects: []
+            text: You lie awake until the Watch calls four, and then sleep like the dead, and wake to find everything still where it was. The corporal says you snore like a sergeant.
+          C:
+            effects: [{ adj: hum.Phlegmatic, by: 1, why: a night without sleep }]
+            text: You keep your purse and lose your night. By morning you are as stupid as an owl in daylight, and about as much use.
+          R:
+            effects: [{ set: robbed }, { adj: purse, by: "= -min(purse, 6)", why: "your loose pence, gone" }]
+            text: You fall asleep at last with your hand on your purse, and wake with your hand on your purse, which is a great comfort until you find the loose pence in your other pocket are gone.
+          X:
+            effects: [{ set: robbed }, { adj: purse, by: "= -floor(purse / 2)", why: robbed in your sleep }, { adj: hum.Melancholic, by: 1, why: robbed on the straw }]
+            text: You wake at dawn with your hand on your purse and the purse a good deal lighter. Someone has cut it open at the bottom, very neatly, and sewn it up again.
+        story:
+          T: In the small hours a hand came stealing under his coat, as a ferret goes into a warren; but {hero}, who had resolved to lie awake, took the wrist and held it fast, without a word said on either side, until its owner thought better of it; and in the morning the old soldier praised his vigilance very highly, and was careful not to say whose hand it had been.
+          X: He kept his hand upon his purse all night with the constancy of a sentry, and woke to find it half empty; some artist of the straw having slit it at the bottom, taken what he wanted, and sewn it up again so neatly that {hero} was obliged, in justice, to admire the needlework.
+        next: lesson
+      - label: Tell him, in his own tongue, that your coat is not for sale.
+        gate: { when: 'has_item("A tongue for the cant")', need: "the cant · you have not learned it" }
+        dev: Gated (the cant, from another night here or the Blue Boar) · certain
+        do:
+          effects: [{ set: supper }, { adj: composure, by: 1, why: spoken to in his own tongue }]
+          text: The corporal hears you out, sets down your sleeve as if it were hot, and begs your pardon. He had taken you for a [[cull]]. He is very glad to be mistaken, he says, and so, you gather, is the man on your left.
+        next: lesson
+
+  - id: lesson
+    num: III
+    phase: The Turn
+    title: A Lesson in the Cant
+    sid: lodging.03.lesson
+    dev: Turn · the cant, bought, earned by ear, or written down (Learning)
+    text: |-
+      Nobody in the cellar is asleep, and nobody is talking English. They are talking the cant: the language of the road and the [[ken]], in which a man is a [[cove]], a receiver is a [[fence]], and anything false or dangerous is [[queer]].{fn *}
+
+      The corporal offers to teach it you. He was a rogue before he was a soldier, he says, and will be one again when his leg mends, which it will not. His fee is a quartern of gin.
+    notes:
+      - "* The cant was then being collected by the curious. B.E.’s New Dictionary of the Canting Crew had appeared about 1698, and A New Canting Dictionary followed in 1725."
+    ask: Will you learn the language?
+    options:
+      - label: Pay the corporal his quartern, and take your lesson properly.
+        cost: 3d
+        dev: Costed · certain · the cant
+        do:
+          effects: [{ adj: purse, by: -3d, why: a quartern for the corporal }, { set: cant }, { item: A tongue for the cant, why: Corporal Tapp’s lesson }]
+          text: For a quartern the corporal is thorough. By the Watch’s three o’clock you can ask for a fence, describe a dupe, refuse a bad shilling and insult a constable without his knowing it. He says you have the ear for it. He says it of everyone who pays.
+        next: bundle
+      - label: Listen to the room, and pick it up for nothing.
+        dev: Risky · Wit against 4
+        check: { attr: Wit, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: cant }, { item: A tongue for the cant, why: picked up on the straw }, { tag: "Game (the Underworld)", why: a quick study }]
+            text: By three you are answering back. A woman by the wall laughs at something you say, in the cant, and repeats it down the row. The corporal looks at you with his one eye as if you had stolen his trade.
+          S:
+            effects: [{ set: cant }, { item: A tongue for the cant, why: picked up on the straw }]
+            text: You listen until your head aches, and by the end you can follow most of it, and say some, and know which words not to say in front of a constable.
+          C:
+            effects: [{ set: cant }, { item: A tongue for the cant, why: picked up on the straw }, { adj: hum.Melancholic, by: 1, why: what the words describe }]
+            text: You learn the words, and in learning them learn what they are for. There are a great many words in the cant for the gallows. The corporal knows all of them.
+          R:
+            effects: [{ adj: hum.Phlegmatic, by: 1, why: Malplaquet again }]
+            text: The talk turns, as all talk with the corporal turns, to Malplaquet. By four you know the order of every regiment on the field and not one word of the cant.
+          X:
+            effects: [{ adj: hum.Choleric, by: 1, why: made a fool of }, { adj: celebrity, by: -1, why: "your new words, repeated" }]
+            text: You learn twenty words, all of them wrong. The room has been teaching you, at the corporal’s signal, and when you try them out it laughs until the keeper bangs on the ceiling with a broom.
+        story:
+          T: He had not lain three hours upon the straw before he had the cant by ear, and was answering in it; and a woman by the wall, hearing him turn a phrase she had not heard before, carried it down the row with such success that the old soldier looked at his pupil as a fiddler looks at the boy who has learned his tune for nothing.
+          X: The company, at a signal from the corporal, undertook to teach him their language, and taught it him with great diligence and entirely wrong; so that when he came to try his learning upon them, the cellar laughed until the master of the house beat upon the ceiling with a broom.
+        next: bundle
+      - label: Write the words down in your pocket-book, with their meanings, like a scholar.
+        gate: { when: attrs.Learning >= 2, need: "Learning 2 · you have {attrs.Learning}" }
+        dev: Gated (Learning) · certain · the cant, and the corporal's suspicion
+        do:
+          effects: [{ set: cant }, { item: A tongue for the cant, why: written down in a pocket-book }, { adj: hum.Sanguine, by: 1, why: a scholar’s pleasure }]
+          text: You write each word down by the light of his candle-end, with its meaning and an example. The corporal watches you do it, and grows quieter and quieter. A man who writes down the cant, he says at last, is either a parson or an informer, and he would be obliged if you would tell him which.
+        next: bundle
+
+  - id: bundle
+    num: IV
+    phase: The Crisis
+    title: A Bundle for Monmouth Street
+    sid: lodging.04.bundle
+    dev: Crisis · Press on (risky, a crime) or Withdraw (certain)
+    text: |-
+      At first light the corporal shakes you by the shoulder. He has a bundle under his arm: some shirts, he says, of a very good Holland, which a friend of his has been keeping for another friend. They want carrying to a dealer in Monmouth Street before the shops are open.{fn *}
+
+      He cannot carry them himself; his leg. You have an honest face, and a coat that no constable would stop. There will be a shilling in it.
+    notes:
+      - "* Seven Dials, at the top of Monmouth Street, was laid out by Thomas Neale in the 1690s, round a column bearing six sundials; the seventh dial, it is said, was the column itself."
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: carry the shirts to Monmouth Street, in your honest coat."
+        dev: Press on · Nerve against 4 · a crime · the fence's Hook
+        check: { attr: Nerve, diff: 4, bonus: [{ when: flags.cant, by: 1, why: you know what to say }] }
+        outcomes:
+          T:
+            effects:
+              - { set: carried }
+              - { loot: 2s 6d, why: the corporal’s shilling and the dealer’s half-crown }
+              - { hook: "A dealer in Monmouth Street, who buys linen and asks nothing", why: a bundle delivered }
+              - { tag: "Game (the Underworld)", why: carried the bundle }
+            text: You carry the shirts through Seven Dials at a gentleman’s stroll. The dealer counts them, looks at you, and gives you half a crown of his own besides the corporal’s shilling. He says he can always use a gentleman. You do not ask what for.
+          S:
+            effects:
+              - { set: carried }
+              - { loot: 1s, why: the corporal’s shilling }
+              - { hook: "A dealer in Monmouth Street, who buys linen and asks nothing", why: a bundle delivered }
+            text: Nobody stops you. The dealer takes the bundle without unwrapping it, which tells you everything, and the corporal pays you your shilling at the corner with great ceremony.
+          C:
+            effects:
+              - { set: carried }
+              - { loot: 1s, why: the corporal’s shilling }
+              - { hook: "A dealer in Monmouth Street, who buys linen and asks nothing", why: a bundle delivered }
+              - { adj: notoriety, by: 1, why: seen at Monmouth Street }
+            text: You deliver the shirts and take your shilling. On the way back a watchman puts out his lantern, looks at your face for a long moment, and says good morning. He will know it again.
+          R:
+            effects: [{ set: carried }, { adj: hum.Melancholic, by: 1, why: left holding the shirts }]
+            text: The dealer will not take them. He looks at the mark on the tails and says, very loud, that he deals only in honest goods. When you turn round, the corporal has gone. You leave the shirts on the steps of St Giles church, and hope whoever finds them is honest.
+          X:
+            effects:
+              - { set: carried }
+              - { set: taken }
+              - { adj: notoriety, by: 1, why: taken up with stolen linen }
+              - { adj: purse, by: "= -min(purse, 60)", why: a consideration for the watchman }
+              - rumour:
+                  id: lodging-watch
+                  delay: 2
+                  from: The watch-house of St Giles
+                  text: A watchman of St Giles took up a gentleman in a good coat at dawn, carrying shirts that were not his, and let him go for a consideration. The shirts have been sent to a justice, and the description with them.
+                  effect: Notoriety +1
+                  hindsight: The shirts, it afterwards appeared, belonged to a curate in Bloomsbury, who identified them by his mother’s marking on the tails, and was more distressed by the loss of the marking than of the shirts.
+            text: At the corner of Monmouth Street a watchman takes hold of the bundle, and then of you. The shirts are marked. You talk, and pay, and are let go with your purse empty and your description in his book.
+        story:
+          T: He carried a bundle of fine Holland shirts, of a provenance he thought it more delicate not to inquire into, through Seven Dials at the hour when the shops take down their shutters; and the dealer in Monmouth Street, admiring a gentleman who could carry stolen linen as though it were his own, gave him half a crown above his wages, and his custom for the future.
+          X: At the corner of Monmouth Street a watchman laid hold of the bundle, and then of its bearer; and {hero}, discovering that the shirts were marked, and that his pockets were not deep enough to unmark them, purchased his liberty with everything in them, and left his description behind in the watchman’s book, as a pledge for his return.
+        next: reckon
+      - label: "Withdraw: give him back his bundle, and his shilling, and wish him good morning."
+        withdraw: true
+        dev: Withdraw · certain
+        do:
+          effects: [{ set: withdrew }, { adj: hum.Phlegmatic, by: 1, why: a shilling refused }]
+          text: The corporal takes the bundle back without offence. Every man to his trade, he says. He tucks it under his arm and limps off up the lane at a pace that suggests his leg is better than he lets on.
+        next: reckon

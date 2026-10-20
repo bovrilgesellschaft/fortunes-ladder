@@ -14,7 +14,15 @@ nubbing-cheat: { dictionary: cant, definition: "The gallows." }
 pad:          { dictionary: cant, definition: "The highway. A gentleman of the high pad is a highwayman." }
 prancer:      { dictionary: cant, definition: "A horse." }
 rum:          { dictionary: cant, definition: "Fine, good, valuable." }
+ken:          { dictionary: cant, definition: "A house. A boozing-ken is an alehouse." }
+cove:         { dictionary: cant, definition: "A man, a fellow." }
+fence:        { dictionary: cant, definition: "A receiver of stolen goods; also, to sell them to him." }
+queer:        { dictionary: cant, definition: "Base, false, dangerous: queer bit is bad money, a queer ken a prison." }
+mort:         { dictionary: cant, definition: "A woman." }
 
+geneva:       { dictionary: town, definition: "Gin, from the Dutch genever, juniper. Madam Geneva to her friends, of whom St Giles had a great many." }
+quartern:     { dictionary: town, definition: "A quarter of a pint: the common measure of gin." }
+kennel:       { dictionary: town, definition: "The gutter down the middle of a street, into which everything is thrown and through which everything runs." }
 chair:        { dictionary: town, definition: "A sedan chair, carried by two chairmen, who charge by the distance and the weather." }
 cit:          { dictionary: town, definition: "A citizen of the City; a tradesman, or his wife, with money and no manners." }
 hartshorn:    { dictionary: town, definition: "Smelling salts. The spirit was once got from the antlers of the hart." }

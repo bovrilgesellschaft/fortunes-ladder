@@ -369,7 +369,8 @@ export class Campaign {
   extra(): Record<string, string | number> {
     const d = this.date(), w = this.activeWrit();
     return {
-      year: d.year, week: d.week, turn: this.st.turn, origin: this.hero.origin, ...nameVars(this.hero.names),
+      year: d.year, week: d.week, turn: this.st.turn, origin: this.hero.origin, sex: this.hero.sex, ...nameVars(this.hero.names),
+      prophecy: this.prophecy(),
       // the bailiff's writ, and the prison, for their Ventures
       writ_amount: w ? this.writAmount(w) : 0, writ_money: w ? money(this.writAmount(w)) : 'nothing', creditor: w?.creditor ?? '',
       prison: this.hero.confined?.where ?? (this.hero.lodging.district === 'Southwark' ? this.econ.prison.marshalsea : this.econ.prison.fleet), debts_all: this.enforceable(), debts_money: money(this.enforceable()),
@@ -413,10 +414,41 @@ export class Campaign {
     if (this.afflicted('Choleric')) { const q = pool.find(v => v.id === hu.quarrel); if (q) { out.push(q.id); pool.splice(pool.indexOf(q), 1); } }
     else pool = pool.filter(v => v.id !== hu.quarrel);
     while (out.length < n && pool.length) {
-      const i = rng.weighted(pool.map(v => v.offer!.weight ?? 1));
+      const i = rng.weighted(pool.map(v => this.offerWeight(v)));
       out.push(pool[i].id); pool.splice(i, 1);
     }
     this.st.rng = rng.state; this.st.offers = out;
+  }
+
+  /** A Venture's weight this turn: its base, times each weight_when that holds (Step 10). */
+  offerWeight(v: Venture): number {
+    let w = v.offer!.weight ?? 1;
+    for (const m of v.offer!.weight_when ?? []) if (this.test(m.when)) w *= m.by;
+    return w;
+  }
+
+  private names(src: string): string {
+    const v: Record<string, unknown> = nameVars(this.hero.names);
+    return src.replace(/\{(\w+)\}/g, (m, k: string) => (k in v ? String(v[k]) : m));
+  }
+
+  /** The Cunning Man's reading (Step 10): the next dated Venture the run holds, foretold in its own
+   *  words; failing that, one of the stock readings. Nothing is promised; the windows do the rest. */
+  private inProphecy = false;
+  prophecy(): string {
+    if (this.inProphecy) return '';
+    this.inProphecy = true;
+    try { return this.prophecyNow(); } finally { this.inProphecy = false; }
+  }
+  private prophecyNow(): string {
+    const now = this.st.at;
+    const coming = this.world.ventures
+      .filter(v => v.offer?.prophecy && v.offer.from && abs(v.offer.from) > now && abs(v.offer.from) <= now + 52 && !this.st.played[v.id]
+        && (!v.offer.prophecy_when || this.test(v.offer.prophecy_when)))
+      .sort((a, b) => abs(a.offer!.from!) - abs(b.offer!.from!));
+    if (coming.length) return this.names(coming[0].offer!.prophecy!);
+    const stock = this.world.settings.prophecies ?? ['The stars are clouded this month; come again.'];
+    return this.names(stock[this.st.turn % stock.length]);
   }
 
   // ----- a Venture -----
@@ -1127,10 +1159,12 @@ export class Campaign {
     let out = '';
     if (kind === 'vice') {
       const h: Humour = H.hum.Sanguine > H.hum.Choleric ? 'Sanguine' : 'Choleric';
-      const cost = amt(this.world.settings.living[this.livingRank()]);
+      // in a low district, vice is had at that district's price (Step 10)
+      const d = H.lodging.district, low = R.vice.by_district?.[d];
+      const cost = low !== undefined ? amt(low) : amt(this.world.settings.living[this.livingRank()]);
       if (H.purse < cost) return `A night of it costs ${money(cost)}; you have ${money(H.purse)}.`;
       H.purse -= cost; H.hum[h] = Math.max(0, H.hum[h] - R.vice.by);
-      out = `A night at the tavern, and later at the bagnio, of which the less said the better. It costs ${money(cost)}. ${h} −${R.vice.by}.`;
+      out = `${(low !== undefined && R.vice.words?.[d]) || 'A night at the tavern, and later at the bagnio, of which the less said the better.'} It costs ${money(cost)}. ${h} −${R.vice.by}.`;
       if (this.random() < R.vice.notoriety) { H.notoriety = Math.min(10, H.notoriety + 1); out += ' The watch took your name on the way home: Notoriety +1.'; }
     } else if (kind === 'religion') {
       const late = abs(R.religion.moorfields) <= st.at;

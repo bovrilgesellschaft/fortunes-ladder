@@ -1,0 +1,409 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# Step 10, batch 1 (St Giles). A kidnapper for the Plantations. Coercion is shown plainly and is never
+# played for laughs (style guide); the hero may escape, inform, or get the others free, but never
+# profits by another's abduction (the slate's "sell someone else" was struck for that reason).
+# The Turn has two variants: the back room (the hero kept clear) and the river room (the hero taken).
+# New canon: Mr Ralph Pellow, a spirit.
+
+id: the-spirit
+title: The Spirit
+names:                     # on this page; a run draws its own
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
+offer:
+  district: St Giles
+  circle: the Army & Navy
+  blurb: A broad, kind man in the alehouses of St Giles stands treat to strangers from his own part of the country, and talks of the fortunes to be had beyond the sea by anyone with a little education and no great prospects at home.
+  weight: 1
+  weight_when:
+    - { when: purse < 240, by: 2 }
+    - { when: 'has_hook("A kind countryman")', by: 2 }
+    - { when: 'rank_at_least("Esquire")', by: 0.25 }
+runhead: The Life &amp; Adventures of Mr {name}
+sub: Being an Evening with a Countryman, in five Beats
+prospectus: >-
+  A kind stranger from your own county; articles of indenture for four years in Maryland; a parting
+  glass; a locked room by the river; and a ship that sails on the ebb.
+year: 1724
+week: 16
+loot_flag: paid
+persona: Mr Byrne
+who:
+  name: Cornelius Byrne
+  as: under his own name
+  origin: Younger son of an Irish squire · Book I
+
+start:
+  purse: 14s
+  debts: £24
+  luck: 1
+  exposure: 0
+  notoriety: 0
+  celebrity: 0
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 1, Choleric: 1, Melancholic: 2, Phlegmatic: 0 }
+  tags: []
+  items: [His father’s sword, "A fine coat, made in Dublin and not paid for"]
+  hooks: []
+
+first: countryman
+
+chapter:
+  no: Chap. V.
+  opening: In which our Hero is offered a Situation abroad
+  parts:
+    - { when: flags.warned, text: "knows a Spirit when {he} sees one" }
+    - { when: flags.treated, text: is treated by a Stranger }
+    - { when: flags.read, text: reads the small Print }
+    - { when: flags.drugged, text: wakes by the River }
+    - { when: flags.freed, text: sets the Prisoners free }
+    - { when: flags.informed, text: fetches the Law }
+    - { when: flags.ashore, text: walks home from Gravesend }
+  last:
+    when: flags.withdrew or flags.left
+    text: "keeps {his} own Counsel"
+    else: "sees the Ship sail without {him}"
+
+story:
+  title: The History of Mr Cornelius Byrne
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface: There was at this time a trade carried on in the alehouses of London, of which the less said in polite company the better, and the more said in the alehouses the safer; and it was into the hands of one of its practitioners that {hero}, being poor, and far from home, and very glad of a kind word, now fell.
+  close: Of the others in that room by the river {hero} never learned the names, nor what became of them; and if {he} thought of them afterwards, it was generally at night, and generally when {he} had been more fortunate than usual.
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: The Ebb Tide
+  sid: spirit.05.reckoning
+  dev: The spirit becomes a Hook either way · courage is remembered by the watermen
+  steps:
+    - when: flags.left
+      say: You go home through St Giles by the busiest streets you can find, and sit up until morning with your back to the wall. Nobody follows you. It is no great comfort; nobody needed to.
+    - when: not flags.left and not flags.ashore
+      say: The ship drops down the river on the ebb, with her hatches battened. You watch her from Wapping Old Stairs until she is round the bend at Limehouse, and you cannot afterwards say whether you were watching to see her go or to be sure you were not on her.
+    - when: flags.ashore
+      say: It is twenty miles from Gravesend to London by the road, and you walk every one of them, and are passed on the way by the same carrier three times, who does not offer you a lift, as you do not look as if you could pay for one.
+    - when: not flags.left
+      do: [{ hook: "Mr Ralph Pellow, a spirit, who keeps a room by the river at Wapping and knows your face", why: an evening with a countryman }]
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
+    none: Nothing is in the post. Nobody talks about what happened at Wapping, which is how it goes on happening.
+  upkeep: "Upkeep follows: the lodging you very nearly gave up for a passage to Maryland."
+  again: Go back to the alehouse
+  notes:
+    - In 1728 James Annesley, a boy of twelve and heir to an Irish peerage, was shipped to Delaware and sold as an indentured servant at the instance of his uncle. He came home, years afterwards, to go to law for it.
+  finis: Finis.
+
+beats:
+  - id: countryman
+    num: I
+    phase: The Approach
+    title: A Countryman of Yours
+    sid: spirit.01.countryman
+    dev: Approach · certain (his treat), costed (your own), risky (test his story), gated (the cellar's warning)
+    text: |-
+      In an alehouse off St Giles High Street a broad, kind-faced man hears you ask for your beer and turns round, beaming. He is from {county} himself, he says, or near it, and has not heard a voice from home in a twelvemonth. He will not hear of your paying.
+
+      His name is Mr Pellow. He has done well. He has done well, he says, in the Plantations, where a {fellow} of education may rise in four years as high as in forty at home, and where they are crying out for such people.
+    ask: How will you take Mr Pellow?
+    options:
+      - label: Let him stand you a pot, and hear him out.
+        dev: Certain · his treat
+        do:
+          effects: [{ set: treated }, { adj: hum.Melancholic, by: -1, why: a kind word }]
+          text: He orders a pot, and then another, and talks of tobacco and fine houses, of overseers who were tailors’ boys, of a clerk from Wexford who now keeps a chariot. He listens to your troubles too. Nobody has listened to your troubles since you came to London.
+        next: articles
+      - label: Pay for your own beer, and keep a clear head.
+        cost: 4d
+        dev: Costed · certain · a clear head
+        do:
+          effects: [{ adj: purse, by: -4d, why: your own beer }, { set: sober }]
+          text: You insist on paying. Mr Pellow laughs and says you are a careful {fellow}, which is what they want in Maryland; and for a moment, as he says it, he looks at you the way a buyer looks at a horse’s teeth.
+        next: articles
+      - label: Ask him, very innocently, about his parish at home.
+        dev: Risky · Wit against 4 · testing his story
+        check: { attr: Wit, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: warned }, { set: sober }, { adj: composure, by: 1, why: seen through }]
+            text: You ask after a parish priest who does not exist, and a fair that is not held, and he remembers both very fondly. After that you drink slowly and listen to him the way you would listen to a dog that wags its tail and shows its teeth.
+          S:
+            effects: [{ set: sober }]
+            text: His answers are vague, but then so are most people’s about places they left young. You keep your head, and your counsel.
+          C:
+            effects: [{ set: sober }, { adj: hum.Choleric, by: 1, why: his evasions }]
+            text: He turns every question back to the Plantations, as a sheepdog turns sheep, until you give up asking.
+          R:
+            effects: [{ set: treated }]
+            text: He knows the parish. He knows your parish, and the squire, and the road to the bog, and you are so glad of it that you forget you were testing him.
+          X:
+            effects: [{ set: treated }, { adj: hum.Sanguine, by: 1, why: warmth and beer }]
+            text: He answers every question with such tears in his eyes, and such a wealth of detail, that you end the evening with your arm round his shoulders, singing a song from home that he has, somehow, learned the words of.
+        story:
+          T: "{Hero}, who had begun to find the stranger’s affection for {his} county a little too warm, asked after a parish priest who had never lived and a fair that had never been held; and the fellow remembered both with great tenderness, which told {him} all {he} needed to know."
+          X: To every question {hero} put to the stranger about {his} own county he answered with tears in his eyes and a wealth of particulars; so that before the evening was out {hero} had {his} arm about the fellow’s shoulders, and was singing with him a song from home, of which the spirit, by the industry of his trade, had learned every word.
+        next: articles
+      - label: Remember what the cellar in Dyot Street said about kind countrymen.
+        gate: { when: 'has_hook("A kind countryman")', need: "a warning · nobody has told you about him" }
+        dev: Gated (the Hook from geneva) · certain
+        do:
+          effects: [{ set: warned }, { set: sober }, { unhook: "A kind countryman, why: met him" }, { adj: composure, by: 1, why: forewarned }]
+          text: You smile, and thank him, and watch him. He is exactly as the cellar described him, down to the way he looks at your boots to see if they are worth anything.
+        next: articles
+
+  - id: articles
+    num: II
+    phase: The Complication
+    title: Articles of Indenture
+    sid: spirit.02.articles
+    dev: Complication · a Withdraw, a risky reading, a risky parting glass
+    text: |-
+      Presently Mr Pellow takes a paper out of his coat: articles of indenture, for four years’ service in Maryland, passage paid, and freedom dues at the end of it.{fn *} A merchant in the back room, he says, will witness it tonight. The ship is at Wapping, and sails on the ebb tomorrow.
+
+      He calls for a parting glass, and pushes it across to you. It is a good deal stronger than the beer.
+    notes:
+      - "* An indentured servant bound himself to labour in the colonies, commonly for four years, in return for his passage; at the end he was owed his ‘freedom dues’ of clothes, tools and sometimes land."
+    ask: What will you do with the paper, and the glass?
+    options:
+      - label: "Withdraw: thank him, leave the glass, and go, now."
+        withdraw: true
+        dev: Withdraw · certain · ends the Venture
+        do:
+          effects: [{ set: left }]
+          text: You get up. Mr Pellow does not try to stop you. He folds the paper and puts it away and says, quite pleasantly, that you will think better of it. Two men at the door, whom you had not noticed, watch you go and do not move.
+        next: reckon
+      - label: Read the articles through, line by line, before you drink anything.
+        dev: Risky · Learning against 3
+        check: { attr: Learning, diff: 3, bonus: [{ when: flags.sober, by: 1, why: a clear head }] }
+        outcomes:
+          T:
+            effects: [{ set: read }, { set: warned }, { adj: composure, by: 1, why: the trick found }]
+            text: The term of years is left blank, and so is the name of the master, and the paper is dated from a day you were not in London. You fold it up and hand it back. Mr Pellow takes it as if you had paid him a compliment.
+          S:
+            effects: [{ set: read }]
+            text: You read it through. It is a real indenture, and it would bind you to whoever holds it. That is the whole of what it says, and the whole of what you need to know.
+          C:
+            effects: [{ set: read }, { adj: hum.Melancholic, by: 1, why: what the paper means }]
+            text: You read it, and understand it, and understand at the same time that this is how people disappear, and that you have been sitting very comfortably while it happened to you.
+          R:
+            effects: [{ set: treated }]
+            text: The writing is very small and the candle very poor, and Mr Pellow is talking the whole time, and somewhere in the middle you pick up the glass to wet your throat.
+          X:
+            effects: [{ set: treated }, { set: drugged }]
+            text: You read until the words swim. It is only when they go on swimming that you notice you have been drinking the parting glass as you read, and that it was not only geneva in it.
+        story:
+          T: Before setting {his} hand to anything, {hero} read the articles through, and found the term of years left blank, the master unnamed, and the date of a day {he} had not been in London; and handed them back to the spirit with a bow, which he received as one craftsman receives the compliment of another.
+          X: "{Hero} undertook to read the articles through before drinking; but the candle was poor, the print small, and the spirit’s conversation continual, so that {he} drank as {he} read, and found the words beginning to swim some time after {he} had swallowed what was in the glass."
+        next:
+          - { when: flags.drugged, go: river }
+          - { go: backroom }
+      - label: Drink the parting glass, and sign nothing.
+        dev: Risky · Constitution against 4 · harder if he has been treating you
+        check:
+          attr: Constitution
+          diff: 4
+          bonus:
+            - { when: flags.treated, by: -1, why: his beer before it }
+            - { when: flags.warned, by: 2, why: you only wet your lips }
+        outcomes:
+          T:
+            effects: [{ adj: composure, by: 1, why: a hard head }]
+            text: It is laced with something, but you have a head like a pew, and Mr Pellow watches with growing respect as you drink it down, thank him, and remain exactly as you were.
+          S:
+            effects: []
+            text: You drink it, and feel it, and hold it. Mr Pellow looks at you with mild disappointment, as at a clock that has not struck.
+          C:
+            effects: [{ adj: hum.Phlegmatic, by: 1, why: a thick head }]
+            text: The room swims once and comes back. You hold on to the table until it settles, and Mr Pellow is very solicitous.
+          R:
+            effects: [{ set: drugged }]
+            text: The room goes on swimming, and you go with it.
+          X:
+            effects: [{ set: drugged }, { adj: purse, by: "= -min(purse, 120)", why: "your purse, gone while you slept" }]
+            text: The room swims, tilts, and goes out like a candle.
+        story:
+          T: The parting glass was laced, as {hero} afterwards understood, with laudanum enough to fell a carter; but {he} drank it off and sat as upright as a churchwarden, so that the spirit, who had seen a hundred go down under that glass, watched {him} with the respect of a farrier for a mule that will not be shod.
+          X: The parting glass, which the spirit had compounded with laudanum, laid {hero} out upon the settle in a quarter of an hour; and {he} knew nothing more until {he} woke in the dark, with {his} purse gone and the smell of the river all about {him}.
+        next:
+          - { when: flags.drugged, go: river }
+          - { go: backroom }
+
+  - id: backroom
+    num: III
+    phase: The Turn
+    title: The Back Room
+    sid: spirit.03.backroom
+    dev: Turn (kept clear) · fetch a constable, buy them out, or leave quietly
+    text: |-
+      On your way out you pass the door of the back room, which is ajar. There is no merchant in it. There are six people sitting on the floor in the dark: a weaver out of work, two country girls of twenty or so, a discharged soldier, a man who will not look up, and a woman who looks at you as if you were a door that might open.
+
+      Mr Pellow’s two men are at the street door, between you and the High Street.
+    ask: What will you do about the back room?
+    options:
+      - label: Go for the constable of the night, and bring him back with you.
+        dev: Risky · Address against 4 · the Law
+        check: { attr: Address, diff: 4, bonus: [{ when: 'rank_at_least("Gentleman")', by: 1, why: a gentleman’s complaint }] }
+        outcomes:
+          T:
+            effects: [{ set: informed }, { set: freed }, { tag: "Brave (the Town)", why: brought the constable }]
+            text: You find the constable at the watch-house and tell him a gentleman’s pocket has been picked in the alehouse, which interests him more than kidnapping would. He comes. The back room empties into the street before he has finished asking whose pocket.
+          S:
+            effects: [{ set: informed }]
+            text: The constable comes, slowly, and looks into the back room, and is told by Mr Pellow that these are servants waiting for their ship, all of them willing. Two of them say so. The constable goes away, and so do you, but you know where the ship is.
+          C:
+            effects: [{ set: informed }, { adj: purse, by: "= -min(purse, 24)", why: the constable’s trouble }]
+            text: The constable will come for a florin, which is what his trouble costs. When you get back the back room is empty. Mr Pellow has moved them already. You know where they will be moved to.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: a constable’s indifference }]
+            text: The constable says kidnapping is a matter for a justice, and the justice is in bed, and anyway half of them go of their own will, and he would be obliged if you would not wake the street.
+          X:
+            effects: [{ adj: notoriety, by: 1, why: a scene at the watch-house }, { adj: hum.Choleric, by: 1, why: laughed at by the Watch }]
+            text: The constable knows Mr Pellow, and likes him. He takes your name instead, for disturbing the peace, and advises you kindly to go home.
+        story:
+          T: Finding a back room full of people who had been promised Maryland, {hero} went for the constable of the night, and, judging that the Watch would care little for a kidnapping and a great deal for a gentleman’s pocket, told him a pocket had been picked; so that the constable came at a run, and the prisoners went out at the door as he came in at it, and the spirit was left with nothing but the explanation.
+          X: "{Hero} ran for the constable, who came, and looked, and turned out to be an old acquaintance of the spirit’s; so that it was {hero}’s own name that went into the constable’s book that night, for disturbing the peace of the parish, and the back room’s that did not."
+        next: ship
+      - label: Offer Mr Pellow what he would get for them, to let them go.
+        cost: 10s
+        dev: Costed · certain · the price of a little freedom
+        do:
+          effects: [{ adj: purse, by: -10s, why: bought them out }, { set: freed }, { adj: hum.Melancholic, by: 1, why: the price of a person }]
+          text: Mr Pellow considers your ten shillings with the air of a man who has never been offered money for this before, and would like to know if it will happen again. He takes it. The back room empties, without a word to you, into the dark. One of the country girls looks back once. You will not see what he gets for the next six.
+        next: ship
+      - label: Leave quietly, by the yard, and say nothing to anyone.
+        dev: Certain · the knowledge of how you kept clear
+        do:
+          effects: [{ adj: hum.Melancholic, by: 1, why: the back room }]
+          text: You go out through the yard, over a wall and into Church Lane. Nobody stops you. There is no reason anyone should, now.
+        next: ship
+
+  - id: river
+    num: III
+    phase: The Turn
+    title: A Room by the River
+    sid: spirit.03.river
+    dev: Turn (taken) · break out, bribe the keeper, or call to the watermen
+    text: |-
+      You wake on bare boards in the dark with a head like a struck bell. The room smells of tar and the river, and through a crack in the shutter you can see the masts of ships at Wapping. {if purse > 0}They have had your shoes, and your purse, but not the money in your stocking.{else}Your purse is gone, and your shoes.{end} Six other people are in the room with you. Nobody says anything. One of them is praying.
+
+      The door is barred outside. A man sits by it with a club, and a candle, and a jug.
+    ask: How will you get out?
+    options:
+      - label: Work the bar of the shutter loose, and go out over the leads.
+        dev: Risky · Constitution against 5
+        check: { attr: Constitution, diff: 5 }
+        outcomes:
+          T:
+            effects: [{ set: freed }, { tag: "Brave (the Town)", why: broke out of the spirit’s room }]
+            text: The bar comes away in your hands after an hour. You go out over the leads and help the others after you, one by one, the praying man last. You all come down into a yard full of anchors and scatter into Wapping like sparrows.
+          S:
+            effects: [{ set: escaped }]
+            text: The bar comes away. You get out over the leads, and two of the others after you, before the man with the club hears the shutter bang.
+          C:
+            effects: [{ set: escaped }, { adj: hum.Melancholic, by: 1, why: the ones left behind }]
+            text: You get out, alone. The shutter bangs as you drop, and you hear the man with the club come in behind you, and you do not wait to hear what happens next.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: a club across the knuckles }]
+            text: The man with the club hears you at the shutter and comes in and shows you, with great patience, what the club is for.
+          X:
+            effects: [{ set: ashore }, { adj: hum.Melancholic, by: 2, why: carried down the river }]
+            text: The bar will not move. At dawn you are all brought down to a boat and rowed out to a ship, and the hatch goes over you. You are past Greenwich before a customs boat at Gravesend comes alongside, and the master, rather than be searched, puts the whole hold ashore on the mud.
+        story:
+          T: Waking in a locked room by the river, among half a dozen others whom the spirit had collected for the Plantations, {hero} worked loose the bar of the shutter with an hour’s labour, and led the whole company out over the leads, the praying man last; and they came down into a yard full of anchors and dispersed into Wapping like sparrows from a barn.
+          X: The bar would not move; and at dawn {hero} was rowed out with the others to a ship, and battened under the hatch, and carried down past Greenwich in the dark, until a customs boat came alongside at Gravesend, and the master, preferring not to be searched, put his whole cargo of free-born English upon the mud, to find their own way home.
+        next: ship
+      - label: Offer the man with the club whatever you have hidden, to look the other way.
+        cost: what is in your stocking
+        gate: { when: purse > 0, need: "money hidden somewhere · they took your purse" }
+        dev: Gated and costed · certain · yourself only
+        do:
+          effects: [{ set: escaped }, { adj: purse, by: "= -purse", why: the keeper’s price }, { adj: hum.Melancholic, by: 1, why: bought your own way out }]
+          text: He takes everything you have, counts it, and looks the other way for exactly as long as it takes you to get through the door. The others watch you go. Nobody asks you to come back.
+        next: ship
+      - label: Shout through the shutter to the watermen at the stairs.
+        dev: Risky · Address against 5
+        check: { attr: Address, diff: 5 }
+        outcomes:
+          T:
+            effects: [{ set: freed }, { hook: "The watermen of Wapping Old Stairs, who owe you a turn", why: called them to the spirit’s house }]
+            text: You shout that there are free-born English locked up for the Plantations, and the watermen of Wapping, who have no love for spirits, come up the street with their stretchers. The man with the club leaves by the back, faster than he has ever done anything.
+          S:
+            effects: [{ set: escaped }]
+            text: A waterman hears you, and comes, and lifts the bar from outside for a shilling you promise him. Two of the others come out after you.
+          C:
+            effects: [{ set: escaped }, { adj: hum.Choleric, by: 1, why: a crack on the head }]
+            text: The watermen come, but the man with the club gets one blow in before he goes, and it is yours.
+          R:
+            effects: [{ adj: hum.Melancholic, by: 1, why: no answer }]
+            text: Nobody answers. Wapping hears a great deal of shouting from windows by the river, and has learned not to listen.
+          X:
+            effects: [{ set: ashore }, { adj: hum.Melancholic, by: 2, why: carried down the river }]
+            text: The man with the club stops your mouth. At dawn you are rowed out with the others and battened under a hatch, and it is Gravesend before a customs boat comes alongside, and the master puts you all ashore on the mud rather than be searched.
+        story:
+          T: Putting {his} mouth to the crack of the shutter, {hero} cried out to the watermen at the stairs that there were free-born English locked up for the Plantations; and those honest fellows, who loved a spirit as a dog loves a cat, came up the street with their boat-stretchers, and the keeper of the door went out by the back faster than he had done anything in his life.
+          X: "{Hero} called through the shutter to the watermen, and was answered by the keeper’s hand over {his} mouth; and at dawn was rowed out and battened under a hatch with the others, and carried down to Gravesend, where the master, sooner than be searched by the customs, put the whole hold ashore upon the mud."
+        next: ship
+
+  - id: ship
+    num: IV
+    phase: The Crisis
+    title: The Ebb
+    sid: spirit.04.ship
+    dev: Crisis · Press on (risky, the ship) or Withdraw (certain, go home)
+    text: |-
+      {if flags.ashore}You stand on the mud at Gravesend in your stockings, twenty miles from London, with the ship already hull-down. There is still a magistrate at Gravesend, and a customs house, and a waterman who says he could catch her at the Nore.{else}The ship is at Wapping, as Mr Pellow said, lying off the Old Stairs with her topsails loose. She sails on the ebb, in an hour, and there are people in her hold who did not mean to be.{end}
+
+      Nobody else is going to do anything about it. You could, perhaps. You could also go home.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: go out to the ship with a waterman and demand the people in her hold, in the King’s name."
+        dev: Press on · Nerve against 5
+        check:
+          attr: Nerve
+          diff: 5
+          bonus:
+            - { when: 'has_hook("The watermen of Wapping")', by: 1, why: the watermen with you }
+            - { when: flags.informed, by: 1, why: the constable has seen it }
+        outcomes:
+          T:
+            effects:
+              - { set: freed }
+              - { tag: "Brave (the Town)", why: boarded the spirit’s ship }
+              - { adj: celebrity, by: 1, why: the talk of the river }
+              - rumour:
+                  id: spirit-ship
+                  delay: 2
+                  from: The watermen of Wapping Old Stairs
+                  text: A {gent} went out to a Maryland ship on the ebb, in a borrowed boat, and took eleven people out of her hold in the King’s name, without the least right to do it. The master gave them up rather than have it tried.
+                  effect: Celebrity +1
+                  hindsight: The master afterwards complained to the owners, and the owners to a justice; but the justice, finding that the eleven had been entered in the ship’s books as willing servants who could none of them write, declined to go further, and the matter dropped.
+            text: The master looks down at you from the rail and decides that a {fellow} who comes out in a wherry to shout the King’s name is either mad or a magistrate’s nephew. He opens the hatch. Eleven people come up into the daylight and stand on the deck, blinking. He gives them to you rather than have it argued.
+          S:
+            effects: [{ set: freed }]
+            text: You argue at the rail for a quarter of an hour. At last the master lets down a ladder and sends up three of them, the three who had been shouting loudest, to be rid of you all.
+          C:
+            effects: [{ adj: hum.Melancholic, by: 1, why: the ship sails }, { adj: purse, by: "= -min(purse, 12)", why: the waterman’s fare }]
+            text: The master listens, laughs, and gives the order to cast off. You sit in the wherry and watch her go, and pay the waterman for the pleasure.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: a bucket of slops }]
+            text: The master answers you with a bucket from the galley, and the waterman, who is wetter than you, rows you back in silence.
+          X:
+            effects: [{ adj: hum.Melancholic, by: 1, why: the ship sails }, { condition: "Wounded (a belaying-pin, the shoulder)", why: boarded a Maryland ship }]
+            text: You get your hand on the ladder before a seaman meets you with a belaying-pin. You come to in the bottom of the wherry, being rowed back, while the ship goes down the river without you, and without anyone else getting off.
+        story:
+          T: Hiring a wherry at the Old Stairs, {hero} put out to the ship as she lay ready to sail, and demanded the people in her hold in the King’s name, to which {he} had no more title than the waterman; but the master, judging that anyone so bold must be either a lunatic or a justice’s nephew, opened his hatch and let up eleven souls into the daylight, rather than have the matter tried.
+          X: "{Hero} went out to the ship in a wherry and laid hold of her ladder, and was met at the rail by a seaman with a belaying-pin, who argued the case so forcibly that {he} came to {his} senses in the bottom of the boat, with {his} shoulder very sore and the ship already standing down the river, with her hold as full as ever."
+        next: reckon
+      - label: "Withdraw: go home, and say nothing about it to anyone."
+        withdraw: true
+        dev: Withdraw · certain
+        do:
+          effects: [{ set: withdrew }, { adj: hum.Melancholic, by: 1, why: "the ship, sailing" }]
+          text: You turn your back on the river and walk home. The ship sails on the ebb, as Mr Pellow said. You find, over the next weeks, that you know exactly what the tide is doing, at every hour, without wanting to.
+        next: reckon

@@ -1,0 +1,335 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# Step 10, batch 1 (St Giles). The design document's cunning man: the reading is drawn from the run's
+# own coming Ventures ({prophecy}: the next dated Venture's offer.prophecy, or a stock reading from
+# settings.yaml). The ambiguity rule: nothing is confirmed; the Editor supplies the rational account.
+# New canon: Mr Abel Gadd, Student in Astrology and Physick, of Short's Gardens.
+
+id: cunning-man
+title: The Cunning Man
+names:                     # on this page; a run draws its own
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
+sample:
+  prophecy: The Moon will stand over a high road, and a stout man will ride under her with a thing he values more than his life. A pale woman sits beside him who remembers everything. One of them will be your fortune, and the other your enemy, and the stars do not say which.
+offer:
+  district: St Giles
+  circle: the Brethren & the Adepts
+  rank: Tradesman
+  blurb: Up three pair of stairs in Short’s Gardens, a Student in Astrology and Physick calculates nativities, resolves questions, and recovers stolen goods by art. His fees are moderate. His clients mostly come back.
+  repeat: true
+  weight: 1
+  weight_when:
+    - { when: played("cunning-man"), by: 0.3 }
+    - { when: hum.Melancholic >= 3, by: 2 }
+runhead: The Life &amp; Adventures of Mr {name}
+sub: Being a Consultation of the Stars, in five Beats
+prospectus: >-
+  A garret in Short’s Gardens; a figure of the heavens drawn square, in the English manner; a reading
+  that seems to know what is coming; and a constable on the stairs who knows what the law says about it.
+year: 1724
+week: 28
+loot_flag: paid
+persona: Mr Byrne
+who:
+  name: Cornelius Byrne
+  as: under his own name
+  origin: Younger son of an Irish squire · Book II
+
+start:
+  purse: £2 10s
+  debts: £24
+  luck: 0
+  exposure: 0
+  notoriety: 0
+  celebrity: 1
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 1, Choleric: 1, Melancholic: 3, Phlegmatic: 0 }
+  tags: []
+  items: [His father’s sword, "A fine coat, made in Dublin and not paid for"]
+  hooks: []
+
+first: stairs
+
+chapter:
+  no: Chap. VIII.
+  opening: In which our Hero consults the Heavens
+  parts:
+    - { when: flags.nativity, text: "has {his} Nativity cast" }
+    - { when: flags.horary, text: puts a Question to the Stars }
+    - { when: flags.credit, text: is read on Credit }
+    - { when: flags.lied, text: lies to the Planets }
+    - { when: flags.sigil, text: buys a Charm }
+    - { when: flags.corrected, text: corrects an Astrologer }
+    - { when: flags.saved, text: rescues an Astrologer from the Law }
+    - { when: flags.taken, text: is taken up for a Conjurer }
+  last:
+    when: flags.withdrew or flags.left
+    text: leaves by the back Stairs
+    else: "goes down with {his} Fortune folded in {his} Pocket"
+
+story:
+  title: The History of Mr Cornelius Byrne
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface: It is a remark of the philosophers that men consult the stars most when their affairs are worst, as sailors pray most in a storm; and it was at about this time, with {his} affairs in no very settled condition, that {hero} climbed three pair of stairs in Short’s Gardens to have them looked into by a higher authority.
+  close: "{Hero} came down the stairs with {his} fortune written on a half-sheet of paper in {his} pocket; and if it proved afterwards to be true, {he} was too much occupied at the time to remember having been told."
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: The Figure in Your Pocket
+  sid: cunning.05.reckoning
+  dev: The reading is a Hook in all but name · a rumour if taken up · the Editor's rational account
+  steps:
+    - when: not flags.left
+      say: "You walk down into the din of Seven Dials with the reading by heart, whether you wished to learn it or not: {prophecy}"
+    - when: flags.left
+      say: You are down the stairs and into Seven Dials before you have been told anything at all. The stars, you reflect, will have to manage your affairs unassisted, as they have so far.
+    - when: flags.sigil
+      say: The sigil is folded small in your waistcoat pocket, over the heart, where Mr Gadd said it would do most good and be least seen.
+    - when: flags.taken
+      say: You spend the night in the roundhouse with Mr Gadd, who casts a figure for the hour of your arrest on the back of the charge sheet and finds it very favourable. In the morning a justice lets you both go, for a fee that Mr Gadd did not foresee.
+  post:
+    some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
+    none: Nothing is in the post. What the stars know, they keep to themselves; it is their great advantage over the Town.
+  upkeep: "Upkeep follows: the lodging, and whatever the heavens have not already taken."
+  again: Climb the stairs again
+  notes:
+    - The Editor observes that a cunning man of Short’s Gardens heard the same talk as the alehouses of St Giles, and generally heard it first; and that a prophecy precise enough to be checked was rarely given twice.
+  finis: Finis.
+
+beats:
+  - id: stairs
+    num: I
+    phase: The Approach
+    title: Three Pair of Stairs in Short’s Gardens
+    sid: cunning.01.stairs
+    dev: Approach · two costed readings and a risky one on credit
+    text: |-
+      A card in a window of Short’s Gardens is lettered in a fine round hand: NATIVITIES CALCULATED. QUESTIONS RESOLVED. STOLEN GOODS RECOVERED BY ART. Up three pair of stairs, in a garret that smells of tallow and old paper, sits Mr Abel Gadd, Student in Astrology and Physick.
+
+      He is small, clean and spectacled, with ink on his cuffs and a well-thumbed copy of Lilly at his elbow.{fn *} A nativity, he says, is half a guinea. A horary question, being put and answered in the hour, is five shillings. He does not do love philtres, whatever you may have heard downstairs.
+    notes:
+      - "* William Lilly’s Christian Astrology (1647), the first great English manual of the art, was still the practitioner’s handbook three generations later."
+      - "John Gadbury (died 1704) was Lilly’s pupil and later his bitter rival. The Arabian Parts are points in the figure found by adding and subtracting the places of the planets."
+    ask: What will you ask of the stars?
+    options:
+      - label: Pay half a guinea, and have your whole nativity calculated.
+        cost: 10s 6d
+        dev: Costed · certain · the full reading
+        do:
+          effects: [{ adj: purse, by: -10s 6d, why: a nativity }, { set: nativity }, { adj: composure, by: 1, why: thoroughly attended to }]
+          text: He takes the half-guinea, tests its edge, and opens his ephemeris with the air of a man opening a ledger. A nativity, he says, is not a parlour trick; it is the whole account of a life, and like all accounts it will be found to have been running for some time.
+        next: hour
+      - label: Pay five shillings, and put a single question to the hour.
+        cost: 5s
+        dev: Costed · certain · a cheaper reading
+        do:
+          effects: [{ adj: purse, by: -5s, why: a horary question }, { set: horary }]
+          text: You ask what fortune holds for you in the coming months. Mr Gadd notes the minute by his watch, which is the minute the question is born, and says that a question is like a child, and he will want to know who its father is.
+        next: hour
+      - label: Tell him you are a fellow student of the heavens, and ask to be read on professional terms.
+        dev: Risky · Learning against 4
+        check: { attr: Learning, diff: 4, bonus: [{ when: 'has_tag("Learned")', by: 1, why: learned }] }
+        outcomes:
+          T:
+            effects: [{ set: credit }, { set: nativity }, { adj: hum.Melancholic, by: -1, why: a kindred spirit }]
+            text: You speak of trines and quartiles, of Lilly and of Gadbury, and you confess a weakness for the Arabian Parts. Mr Gadd is so delighted to have a colleague in his garret that he calculates your whole nativity for nothing, and gives you a glass of his own cordial while he does it.
+          S:
+            effects: [{ set: credit }, { set: horary }]
+            text: You know enough to be worth a question for nothing, he decides, though not enough to be worth a nativity.
+          C:
+            effects: [{ set: credit }, { set: horary }, { adj: hum.Choleric, by: 1, why: corrected }]
+            text: He reads you on credit, after first correcting your pronunciation of Aldebaran, twice.
+          R:
+            effects: [{ adj: purse, by: -5s, why: "a horary question, at the full price" }, { set: horary }]
+            text: He hears you out, and asks you which house governs servants. You say the seventh. He charges you five shillings, as a layman.
+          X:
+            effects: [{ adj: purse, by: -10s 6d, why: "a nativity, at the full price" }, { set: nativity }, { adj: celebrity, by: -1, why: "your learning, repeated downstairs" }]
+            text: You speak of the planet Neptune with great confidence. Mr Gadd, who has never heard of it, nor has anyone else, decides you are a wag, and charges you for a nativity to teach you better. His boy, on the stairs, has heard it all.
+        story:
+          T: Presenting {himself} to the astrologer as a brother of the art, {hero} discoursed so learnedly of trines and quartiles, and of the Arabian Parts, that the little man, who had not had a colleague up his stairs in twenty years, calculated {his} whole nativity for nothing, and drank {his} health in his own cordial while the planets were placed.
+          X: Wishing to pass for a student of the stars, {hero} spoke with great confidence of a planet which nobody had then discovered; upon which the astrologer, taking {him} for a wag, charged {him} the full price of a nativity by way of correction, and his boy, who had listened on the stairs, carried the planet down to the alehouse, where it was much admired.
+        next: hour
+
+  - id: hour
+    num: II
+    phase: The Complication
+    title: The Hour of Your Birth
+    sid: cunning.02.hour
+    dev: Complication · the truth, a better lie, or a Withdraw
+    text: |-
+      {if flags.nativity}Mr Gadd dips his pen and asks for the hour of your birth: the day, the place and, as near as you can tell him, the minute. Everything follows from it, he says, as a river follows from its spring.{else}Mr Gadd asks, for the cast of the question, where and when you were born. The question is the child, he says, but the querent is its father, and the stars will want to know his character.{end}
+
+      You know the day. You have some idea of the hour. You also know, from a book you once read in a library in {county}, which hours make a great man, and which make a parish clerk.
+    notes:
+      - "Astrologers ‘rectified’ a doubtful birth-time by working back from the known accidents of a life. The Editor notes that the method requires the astrologer to learn a great deal about his client."
+    ask: What hour will you give him?
+    options:
+      - label: Tell him the truth, as near as you know it.
+        dev: Certain · an honest reading
+        do:
+          effects: [{ set: honest }]
+          text: You give him the day and the hour, and the place, and the weather, which your mother always said was very bad. He writes it all down. The truth, he observes, is the beginning of every good figure, and of very few good fortunes.
+        next: figure
+      - label: Give him an hour with Jupiter rising, and have the nativity of a great {fellow}.
+        dev: Risky · Wit against 4 · lying to the planets
+        check: { attr: Wit, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: lied }, { adj: hum.Sanguine, by: 1, why: a splendid nativity }, { adj: composure, by: 1, why: born to greatness }]
+            text: You give him an hour at which, by your recollection of the book, the greater fortune rises in the east. He calculates it, looks up at you over his spectacles with new respect, and reads you a nativity fit for a lord chancellor. You go down the stairs a good inch taller.
+          S:
+            effects: [{ set: lied }]
+            text: You give him a grand hour. He calculates it, and pronounces you born to a fine but chequered fortune, which is what he pronounces most people born to, whatever hour they give.
+          C:
+            effects: [{ set: lied }, { adj: hum.Phlegmatic, by: 1, why: a long rectification }]
+            text: You give him a grand hour. He finds it does not agree with the accidents of your life, and spends an hour rectifying it, asking about your smallpox and your father’s death, until he arrives at very nearly the true one.
+          R:
+            effects: [{ set: lied }, { adj: hum.Melancholic, by: 1, why: Saturn in the ascendant }]
+            text: You give him an hour you are sure is splendid. He calculates it, goes pale, and puts down his pen. Saturn, he says, and says nothing more for some time.
+          X:
+            effects:
+              - { set: lied }
+              - { adj: hum.Melancholic, by: 1, why: found out by the stars }
+              - { hook: "Mr Gadd of Short’s Gardens, who has rectified your nativity and knows more than he says", why: he found the true hour }
+            text: He looks at the hour you have given him, and then at you, and begins to ask questions, very gently. Where were you at seven years old? Who keeps the house in {county} now? Why did you leave? At the end of half an hour he has found your true hour of birth, and a good deal else, and writes it all down.
+        story:
+          T: Not content with the hour of {his} birth as Providence had appointed it, {hero} furnished the astrologer with a better, at which the greater fortune was rising in the east; and the little man, calculating it, looked up at {his} client with a new respect and read {him} a nativity fit for a lord chancellor, so that {hero} went down the stairs an inch taller, and owed it all to a library in {county}.
+          X: Thinking to improve upon Providence, {hero} gave the astrologer a false hour of {his} birth; but the little man, finding it disagree with the accidents of {his} life, fell to rectifying it with such gentle and particular questions that within half an hour he had the true hour, and the true county, and very nearly the true state of {his} affairs, all written down in a fair hand.
+        next: figure
+      - label: "Withdraw: decide you would rather not know, and leave him your fee."
+        withdraw: true
+        dev: Withdraw · certain · ends the Venture
+        do:
+          effects: [{ set: left }]
+          text: You get up, lay your money on the table whether or not it is owed, and go. Mr Gadd does not try to stop you. Many querents, he says to your back, prefer the future as a surprise. He does not say whether it obliges them.
+        next: reckon
+
+  - id: figure
+    num: III
+    phase: The Turn
+    title: The Figure Drawn Square
+    sid: cunning.03.figure
+    dev: Turn · the reading ({prophecy}) · press for more, buy a charm, check his sums, or laugh
+    text: |-
+      Mr Gadd draws the figure square, in the English manner, the twelve houses ranged about a central box in which he writes your name.{fn *} He places the planets with little hooked signs, consults his tables, frowns, consults them again, and at last sits back.
+
+      “{prophecy}”
+
+      He says it flatly, like a bill of lading. Then he takes off his spectacles and wipes them, and you understand that the reading is delivered and the conversation is now open.
+    notes:
+      - "* English astrologers drew their figures square, with the houses as triangles about a central square, until well into the nineteenth century."
+    ask: What will you make of it?
+    options:
+      - label: Press him for the particulars, the when and the who.
+        dev: Risky · Address against 4
+        check: { attr: Address, diff: 4, bonus: [{ when: flags.honest, by: 1, why: an honest figure }] }
+        outcomes:
+          T:
+            effects: [{ adj: luck, by: 1, why: forewarned }, { hook: "Mr Gadd’s reading, which you have by heart", why: pressed him for particulars }]
+            text: "He gives you more than you asked: the season, the quarter of the town, the colour of a coat. He is not, he says, permitted to be plainer. You find you believe him, which is worth something in itself, if only to you."
+          S:
+            effects: [{ hook: "Mr Gadd’s reading, which you have by heart", why: pressed him for particulars }]
+            text: He tells you it will be within the year, and that you will know it when it comes. You make him say it twice, so as to have it right.
+          C:
+            effects: [{ hook: "Mr Gadd’s reading, which you have by heart", why: pressed him for particulars }, { adj: purse, by: "= -min(purse, 30)", why: an extra half-crown for particulars }]
+            text: He gives you a particular or two, for an extra half-crown, which he explains is the ordinary charge for the stars to be specific.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: oracular evasions }]
+            text: The more you press, the more he speaks of the Moon’s nodes. At the end of a quarter of an hour you know a great deal about the Moon’s nodes.
+          X:
+            effects: [{ adj: hum.Melancholic, by: 2, why: a reading that will not leave you }]
+            text: He tells you more than you asked, and then, with real reluctance, a little more than that, about a hard winter and a door with iron on it. He will not explain. He will not take a fee for that part.
+        story:
+          T: Pressing the astrologer for particulars, {hero} had from him the season, the quarter of the town and the colour of a coat; and if the little man drew these out of the heavens, or out of the talk of the alehouse below, {hero} never troubled to inquire, the reading serving {him} equally well in either case.
+          X: Pressed beyond his inclination, the astrologer spoke of a hard winter and of a door with iron upon it, and would say no more, nor take a penny for it; which so preyed upon {hero} that {he} looked askance at every door in London for a month, and at the ironmongers’ in particular.
+        next: stairs-constable
+      - label: Buy a sigil of Jupiter against your enemies, drawn on parchment in the planet’s hour.
+        cost: 5s
+        dev: Costed · certain · Luck +1, which is what belief is worth
+        do:
+          effects: [{ adj: purse, by: -5s, why: a sigil of Jupiter }, { set: sigil }, { item: "A sigil of Jupiter, on parchment", why: bought of Mr Gadd }, { adj: luck, by: 1, why: a sigil of Jupiter }]
+          text: "He draws it while you wait: the planet’s square of numbers, four by four, every line adding to thirty-four, on a slip of parchment no bigger than a playing card. Keep it about you, he says, and keep it to yourself. It works better unseen, like most things in London."
+        next: stairs-constable
+      - label: Check his arithmetic, house by house, against his own tables.
+        gate: { when: attrs.Learning >= 3, need: "Learning 3 · you have {attrs.Learning}" }
+        dev: Gated (Learning 3) · certain · a refund and a friend
+        do:
+          effects: [{ set: corrected }, { loot: 5s, why: a refund for an error in the tenth house }, { hook: "Mr Gadd of Short’s Gardens, an astrologer who owes you a figure", why: corrected his tables }]
+          text: You find his error in the cusp of the tenth house, where he has taken the wrong line of the table. He checks it, goes red, recalculates, and finds that it makes no difference whatever to the reading, as the stars are generous with a margin. He gives you back five shillings all the same, as between colleagues.
+        next: stairs-constable
+      - label: Laugh, and tell him the stars have better things to do.
+        dev: Certain
+        do:
+          effects: [{ adj: hum.Sanguine, by: 1, why: a good laugh }]
+          text: Mr Gadd does not take offence. A great many querents laugh, he says. It does not alter the figure, and it does not alter what they do on the stairs afterwards, which is to say it over to themselves.
+        next: stairs-constable
+
+  - id: stairs-constable
+    num: IV
+    phase: The Crisis
+    title: A Constable on the Stairs
+    sid: cunning.04.constable
+    dev: Crisis · Press on (risky, a rescue) or Withdraw (certain, by the back stairs)
+    text: |-
+      There are boots on the stairs: a constable of the parish, with a staff, and behind him a woman in a red cloak who paid Mr Gadd five shillings to find her husband’s silver spoons, and found instead that her husband had pawned them.{fn *}
+
+      Mr Gadd closes his ephemeris and goes grey. If he is taken before a justice, he will be taken as a cheat and a vagrant, and his books with him. There is a door behind the curtain, he whispers, that gives on the back stairs.
+    notes:
+      - "* Fortune-tellers might be taken up as vagrants. From June 1736 the Witchcraft Act made it an offence in itself to undertake to tell fortunes, or to discover stolen goods by any occult or crafty science, punishable by a year’s imprisonment."
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: meet the constable at the door as Mr Gadd’s client of quality, and talk him down the stairs."
+        dev: Press on · Address against 5 · a rescue
+        check:
+          attr: Address
+          diff: 5
+          bonus:
+            - { when: 'rank_at_least("Gentleman")', by: 1, why: a gentleman’s word }
+            - { when: flags.corrected, by: 1, why: you know his trade }
+        outcomes:
+          T:
+            effects:
+              - { set: saved }
+              - { hook: "Mr Gadd of Short’s Gardens, who owes you his liberty", why: saved him from the constable }
+              - { tag: "Generous (the Brethren & the Adepts)", why: saved an astrologer }
+            text: You tell the constable that Mr Gadd is a mathematician, which is true, and that you have engaged him to calculate the tides for a venture to the Indies, which is not. You give the lady a shilling for her trouble. The constable apologises to everyone, including the stairs.
+          S:
+            effects: [{ set: saved }, { hook: "Mr Gadd of Short’s Gardens, who owes you his liberty", why: saved him from the constable }]
+            text: You talk until the constable is confused and the lady is tired, and they go down together, agreeing that it is all very irregular.
+          C:
+            effects: [{ set: saved }, { adj: purse, by: "= -min(purse, 60)", why: "the lady’s five shillings, refunded by you" }]
+            text: The lady will go only with her five shillings back. Mr Gadd has spent them. You pay, and the constable goes too, satisfied that a debt has been discharged, which is all the law ever really wants.
+          R:
+            effects: [{ adj: notoriety, by: 1, why: your name in a constable’s book }]
+            text: The constable goes away, but he takes your name first, in a little book, as a person found in the company of a conjurer.
+          X:
+            effects:
+              - { set: taken }
+              - { adj: notoriety, by: 1, why: taken up with a conjurer }
+              - { adj: purse, by: "= -min(purse, 120)", why: the justice’s fees }
+              - rumour:
+                  id: conjurer
+                  delay: 2
+                  from: A trading justice in Bloomsbury
+                  text: A conjurer of Short’s Gardens was taken up with a {gent} in a good coat, who said a great deal about the tides. Both were let go on payment of fees. The {gent} is said to keep low company, and to believe in it.
+                  effect: Celebrity −1 · Notoriety +1
+                  hindsight: The tides were never calculated; but Mr Gadd, out of gratitude, drew a figure for the justice’s gout, which proved so accurate that the justice became his best customer.
+            text: The constable listens to your tides with great attention, and then takes you both, as the conjurer and his confederate. The lady goes home satisfied, without her spoons.
+        story:
+          T: There came a constable up the stairs, with a woman whose spoons the stars had failed to find; whereupon {hero}, stepping between the law and the astrologer, declared the little man a mathematician engaged upon the tides for a voyage to the Indies, with such authority that the constable apologised to the company, and to the stairs, and went down them backwards.
+          X: To the constable at the door {hero} represented the astrologer as a mathematician engaged upon the tides; which the constable heard out with great attention, and then took the two of them before a justice, the one for a conjurer and the other for his confederate, and the lady went home well pleased, though not with her spoons.
+        next: reckon
+      - label: "Withdraw: go down the back stairs, and leave Mr Gadd to his stars."
+        withdraw: true
+        dev: Withdraw · certain
+        do:
+          effects: [{ set: withdrew }, { adj: hum.Melancholic, by: 1, why: a door closed on Mr Gadd }]
+          text: The back stairs come out in a yard full of washing and a pig. Above you, through the window, you hear the constable’s voice, and the lady’s, and then, quite steadily, Mr Gadd’s, explaining that he is a mathematician.
+        next: reckon

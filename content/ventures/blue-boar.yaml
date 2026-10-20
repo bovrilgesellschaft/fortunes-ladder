@@ -1,8 +1,9 @@
 # yaml-language-server: $schema=../schema/venture.schema.json
 #
-# PLACEHOLDER (Step 5): written to exercise the run shell. It introduces Will Gallow and sells
-# the hero the pistols and the mask that heath needs. Keep, rewrite or drop it in Step 10.
-# Places the canon Blue Boar (bible: "unplaced") in St Giles: a ruling for the bible.
+# Step 10, batch 1 (St Giles): the Step 5 placeholder rewritten. Introduces Will Gallow and sells the
+# pistols and the mask that heath needs; the gang may be ridden with, fenced for, or sold.
+# Places the canon Blue Boar (bible: "unplaced") in St Giles. Mr Wild is named only to February 1725.
+# New canon: Mrs Gammon of the Blue Boar; the Tag Informer.
 
 id: blue-boar
 title: The Blue Boar
@@ -14,17 +15,20 @@ names:                     # on this page; a run draws its own
   short_title: Capt.
   alias_surname: O’Rourke
   claim: late of the Imperial service
-test: true
 offer:
   district: St Giles
   circle: the Underworld
-  blurb: A tavern in St Giles where gentlemen of the road are said to drink. A man who wanted to learn the trade might learn it there, if he survived the gin.
+  blurb: A tavern in a court off St Giles High Street, where gentlemen of the road are said to drink. Anyone who wanted to learn the trade might learn it there, if they survived the gin.
   weight: 2
+  weight_when:
+    - { when: 'has_item("A tongue for the cant")', by: 2 }
+    - { when: 'has_hook("A dealer in Monmouth Street")', by: 2 }
+    - { when: 'rank_at_least("Esquire")', by: 0.5 }
 runhead: The Life &amp; Adventures of Mr {name}
 sub: Being an Evening among the Gentlemen of the Road, in five Beats
 prospectus: >-
-  <b>A placeholder Venture,</b> written to exercise the run shell: a flash tavern, an old
-  highwayman, a brace of pistols and a thief-taker's man.
+  A tavern in St Giles; an old highwayman who has never been in a hurry; a job on the Hampstead road
+  that wants another rider, or a fence, or an informer; and a thief-taker’s man at the door.
 year: 1724
 week: 20
 loot_flag: won
@@ -57,36 +61,42 @@ chapter:
     - { when: flags.drunk, text: drinks more than is good for him }
     - { when: flags.will, text: makes an old Acquaintance }
     - { when: flags.armed, text: buys a Brace of Pistols }
+    - { when: flags.fence, text: turns Merchant }
+    - { when: flags.sold, text: "sells {his} Friends" }
     - { when: flags.brazen, text: outfaces a Thief-taker }
   last:
-    when: flags.withdrew
+    when: flags.withdrew or flags.left
     text: leaves by the Roof
     else: goes home by the Door, which in St Giles is a Distinction
 
 story:
   title: The History of Mr Cornelius Byrne
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
-  preface: It was about this time that our hero, finding that the life of a gentleman cost a great deal more than a gentleman had, began to consider those professions in which a gentleman’s qualities are rewarded at once, and in ready money.
-  close: He went home by daylight, with an acquaintance he had not sought and a brace of pistols he could not well afford, and the firm resolution, which young men always form on such occasions, never to use either.
+  preface: It was about this time that {hero}, finding that the life of a gentleman cost a great deal more than a gentleman had, began to consider those professions in which a gentleman’s qualities are rewarded at once, and in ready money.
+  close: He went home by daylight, with an acquaintance he had not sought and a set of prospects he could not well describe to his landlady, and the firm resolution, which the young always form on such occasions, to think better of them in the morning.
 
 reckoning:
   num: V
   phase: The Reckoning
   title: Home through St Giles
   sid: blueboar.05.reckoning
-  dev: Placeholder · nothing further to settle
+  dev: The gang's job is a Hook (heath reads Will Gallow); an informer's money is paid now, and remembered
   steps:
     - when: flags.armed
-      say: You walk home through St Giles with a pistol in each pocket and the mask in your hat, and every watchman you pass seems to look at your pockets.
-    - when: not flags.armed
+      say: You walk home through St Giles with a pistol in each pocket and a mask in your hat, and every watchman you pass seems to look at your pockets.
+    - when: not flags.armed and not flags.sold
       say: You walk home through St Giles with nothing in your pockets worth taking, which in St Giles is the best protection there is.
-    - when: flags.will
+    - when: flags.will and not flags.sold
       say: Will Gallow has told you where to find him, which is to say he has told you where he will not be, and that someone there will know.
+    - when: flags.sold
+      say: You walk home with two guineas of the thief-taker’s money, which are exactly as heavy as two guineas of anyone else’s. It is the rest of you that is heavier.
   post:
     some: Sealed, and in the post. They will arrive in the weeks ahead, whatever you do next.
     none: Nothing is in the post. St Giles keeps its own counsel, as a rule, and sells it only for cash.
-  upkeep: "Upkeep follows: the garret, the coat, and now the pistols, which want powder."
+  upkeep: "Upkeep follows: the lodging, the coat, and whatever else you brought home tonight."
   again: Go back to the Blue Boar
+  notes:
+    - Parliament paid £40 on the conviction of a highway robber, besides the robber’s horse and arms; which is why the thief-takers knew the inns, and the inns knew the thief-takers.
   finis: Finis.
 
 beats:
@@ -95,11 +105,11 @@ beats:
     phase: The Approach
     title: The Sign of the Blue Boar
     sid: blueboar.01.tavern
-    dev: Placeholder · certain, costed and risky options
+    dev: Approach · costed, risky, certain, and a gate (the cant)
     text: |-
       The Blue Boar stands in a court off St Giles High Street, where the houses lean together like drunk men holding each other up. The sign has lost its paint. The boar is now merely blue, or merely a boar, depending on the light.
 
-      Inside are a fire, a dozen men who stop talking when you come in, and a smell of gin so strong you could light it.{fn *} You have heard that gentlemen of the [[pad]] drink here. You have not quite decided why you have come to look at them.
+      Inside are a fire, a dozen people who stop talking when you come in, and a smell of gin so strong you could light it.{fn *} Gentlemen of the [[pad]] are said to drink here. You have not quite decided why you have come to look at them.
     notes:
       - "* Gin was cheap and untaxed in the 1720s. Parliament’s first attempt to restrain it, the Gin Act, came in 1729."
     ask: How will you make yourself welcome?
@@ -117,28 +127,35 @@ beats:
         outcomes:
           T:
             effects: [{ set: treated }, { adj: hum.Sanguine, by: 1, why: gin }]
-            text: You drink glass for glass with a carter, a coiner and a woman who says she is a duchess, and you are the last standing. The room applauds. The duchess kisses you, and you check your pockets afterwards, and everything is there, which you understand to be a great compliment.
+            text: You drink glass for glass with a carter, a coiner and a woman who says she is a duchess, and you are the last standing. The room applauds. You check your pockets afterwards and everything is there, which you understand to be a great compliment.
           S:
-            effects: [{ adj: hum.Sanguine, by: 1, why: gin }]
+            effects: [{ set: treated }, { adj: hum.Sanguine, by: 1, why: gin }]
             text: You hold your gin. The room decides you are not a constable, which in St Giles is the beginning of every friendship.
           C:
-            effects: [{ adj: hum.Sanguine, by: 1, why: gin }, { adj: purse, by: -1s, why: "your round, and someone else’s" }]
+            effects: [{ set: treated }, { adj: hum.Sanguine, by: 1, why: gin }, { adj: purse, by: -1s, why: "your round, and someone else’s" }]
             text: You hold your gin, and somehow pay for a good deal of other people’s.
           R:
             effects: [{ set: drunk }, { adj: hum.Melancholic, by: 1, why: gin }]
-            text: The gin wins. You spend a quarter of an hour explaining to a coal-heaver that your father is a squire in {county}, and the coal-heaver says so is his, and you both weep.
+            text: The gin wins. You spend a quarter of an hour explaining to a coal-heaver that your family is a very old one in {county}, and the coal-heaver says so is his, and you both weep.
           X:
-            effects: [{ set: drunk }, { adj: purse, by: -10s, why: robbed while drunk }, { adj: hum.Melancholic, by: 1, why: gin }]
-            text: You wake on the settle with your purse ten shillings lighter and a duchess’s garter in your hand. Nobody in the room has ever seen a duchess.
+            effects: [{ set: drunk }, { adj: purse, by: "= -min(purse, 120)", why: robbed while drunk }, { adj: hum.Melancholic, by: 1, why: gin }]
+            text: You wake on the settle with your purse ten shillings lighter and a garter in your hand that nobody in the room will own.
         story:
-          T: He sat down among them and drank glass for glass with a carter, a coiner and a lady who styled herself a duchess, and was the last of the company upon his legs; which won him the respect of the house, and the duchess’s, and, what is rarer in St Giles, the safe return of his handkerchief.
-          X: The gin, which in that house was sold by the quartern and drunk by the pint, prevailed over him at last; and he woke upon the settle ten shillings the poorer, with a garter in his hand which nobody would own.
+          T: Sitting down among them, {hero} drank glass for glass with a carter, a coiner and a lady who styled herself a duchess, and was the last of the company upon {his} legs; which won {him} the respect of the house, and, what is rarer in St Giles, the safe return of {his} handkerchief.
+          X: The gin, which in that house was sold by the quartern and drunk by the pint, prevailed at last; and {hero} woke upon the settle ten shillings the poorer, with a garter in {his} hand which nobody would own.
         next: will
       - label: Take a stool in the corner, and listen.
         dev: Certain
         do:
           effects: [{ adj: hum.Phlegmatic, by: 1, why: listening }]
-          text: You sit in the corner and listen. You learn that the Hampstead road is good this autumn, that the Bath road is watched, and that Mr Wild has a man in the house tonight, though nobody will say which.
+          text: You sit in the corner and listen. You learn that the Hampstead road is good this season, that the Bath road is watched, and that a thief-taker has a man in the house tonight, though nobody will say which.
+        next: will
+      - label: Ask the landlady, in the cant, for the oldest [[cove]] in the [[ken]].
+        gate: { when: 'has_item("A tongue for the cant")', need: "the cant · you have not learned it" }
+        dev: Gated (the cant) · certain · straight to Will, with standing
+        do:
+          effects: [{ set: treated }, { adj: composure, by: 1, why: spoken for }]
+          text: The landlady looks at you as if a dog had asked for the salt. Then she jerks her head at the fire. The room starts talking again, a little louder than before, which in St Giles is a welcome.
         next: will
 
   - id: will
@@ -146,27 +163,27 @@ beats:
     phase: The Complication
     title: An Old Acquaintance of the Road
     sid: blueboar.02.will
-    dev: Placeholder · introduces Will Gallow, the canon Hook heath reads
+    dev: Complication · introduces Will Gallow, the canon Hook heath reads · a Withdraw
     text: |-
-      By the fire sits a long, grey, silent man with a pipe, who has watched you since you came in without once appearing to. The landlord calls him Will. The room gives him a yard of space on every side, as cattle give it to a bull who has never yet charged anyone.
+      By the fire sits a long, grey, silent man with a pipe, who has watched you since you came in without once appearing to. The landlady calls him Will. The room gives him a yard of space on every side, as cattle give it to a bull who has never yet charged anyone.
 
-      He takes the pipe out of his mouth. “You’ll be the gentleman,” he says, “as is thinking of the road.”
+      He takes the pipe out of his mouth. “You’ll be the {gent},” he says, “as is thinking of the road.”
     ask: What do you say to Will Gallow?
     options:
-      - label: Ask him, man to man, how the road is to be learned.
-        gate: { when: flags.treated, need: "Standing in the room (stand the gin, or drink level)" }
+      - label: Ask him, plainly, how the road is to be learned.
+        gate: { when: flags.treated, need: "Standing in the room (stand the gin, drink level, or ask in the cant)" }
         dev: Gated · certain · gives the Hook
         do:
           effects: [{ set: will }, { hook: "Will Gallow, an old acquaintance of the road", why: an evening at the Blue Boar }]
           text: Will looks at you a long time. Then he tells you three things. Never ride a horse you cannot afford to lose. Never rob a man who is laughing. And never be in a hurry. He has been on the [[pad]] since Queen Anne’s time, he says, and never once taken, and that is why.
-        next: pistols
+        next: job
       - label: Play him a hand of all-fours for a shilling a game.
         dev: Risky · Wit against 4
         check: { attr: Wit, diff: 4 }
         outcomes:
           T:
             effects: [{ set: will }, { loot: 6s, why: won at all-fours }, { hook: "Will Gallow, an old acquaintance of the road", why: beat him at cards }]
-            text: You beat him six games in seven. He pays without a word, then laughs, which nobody in the room has heard before. A man who can count cards, he says, can count coaches.
+            text: You beat him six games in seven. He pays without a word, then laughs, which nobody in the room has heard before. Anyone who can count cards, he says, can count coaches.
           S:
             effects: [{ set: will }, { hook: "Will Gallow, an old acquaintance of the road", why: an evening’s cards }]
             text: You win some and lose some. He likes the way you lose. By midnight he is telling you about the Hampstead road.
@@ -180,19 +197,19 @@ beats:
             effects: [{ adj: purse, by: -15s, why: lost at all-fours }, { adj: hum.Choleric, by: 1, why: fleeced by a silent man }]
             text: He wins fifteen shillings without speaking a word, and you realise, too late, that he has been reading your cards in the brass of the warming-pan.
         story:
-          T: He sat down to all-fours with an old highwayman called Will Gallow, and beat him six games in seven; at which the old man laughed aloud, a thing not heard in that house since the old Queen’s time, and declared that a gentleman who could count cards could count coaches.
-          X: Will Gallow won fifteen shillings off him at all-fours without once opening his mouth; and {styled} learned afterwards that the old rogue had read every card in his hand in the bottom of a brass warming-pan which hung behind his chair.
-        next: pistols
-      - label: Tell him you are already a gentleman of the road, and a bold one.
+          T: "{Hero} sat down to all-fours with an old highwayman called Will Gallow, and beat him six games in seven; at which the old man laughed aloud, a thing not heard in that house since the old Queen’s time, and declared that a hand which could count cards could count coaches."
+          X: Will Gallow won fifteen shillings of {him} at all-fours without once opening his mouth; and {hero} learned afterwards that the old rogue had read every card {he} held in the bottom of a brass warming-pan which hung behind {his} chair.
+        next: job
+      - label: Tell him you are already on the road, and a bold hand at it.
         dev: Risky · Nerve against 5 · a bluff
         check: { attr: Nerve, diff: 5 }
         outcomes:
           T:
             effects: [{ set: will }, { hook: "Will Gallow, an old acquaintance of the road", why: a bluff he admired }]
-            text: He does not believe a word of it, and admires every one. A man who lies that steadily, he says, will stand very steady in a road at night.
+            text: He does not believe a word of it, and admires every one. Anyone who lies that steadily, he says, will stand very steady in a road at night.
           S:
             effects: [{ set: will }, { hook: "Will Gallow, an old acquaintance of the road", why: a bluff he forgave }]
-            text: He hears you out with his pipe going, then tells you gently that he can see you have never sat a horse at a coach in your life, and that he will show you how, for a share.
+            text: He hears you out with his pipe going, then tells you gently that you have never sat a horse at a coach in your life, and that he will show you how, for a share.
           C:
             effects: [{ set: will }, { hook: "Will Gallow, an old acquaintance of the road", why: a bluff he saw through }, { adj: hum.Choleric, by: 1, why: laughed at }]
             text: He laughs until he coughs. Then he says he will take you on, as a man takes on a puppy.
@@ -200,35 +217,33 @@ beats:
             effects: [{ adj: hum.Choleric, by: 1, why: laughed at }]
             text: He says nothing at all, which is worse than laughing, and turns back to the fire.
           X:
-            effects: [{ adj: hum.Choleric, by: 1, why: laughed at }, { adj: notoriety, by: 1, why: boasting of robbery in a flash house }]
-            text: You say it loudly, which is a mistake, because a man at the next table says it more loudly still, to someone outside.
-        next: pistols
+            effects: [{ adj: hum.Choleric, by: 1, why: laughed at }, { adj: notoriety, by: 1, why: boasting of robbery in a thieves’ tavern }]
+            text: You say it loudly, which is a mistake, because someone at the next table repeats it more loudly still, to someone outside.
+        next: job
+      - label: "Withdraw: drink up, and go, before anyone here remembers your face."
+        withdraw: true
+        dev: Withdraw · certain · ends the Venture
+        do:
+          effects: [{ set: left }]
+          text: You finish your glass and go out into the court as if you had remembered an appointment. Behind you the talk starts again. Will Gallow does not look up, which you will later understand was a courtesy.
+        next: reckon
 
-  - id: pistols
+  - id: job
     num: III
     phase: The Turn
-    title: A Brace of Pistols
-    sid: blueboar.03.pistols
-    dev: Placeholder · the kit heath needs · costed, risky and a refusal
+    title: A Coach on the Hampstead Road
+    sid: blueboar.03.job
+    dev: Turn · ride (the kit), fence (the cant or Monmouth Street), sell (informer), or decline
     text: |-
-      The woman who keeps the house, a Mrs Gammon, with a face like a closed shop, puts a bundle on the table in front of you and unwraps it. A brace of pistols, one of them of doubtful temper. A crape mask. Fifteen shillings, the lot, and no questions in either direction.
+      Near midnight the talk at the fire turns to business. There is a coach that goes up the Hampstead road late, Will says, with a stout gentleman in it who carries more than a stout gentleman needs. It wants another rider. It wants, afterwards, someone to turn what is taken into money.
 
-      “For a gentleman as is thinking,” she says.
-    ask: Will you buy?
+      The landlady, a Mrs Gammon, with a face like a closed shop, puts a bundle on the table and unwraps it: a brace of pistols, one of doubtful temper, and a crape mask. Fifteen shillings the lot, and no questions in either direction.
+    ask: What part will you take?
     options:
-      - label: Pay her fifteen shillings.
-        cost: 15s
-        dev: Costed · certain · gives the pistols and the mask
-        do:
-          effects:
-            - { adj: purse, by: -15s, why: pistols and a mask }
-            - { set: armed }
-            - { item: "A brace of pistols, one doubtful", why: bought of Mrs Gammon }
-            - { item: A crape mask, why: bought of Mrs Gammon }
-          text: She counts the shillings twice, bites one, and pushes the bundle across. You are now a man with pistols, which is to say a man with a decision to make.
-        next: wild
-      - label: Haggle with her, as your father haggled for horses.
-        dev: Risky · Address against 4 · always gets the pistols; the price and the rumour vary
+      - label: Haggle with Mrs Gammon for the pistols, as if they were a horse at a fair, and ride when Will rides.
+        cost: 5s to £1
+        gate: { when: purse >= 60, need: "five shillings at least · you have {money(purse)}" }
+        dev: Costed and risky · Address against 4 · always gets the pistols; the price and the rumour vary
         check: { attr: Address, diff: 4 }
         outcomes:
           T:
@@ -244,7 +259,7 @@ beats:
               - { set: armed }
               - { item: "A brace of pistols, one doubtful", why: bought of Mrs Gammon }
               - { item: A crape mask, why: bought of Mrs Gammon }
-            text: Ten shillings. She calls you a hard man, which from Mrs Gammon is a character.
+            text: Ten shillings. She calls you a hard bargainer, which from Mrs Gammon is a character.
           C:
             effects:
               - { adj: purse, by: -15s, why: pistols and a mask }
@@ -262,12 +277,12 @@ beats:
                   id: gammon
                   delay: 2
                   from: Mrs Gammon’s back parlour
-                  text: A young Irish gentleman in a Dublin coat has bought a brace of pistols at the Blue Boar. Mrs Gammon thinks Mr Wild may like to know.
+                  text: A young {gent} in a good coat has bought a brace of pistols at the Blue Boar. Mrs Gammon thinks a thief-taker may like to know.
                   effect: Notoriety +1
             text: You haggle so hard that she remembers you. You pay her price in the end, and she remembers that too.
           X:
             effects:
-              - { adj: purse, by: -£1, why: "pistols and a mask, dear" }
+              - { adj: purse, by: "= -min(purse, 240)", why: "pistols and a mask, dear" }
               - { set: armed }
               - { item: "A brace of pistols, one doubtful", why: bought of Mrs Gammon }
               - { item: A crape mask, why: bought of Mrs Gammon }
@@ -275,15 +290,53 @@ beats:
                   id: gammon
                   delay: 1
                   from: Mrs Gammon’s back parlour
-                  text: A young Irish gentleman, very free with his money, has bought pistols and a mask at the Blue Boar. Mrs Gammon has sold the news to Mr Wild’s people for a crown.
+                  text: A young {gent}, very free with money, has bought pistols and a mask at the Blue Boar. Mrs Gammon has sold the description to a thief-taker’s people for a crown.
                   effect: Notoriety +2
-            text: You lose your temper, and with it the haggle. She takes a pound off you, and sells your face to Mr Wild’s people for a crown before you are out of the court.
+            text: You lose your temper, and with it the haggle. She takes a pound off you, and sells your face to a thief-taker’s people for a crown before you are out of the court.
         story:
-          T: The hostess, one Mrs Gammon, produced a brace of pistols and a crape mask, and named fifteen shillings; but our hero, who had seen his father buy horses at every fair in Connaught, beat her down to five, and she, in admiration, threw in a powder-horn and the best advice he was ever given, which was to keep the worse pistol for show.
-          X: In beating down Mrs Gammon he so far forgot himself as to call her a name she did not deserve, or at least had not earned that evening; whereupon she raised her price to a pound, and sold his description to Mr Wild’s people for a crown before he was out of the court.
+          T: The hostess, one Mrs Gammon, produced a brace of pistols and a crape mask, and named fifteen shillings; but {hero} beat her down to five with such address that she threw in a powder-horn and the best advice {he} was ever given, which was to keep the worse pistol for show.
+          X: In beating down Mrs Gammon {hero} so far forgot {himself} as to call her a name she had not earned that evening; whereupon she raised her price to a pound, and sold {his} description to the thief-takers for a crown before {he} was out of the court.
         next: wild
-      - label: Thank her, and leave the bundle where it lies.
-        dev: Certain · no pistols, so heath will not be offered
+      - label: Offer to turn the takings into money, through your dealer in Monmouth Street.
+        gate: { when: 'has_hook("A dealer in Monmouth Street") or has_item("A tongue for the cant")', need: "a fence, or the cant to find one" }
+        dev: Gated (the cant or the Monmouth Street Hook) · certain · the fence's trade
+        do:
+          effects:
+            - { set: fence }
+            - { loot: 10s, why: "a watch sold for the gang, on trial" }
+            - { adj: notoriety, by: 1, why: dealing in stolen goods }
+            - { hook: "Will Gallow’s gang, who will want their takings turned into money", why: an evening at the Blue Boar }
+          text: Will hands you a watch to try you with. You are back in an hour with more for it than he expected, less your share. He looks at the money, and then at you, with something near respect. A good fence, he says, is harder to find than a good horse, and lives longer.
+        next: wild
+      - label: Slip out, and tell a thief-taker where a coach will be robbed.
+        dev: Certain · two guineas now · the gang's enmity, and a name in the Underworld
+        do:
+          effects:
+            - { set: sold }
+            - { loot: 2 guineas, why: an informer’s earnest }
+            - { tag: "Informer (the Underworld)", why: sold the Blue Boar }
+            - { unhook: Will Gallow, why: sold him }
+            - when: year < 1725 or (year == 1725 and week < 7)
+              then:
+                - rumour:
+                    id: sold
+                    delay: 3
+                    from: Mr Wild’s office, in the Old Bailey
+                    text: Mr Wild’s people were waiting on the Hampstead road last night, and a coach went by unrobbed. The Blue Boar wants to know who told them.
+                    effect: Notoriety +1
+                    hindsight: The gang did not ride that night, Will Gallow having never in forty years been in a hurry; so that the thief-taker paid for nothing, and the Blue Boar learned everything.
+              else:
+                - rumour:
+                    id: sold
+                    delay: 3
+                    from: A thief-taker’s office, in the Old Bailey
+                    text: The thief-takers were waiting on the Hampstead road last night, and a coach went by unrobbed. The Blue Boar wants to know who told them.
+                    effect: Notoriety +1
+                    hindsight: The gang did not ride that night, Will Gallow having never in forty years been in a hurry; so that the thief-taker paid for nothing, and the Blue Boar learned everything.
+          text: You find the thief-taker’s man drinking alone in an alehouse in Holborn. He listens, writes in a little book, and gives you two guineas as an earnest, with the air of a farmer paying for a calf. When you come back into the Blue Boar, nobody looks at you, which is not the same as nobody seeing you.
+        next: wild
+      - label: Thank Mrs Gammon, and leave the bundle where it lies.
+        dev: Certain · no part in it, and no pistols for heath
         do:
           effects: [{ adj: hum.Phlegmatic, by: 1, why: prudence }]
           text: You thank her. She wraps the pistols up again with the air of a woman who will sell them to the next fool, and knows exactly how long she will have to wait.
@@ -292,56 +345,67 @@ beats:
   - id: wild
     num: IV
     phase: The Crisis
-    title: Mr Wild’s Man
+    title: The Thief-taker’s Man
     sid: blueboar.04.wild
-    dev: Placeholder · Press on (risky) or Withdraw (certain)
+    dev: Crisis · Press on (risky) or Withdraw (certain) · a variant if the hero informed
     text: |-
-      The door opens, and the room goes quiet the way a pond goes quiet when a pike comes into it. A broad man in a good coat and a bad wig stands in the doorway, looking at faces. Somebody whispers the name of Mr Wild, and somebody else whispers that it is only one of his people, as if that were better.
+      The door opens, and the room goes quiet the way a pond goes quiet when a pike comes into it. A broad man in a good coat and a bad wig stands in the doorway, looking at faces. {if year < 1725 or (year == 1725 and week < 7)}Somebody whispers the name of Mr Wild, and somebody else whispers that it is only one of his people, as if that were better.{fn †}{else}Somebody whispers that he is a thief-taker’s man, and the word goes round the room like a draught.{end}
 
-      {if flags.armed}You are conscious of the pistols in your pockets, which are suddenly very heavy.{end}
+      {if flags.sold}It is the man you spoke to in Holborn. He does not look at you. Will Gallow, at the fire, looks at nobody else.{elif flags.armed}You are conscious of the pistols in your pockets, which are suddenly very heavy.{else}Nobody has done anything yet tonight. That has never yet saved anyone in St Giles.{end}
+    notes:
+      - "† Jonathan Wild, ‘Thief-Taker General’, ran a great part of London’s thieving and its prosecution at once, until his arrest in February 1725. He was hanged at Tyburn on 24 May that year."
     ask: Press on, or withdraw?
     options:
-      - label: "Press on: sit where you are, and meet his eye like a gentleman who has every right to be bored."
-        dev: Press on · Nerve against 5
-        check: { attr: Nerve, diff: 5, bonus: [{ when: flags.will, by: 1, why: Will Gallow at the fire }] }
+      - label: "Press on: sit where you are, and meet his eye as if you had every right to be bored."
+        dev: Press on · Nerve against 5 · harder if you informed
+        check:
+          attr: Nerve
+          diff: 5
+          bonus:
+            - { when: flags.will and not flags.sold, by: 1, why: Will Gallow at the fire }
+            - { when: flags.sold, by: -1, why: Will Gallow watching you }
         outcomes:
           T:
-            effects: [{ set: brazen }, { tag: "Game (the Underworld)", why: outfaced Mr Wild’s man }]
-            text: He looks at you. You look back, and yawn. He decides you are a young gentleman of fashion slumming, which is very nearly true, and moves on. When he has gone, the room drinks your health.
+            effects: [{ set: brazen }, { tag: "Game (the Underworld)", why: outfaced the thief-taker’s man }]
+            text: He looks at you. You look back, and yawn. He decides you are a young person of fashion slumming, which is very nearly true, and moves on. When he has gone, the room drinks your health{if flags.sold}, and Will Gallow drinks it longest, looking at you over the glass{end}.
           S:
             effects: [{ set: brazen }]
             text: He looks at you for a long moment, and moves on to a carter who looks at him first.
           C:
-            effects: [{ set: brazen }, { adj: purse, by: -5s, why: a consideration for Mr Wild’s man }]
-            text: He stops at your table and remarks that it is a cold night for a gentleman to be so far from home. You find that five shillings make it warmer.
+            effects: [{ set: brazen }, { adj: purse, by: "= -min(purse, 60)", why: a consideration for the thief-taker’s man }]
+            text: He stops at your table and remarks that it is a cold night to be so far from home. You find that five shillings make it warmer.
           R:
             effects:
               - rumour:
-                  id: wildsman
+                  id: takersman
                   delay: 2
-                  from: Mr Wild’s office, in the Old Bailey
-                  text: Mr Wild’s man has taken note of a young Irishman at the Blue Boar, in a fine coat, who looked at him too long.
+                  from: A thief-taker’s office, in the Old Bailey
+                  text: A thief-taker’s man has taken note of a {fellow} at the Blue Boar, in a fine coat, who looked at him too long.
                   effect: Notoriety +1
-            text: He looks at you, and you look back a moment too long. He smiles, and takes out a little book, and writes in it.
+            text: He looks at you, and you look back a moment too long. He smiles, takes out a little book, and writes in it.
           X:
             effects:
               - { adj: notoriety, by: 1, why: marked by a thief-taker }
               - { adj: hum.Melancholic, by: 1, why: a fright }
+              - when: flags.sold
+                then:
+                  - { hook: "Will Gallow, who knows who sold him", why: the thief-taker’s man sat at your table }
+                  - { adj: hum.Melancholic, by: 1, why: Will Gallow’s eye }
               - rumour:
-                  id: wildsman
+                  id: takersman
                   delay: 1
-                  from: Mr Wild’s office, in the Old Bailey
-                  text: Mr Wild’s people have the description of a young Irish gentleman who drinks at the Blue Boar, and would be glad of a word with him.
+                  from: A thief-taker’s office, in the Old Bailey
+                  text: The thief-takers have the description of a {fellow} who drinks at the Blue Boar, and would be glad of a word.
                   effect: Notoriety +1
-            text: He comes straight to your table, sits down without being asked, and talks for ten minutes about the weather in {county}, of which he seems to know a great deal. Then he goes. You do not sleep that night.
+            text: He comes straight to your table, sits down without being asked, and talks for ten minutes about the weather in {county}, of which he seems to know a great deal. {if flags.sold}Will Gallow watches the two of you the whole time. {end}Then he goes. You do not sleep that night.
         story:
-          T: At this juncture there entered one of the people of Mr Jonathan Wild, the thief-taker, who looked round the room as a farmer looks over a fold; but our hero met his eye, and yawned in his face, with so perfect an air of fashionable weariness that the fellow took him for a young lord upon a frolic, and passed on.
-          X: The thief-taker’s man, singling him out, sat down at his table uninvited, and discoursed for ten minutes upon the weather in the county of {county}, with a familiarity which our hero found more alarming than any threat.
+          T: At this juncture there entered one of the thief-takers’ people, who looked round the room as a farmer looks over a fold; but {hero} met his eye, and yawned in his face, with so perfect an air of fashionable weariness that the fellow took {him} for a young person of quality upon a frolic, and passed on.
+          X: The thief-taker’s man, singling {him} out, sat down at {his} table uninvited, and discoursed for ten minutes upon the weather in {county}, with a familiarity which {hero} found more alarming than any threat{if flags.sold}; the more so as Will Gallow watched the whole conversation from the fire, and drew his conclusions{end}.
         next: reckon
       - label: "Withdraw: up the back stairs, and out across the leads."
         withdraw: true
         dev: Withdraw · certain
         do:
-          effects: [{ set: withdrew }]
-          text: You go up the back stairs as if looking for the necessary house, and out of a garret window onto the leads. Half the room seems to know the way. You come down in the next court, among the washing, with a woman shaking a broom at you.
+          effects: [{ set: withdrew }, { when: flags.sold, then: [{ hook: "Will Gallow, who knows who sold him", why: you ran when the thief-taker came }] }]
+          text: You go up the back stairs as if looking for the necessary house, and out of a garret window onto the leads. Half the room seems to know the way. You come down in the next court, among the washing, with a woman shaking a broom at you.{if flags.sold} Nobody who had nothing to fear went out by the roof tonight, and Will Gallow will have counted.{end}
         next: reckon
