@@ -10,7 +10,7 @@
 import { Run, money, odds, parseMoney, type HeroSeed } from './core';
 import { compile, evaluate, type Fn } from './expr';
 import { Rng } from './rng';
-import type { Effect, Humour, Origin, Passage, PersonaKind, Rank, Room, Segment, Told, Venture, When, World, Written } from './types';
+import type { Effect, Ending, Humour, Mood, Origin, PersonaKind, Rank, Room, Segment, Told, Venture, When, World, Written } from './types';
 import { RANKS, SEGMENTS, SEGMENT_NAMES } from './types';
 import { drawNames, nameVars, type Names } from './names';
 import {
@@ -18,9 +18,36 @@ import {
   type Confinement, type Dress, type Loan, type Note, type Pledge, type Slot, type Writ,
 } from './economy';
 
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 const HUMOURS: Humour[] = ['Sanguine', 'Choleric', 'Melancholic', 'Phlegmatic'];
 const EPOCH = 1719;
+/** The Book a Claimed Rank belongs to (systems spec). */
+export const bookOf = (r: Rank): 'I' | 'II' | 'III' => (rankIndex(r) >= rankIndex('Baronet or Knight') ? 'III' : rankIndex(r) >= rankIndex('Gentleman') ? 'II' : 'I');
+/** "a Gentleman", "an Esquire", "a Baronet". */
+const aRank = (r: Rank) => (r === 'Esquire' ? 'an Esquire' : r === 'Baronet or Knight' ? 'a Baronet' : `a ${r}`);
+/** The person a Hook names, if it names one: the words before its first comma. */
+const PERSON = /^(Mr|Mrs|Miss|Lady|Lord|Sir|Dr|Captain|Colonel|Major|The Rev|The Hon|His Grace|Her Grace|Mother|Father|Old|Young|Betty|Will|[A-Z][a-z]+ [A-Z][a-z]+)/;
+export function personOf(hook: string): string | null {
+  const head = hook.split(/,| who | whose /)[0].trim();
+  if (!PERSON.test(head) || head.split(' ').length > 6) return null;
+  return head;
+}
+/** The dedicatee: the most titled person among the Hooks held at the end. */
+function patronOf(hooks: string[]): string | null {
+  const ps = hooks.map(personOf).filter((x): x is string => !!x);
+  const rank = (p: string) => (/^(His Grace|Her Grace)/.test(p) ? 0 : /^(Lord|Lady)/.test(p) ? 1 : /^Sir/.test(p) ? 2 : /^(The Hon|Colonel|Captain|Major|Dr|The Rev)/.test(p) ? 3 : 4);
+  return ps.sort((a, b) => rank(a) - rank(b))[0] ?? null;
+}
+export function roman(n: number): string {
+  const t: [number, string][] = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+  let s = ''; for (const [v, r] of t) while (n >= v) { s += r; n -= v; } return s;
+}
+export const ENDING_NAME: Record<Ending, string> = { apotheosis: 'Apotheosis', retirement: 'Retirement', ruin: 'Ruin', transportation: 'Transportation', death: 'Death' };
+const ENDING_HEADING: Record<Ending, string> = {
+  apotheosis: 'In which our Hero arrives', retirement: 'In which our Hero retires from the World', ruin: 'In which our Hero comes to Rest in Prison',
+  transportation: 'In which our Hero goes abroad', death: 'In which our Hero makes an End',
+};
+
 /** What each Affliction does, as the bills announce it. */
 const AFFLICTION: Record<Humour, string> = {
   Sanguine: 'Your spirits run away with your purse: Upkeep is half as much again, a certain cost is paid twice over, and you will not hear of pinching.',
@@ -117,13 +144,33 @@ export interface PersonaRec {
 export interface Letter {
   id: string; from: string; text: string; effect: string; persona: string;
   at: number; venture: string; on_delivery?: Effect[];
+  /** The chapter its Venture wrote, for a hindsight note; and an authored one (Step 9). */
+  chapter?: number; hindsight?: string;
   /** Whose talk it is (Step 7). A letter without a circle is felt in full. */
   circle?: string;
   /** What it did, once delivered. */
   done?: string[];
 }
 
-export interface Chapter { no: number; venture: string; title: string; heading: string; passages: Passage[] }
+/** A chapter of the Story: numbered within its volume (Step 9). */
+export interface Chapter {
+  no: number; vol: number; venture: string; title: string; heading: string; passages: string[];
+  /** When it was written, and the narrator's mood. */
+  at: number; mood: Mood;
+  /** Footnotes added when a rumour from its Venture landed (hindsight). */
+  notes: { text: string; authored: boolean }[];
+}
+/** A volume of the Story: one per Book, a new one each time the Book changes. */
+export interface Volume { no: number; book: 'I' | 'II' | 'III'; again: boolean; title: string; opening: string }
+
+/** The bound Memoir (Step 9). */
+export interface Memoir {
+  id: string; finished: number; how: Ending; hero: string; seed: number;
+  title: { framing: string; name: string; subtitle: string; volumes: string; imprint: string };
+  dedication: string;
+  volumes: (Volume & { chapters: { no: number; heading: string; passages: string[]; notes: string[] }[] })[];
+  subscribers: { total: number; breakdown: [string, number][]; names: string[]; others: number };
+}
 export interface Choice { beat: string; opt: number; seg?: Segment; luck?: boolean }
 
 export interface WeekBill { at: number; upkeep: number; paid: number; owed: number; letters: Letter[] }
@@ -147,7 +194,7 @@ export interface CampaignState {
   current?: { id: string; hero: Hero; at: number; choices: Choice[] };
   raised: Record<string, boolean>;
   bills?: Bills;
-  ended?: { how: string; at: number };
+  ended?: { how: Ending; at: number };
   /** One line per turn, for the designer's view. */
   log: string[];
   // ----- Step 8 -----
@@ -161,6 +208,24 @@ export interface CampaignState {
   lastVenture?: string;
   /** The turn of the last relief: one a turn. */
   relieved?: number;
+  // ----- the Story and the Memoir (Step 9) -----
+  volumes: Volume[];
+  /** This month's milestones, waiting for its chapter; and the chapter this month's Venture wrote. */
+  month: { passages: string[]; heading?: string; blown?: boolean };
+  monthChapter?: number;
+  /** The hero as the last chapter left them, for the narrator's mood and the connective. */
+  snap?: { at: number; celebrity: number; owed: number; rank: number; district: string };
+  /** Connectives used lately, so as not to repeat them. */
+  usedConnectives: number[];
+  arrival: Rank;
+  peak: { celebrity: number; rank: number };
+  /** The people the run altered: each named in a Hook gained. */
+  altered: string[];
+  /** A Venture has made Apotheosis possible (flags.ends_apotheosis). */
+  apotheosis?: boolean;
+  memoir?: Memoir;
+  /** A footnote has been added to an old chapter since the Story was last read. */
+  storyNew?: boolean;
 }
 
 // ---------- the run ----------
@@ -208,6 +273,20 @@ export class Campaign {
       for (const l of st.post) if (l.circle) l.circle = fix(l.circle);
       H.tagSince = Object.fromEntries(H.tags.map(t => [t, st.at]));
       H.timed = {};
+      st.v = 4;
+    }
+    if (st.v === 4) {
+      // Step 9: one voice; the Story in volumes; the score's records
+      const H = st.hero, b = bookOf(H.claimedRank), B = this.world.story.books[b];
+      st.volumes = [{ no: 1, book: b, again: false, title: B.title, opening: this.fill(B.opening) }];
+      st.story = st.story.map((ch, i) => {
+        const old = ch as unknown as { passages: ({ sm: string } | string)[] };
+        return { ...ch, no: i + 1, vol: 1, at: st.at, mood: 'easy' as Mood, notes: [], passages: old.passages.map(p => (typeof p === 'string' ? p : p.sm)) };
+      });
+      st.month = { passages: [] }; st.usedConnectives = [];
+      st.arrival = this.origin.hero?.claimed_rank ?? H.claimedRank;
+      st.peak = { celebrity: H.celebrity, rank: rankIndex(H.claimedRank) };
+      st.altered = [...new Set(H.hooks.map(personOf).filter((x): x is string => !!x))];
       st.v = SAVE_VERSION;
     }
   }
@@ -249,6 +328,7 @@ export class Campaign {
     const st: CampaignState = {
       v: SAVE_VERSION, seed, rng: rng.state, hero, at, turn: 1, phase: 'town', offers: [], played: {},
       post: [], news: [], story: [], raised: {}, log: [],
+      volumes: [], month: { passages: [] }, usedConnectives: [], arrival: h.claimed_rank, peak: { celebrity: x.celebrity, rank: rankIndex(h.claimed_rank) }, altered: [],
     };
     const c = new Campaign(world, st);
     hero.records[nv.styled] = c.newRec(nv.styled, h.claimed_rank, 'own', hero.debts);
@@ -453,17 +533,22 @@ export class Campaign {
     if (v.id === 'bailiff') this.rise('Choleric', 'A writ served', events);
     if (this.st.lastVenture === v.id && !v.system) this.rise('Phlegmatic', 'The same scene twice running', events);
     this.st.lastVenture = v.id;
+    // the people the run altered (Step 9)
+    for (const hk of S.hooks) if (!c.hero.hooks.includes(hk)) this.alter(hk);
+    // the Venture's chapter, which this month's milestones will join
+    const chap = S.story.length ? this.openChapter(chapterHeading, v.id, v.title, S.story.map(p => p.text)) : undefined;
+    if (chap !== undefined) this.st.monthChapter = chap;
     for (const r of S.rumours) {
       // talk from another district takes a week longer to reach the hero's lodging
       const far = v.offer?.district && v.offer.district !== H.lodging.district ? 1 : 0;
-      this.st.post.push({ id: r.id, from: r.from, text: r.text, effect: r.effect, persona: r.persona, at: r.week + far, venture: v.id, on_delivery: r.on_delivery, circle: r.circle ?? v.offer?.circle });
+      this.st.post.push({ id: r.id, from: r.from, text: r.text, effect: r.effect, persona: r.persona, at: r.week + far, venture: v.id, on_delivery: r.on_delivery, circle: r.circle ?? v.offer?.circle, chapter: chap, hindsight: r.hindsight ? this.fill(r.hindsight) : undefined });
     }
-    if (S.story.length) {
-      this.st.story.push({ no: this.st.story.length + 1, venture: v.id, title: v.title, heading: chapterHeading, passages: S.story.map(p => ({ sm: p.sm, st: p.st })) });
-    }
+    if (S.flags.ends_apotheosis) this.st.apotheosis = true;
     this.st.played[v.id] = (this.st.played[v.id] ?? 0) + 1;
     this.st.log.push(`Turn ${this.st.turn}: ${v.title}${S.story.length ? ' (a chapter)' : ''}`);
     this.st.current = undefined;
+    // a Venture can end the run outright: the gallows, the sea, a sword, a transport ship (Step 9)
+    if (S.flags.ends_death || S.flags.ends_transportation) { this.end(S.flags.ends_death ? 'death' : 'transportation'); return; }
     this.settle(events);
   }
 
@@ -561,7 +646,7 @@ export class Campaign {
       // the post
       const due = this.st.post.filter(r => r.at <= at);
       this.st.post = this.st.post.filter(r => r.at > at);
-      for (const r of due) r.done = this.deliver(r, events);
+      for (const r of due) { r.done = this.deliver(r, events); if (r.done.length) this.hindsight(r); }
       this.checkPersonas(at, events);
       due.push(...this.lettersNow.splice(0));
       // the moneylender sends for the bailiff when a loan is long overdue
@@ -579,7 +664,7 @@ export class Campaign {
       if (H.celebrity > 0) H.celebrity--;
       events.push('A month in the Liberty of the Savoy: Melancholic +1, Celebrity −1.');
       if (H.savoySince !== undefined && this.st.at + s.turn_weeks - H.savoySince >= e.savoy.season && !H.tags.includes(e.savoy.tag)) {
-        this.addTag(e.savoy.tag); events.push(`A season in the Savoy: you are now ${e.savoy.tag.replace(/ \(.*\)$/, '')}, and the Quality has forgotten your face.`);
+        this.addTag(e.savoy.tag); this.milestone('savoy_season'); events.push(`A season in the Savoy: you are now ${e.savoy.tag.replace(/ \(.*\)$/, '')}, and the Quality has forgotten your face.`);
       }
     }
     if (H.confined?.stage === 'prison' && H.confined.side === 'common') {
@@ -593,6 +678,8 @@ export class Campaign {
     }
     this.st.raised = {}; this.st.auto = {};
     this.updateAfflictions(events);
+    this.flushMonth();
+    this.notePeak();
     this.syncDebts();
     this.st.news = weeks.flatMap(w => w.letters);
     this.st.bills = { weeks, cooled, total, owed: owedAll, events };
@@ -636,7 +723,7 @@ export class Campaign {
       for (const e of r.on_delivery) {
         if ('adj' in e) bump(e.adj, typeof e.by === 'number' ? e.by : parseMoney(String(e.by)));
         else if ('tag' in e) { if (!H.tags.includes(e.tag)) done.push('Tag: ' + e.tag); this.addTag(e.tag, events); }
-        else if ('hook' in e) { H.hooks.push(e.hook); done.push('New hook'); }
+        else if ('hook' in e) { H.hooks.push(e.hook); this.alter(e.hook); done.push('New hook'); }
         else if ('unhook' in e) { const i = H.hooks.findIndex(h => h.startsWith(e.unhook)); if (i > -1) { H.hooks.splice(i, 1); done.push('Hook spent'); } }
         else if ('item' in e) { H.items.push(e.item); done.push('Gained: ' + e.item.split(',')[0]); }
         else if ('lose' in e) { const i = H.items.indexOf(e.lose); if (i > -1) { H.items.splice(i, 1); done.push('Lost: ' + e.lose.split(',')[0]); } }
@@ -658,6 +745,13 @@ export class Campaign {
     this.st.turn++;
     this.st.bills = undefined;
     this.st.phase = 'town';
+    // canon's window closes with 1745 (Step 9)
+    if (when(this.st.at).year > this.world.settings.score.last_year) {
+      this.milestoneText(this.world.story.endings.calendar);
+      const H = this.hero;
+      this.end(H.confined || bookOf(H.claimedRank) === 'I' ? 'ruin' : this.apotheosisEarned() ? 'apotheosis' : 'retirement');
+      return;
+    }
     this.beginTurn();
   }
 
@@ -668,6 +762,8 @@ export class Campaign {
     // Hipped: every other turn is lost (Step 8)
     this.st.lost = this.afflicted('Melancholic') ? !this.st.lastLost : false;
     this.st.lastLost = this.st.lost;
+    // a year in prison without release is Ruin (Step 9)
+    if (H.confined && this.st.at - H.confined.since >= this.world.settings.score.ruin_weeks) { this.end('ruin'); return; }
     if (this.st.lost) { this.st.offers = []; return; }
     if (H.confined) {
       if (H.purse >= this.enforceable()) this.release('You pay what is owed, every farthing, and the turnkey lets you out into the street.');
@@ -710,6 +806,7 @@ export class Campaign {
     H.confined = { where, stage: 'sponging-house', since: this.st.at, side: 'common', was: { ...H.lodging } };
     for (const sl of WEEKLY) H.dress[sl] = null;
     H.writs = [];
+    this.milestone('prison_taken');
     this.st.log.push(`Turn ${this.st.turn}: taken for debt, to ${where}`);
   }
 
@@ -731,6 +828,7 @@ export class Campaign {
   private release(why: string) {
     const H = this.hero;
     const was = H.confined?.was ?? { district: 'Fleet Street and the Strand', room: 'garret' };
+    this.milestone('prison_released');
     H.confined = undefined; H.writs = [];
     H.lodging = { district: was.district, room: 'garret' };
     this.st.news = [{ id: 'released', from: 'The turnkey', text: why, effect: '', persona: H.persona, at: this.st.at, venture: 'fleet' }, ...this.st.news];
@@ -863,6 +961,7 @@ export class Campaign {
     const H = this.hero, r = H.records[H.persona], i = rankIndex(r.rank);
     if (i >= RANKS.length - 1) return;
     r.rank = RANKS[i + 1]; H.claimedRank = r.rank;
+    this.milestone('rank_up');
     events.push(`You are received as a ${r.rank}. The Town will expect you to live like one.`);
     this.st.log.push(`Turn ${this.st.turn}: ${H.persona} raised to ${r.rank}`);
   }
@@ -898,11 +997,14 @@ export class Campaign {
   private blow(r: PersonaRec, at: number, events: string[]) {
     const H = this.hero, P = this.pset, twice = H.tags.some(t => t.startsWith('Brother')) && r.circles.length ? 2 : 1;
     events.push(`<b>${r.name} is blown.</b> The whole Town knows the name for a lie.`);
+    this.st.month.blown = true;
+    this.milestone('name_blown', { name_blown: r.name });
     // the hero falls to the Book of the True Rank
     if (H.persona === r.name || r.state === 'own') {
-      const own = H.records[H.styled];
+      const own = H.records[H.styled], was = H.claimedRank;
       own.rank = H.trueRank;
       H.persona = H.styled; H.claimedRank = H.trueRank;
+      if (rankIndex(was) > rankIndex(H.trueRank)) this.milestone('rank_down', { old_rank: aRank(was) });
       events.push(`You are ${H.styled} again, and a ${H.trueRank}, as you always were.`);
     }
     if (r.state !== 'own') r.state = 'dead';
@@ -942,7 +1044,7 @@ export class Campaign {
     const chips: string[] = [];
     if (so.credit_rank && so.weeks) { H.lowCredit = { rank: so.credit_rank, until: at + so.weeks }; chips.push(`Credit as a ${so.credit_rank}, ${so.weeks} weeks`); }
     if (so.tag) { this.addTag(so.tag, events); chips.push('Tag: ' + so.tag); }
-    if (so.hook) { H.hooks.push(this.fill(so.hook)); chips.push('New hook'); }
+    if (so.hook) { const hk = this.fill(so.hook); H.hooks.push(hk); this.alter(hk); chips.push('New hook'); }
     this.tell(so.letter, so.story, at, 'secret', chips, events);
   }
   /** Each new year, the Hook a Secret left may pay off. */
@@ -967,13 +1069,14 @@ export class Campaign {
     const letter: Letter = { id, from: this.fill(l.from), text: this.fill(l.text), effect: chips.join(' · '), persona: this.hero.persona, at, venture: id, done: chips };
     this.lettersNow.push(letter);
     events.push(`A letter from ${letter.from.replace(/^The /, 'the ')}.`);
-    this.st.story.push({ no: this.st.story.length + 1, venture: id, title: w.heading, heading: w.heading, passages: [{ sm: this.fill(w.sm), st: this.fill(w.st) }] });
+    this.st.month.heading ??= w.heading;
+    this.st.month.passages.push(this.fill(w.text));
   }
   /** Letters written by the engine this month, shown with the post. */
   private lettersNow: Letter[] = [];
   /** {name}-style slots, and [[glossary]] terms, in text the engine writes itself. */
-  fill(src: string): string {
-    const v: Record<string, unknown> = { ...nameVars(this.hero.names) };
+  fill(src: string, extra: Record<string, string> = {}): string {
+    const v: Record<string, unknown> = { ...nameVars(this.hero.names), ...this.storyVars(), ...extra };
     return src.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, t: string, sh?: string) => `<span class="cant" tabindex="0" role="button" data-t="${t.trim()}">${(sh ?? t).trim()}</span>`)
       .replace(/\{(\w+)\}/g, (m, k: string) => (k in v ? String(v[k]) : m));
   }
@@ -1117,6 +1220,153 @@ export class Campaign {
     return n;
   }
 
+  // ----- the Story and the Memoir (Step 9) -----
+
+  /** The slots the Story's own words use. */
+  storyVars(): Record<string, string> {
+    const H = this.hero, w = H.sex === 'woman';
+    const P = w ? { he: 'she', his: 'her', him: 'her', himself: 'herself' } : { he: 'he', his: 'his', him: 'him', himself: 'himself' };
+    const cap = (x: string) => x.charAt(0).toUpperCase() + x.slice(1);
+    return {
+      hero: w ? 'our heroine' : 'our hero', Hero: w ? 'Our heroine' : 'Our hero', adventurer: w ? 'adventuress' : 'adventurer',
+      ...P, He: cap(P.he), His: cap(P.his), his_cap: cap(P.his), himself_cap: cap(P.himself),
+      a_gentleman: w ? 'a Gentlewoman' : 'a Gentleman',
+      rank: aRank(H.claimedRank), persona: H.persona, district: H.lodging.district,
+      prison: H.confined?.where ?? (H.lodging.district === 'Southwark' ? this.econ.prison.marshalsea : this.econ.prison.fleet),
+    };
+  }
+  /** The narrator's mood, from the hero's fortunes since the last chapter. */
+  mood(): Mood {
+    const H = this.hero, sn = this.st.snap;
+    if (H.confined || this.inSavoy() || this.afflicted('Melancholic')) return 'moralising';
+    if (!sn) return 'easy';
+    const rank = rankIndex(H.claimedRank);
+    if (rank > sn.rank) return 'mockheroic';
+    if (rank < sn.rank || this.st.month.blown || H.celebrity < sn.celebrity || this.enforceable() - sn.owed >= 1200) return 'rueful';
+    if (H.celebrity > sn.celebrity) return 'mockheroic';
+    return 'easy';
+  }
+  private pickIndex(n: number): number { const r = new Rng(this.st.rng), i = r.int(0, n - 1); this.st.rng = r.state; return i; }
+  /** A milestone passage, waiting for this month's chapter (Ruling 1). */
+  milestone(kind: string, extra: Record<string, string> = {}) {
+    const m = this.world.story.milestones[kind]; if (!m) return;
+    const mood = this.mood(), fit = m.variants.filter(x => x.mood === mood), pool = fit.length ? fit : m.variants.filter(x => !x.mood);
+    const v = (pool.length ? pool : m.variants)[this.pickIndex((pool.length ? pool : m.variants).length)];
+    this.st.month.heading ??= m.heading;
+    this.st.month.passages.push(this.fill(v.text, extra));
+  }
+  milestoneText(text: string) { this.st.month.passages.push(this.fill(text)); }
+  /** A new chapter, in the right volume, opened by a connective after the first (Rulings 1–2). */
+  private openChapter(heading: string, venture: string, title: string, passages: string[]): number {
+    const st = this.st, H = this.hero, b = bookOf(H.claimedRank), last = st.volumes.at(-1);
+    if (!last || last.book !== b) {
+      const again = st.volumes.some(v => v.book === b), B = this.world.story.books[b];
+      st.volumes.push({ no: st.volumes.length + 1, book: b, again, title: B.title + (again ? ', again' : ''), opening: this.fill(again ? B.again : B.opening) });
+    }
+    const vol = st.volumes.at(-1)!, mood = this.mood();
+    const out = [...passages];
+    if (st.story.length && st.snap) out.unshift(this.connective(mood));
+    st.story.push({ no: st.story.filter(c => c.vol === vol.no).length + 1, vol: vol.no, venture, title, heading, passages: out, at: st.at, mood, notes: [] });
+    st.snap = { at: st.at, celebrity: H.celebrity, owed: this.enforceable(), rank: rankIndex(H.claimedRank), district: H.lodging.district };
+    return st.story.length - 1;
+  }
+  /** The connective: by the gap since the last chapter, the season, a move, and the mood. */
+  private connective(mood: Mood): string {
+    const st = this.st, sn = st.snap!, C = this.world.story.connectives, d = when(st.at);
+    const weeks = st.at - sn.at, gap = weeks < 8 ? 'next' : weeks < 40 ? 'months' : 'year';
+    const frost = (d.year === 1739 && d.week >= 49) || (d.year === 1740 && d.week <= 8);
+    const season = frost ? 'frost' : d.week <= 9 || d.week >= 49 ? 'winter' : d.week <= 22 ? 'spring' : d.week <= 35 ? 'summer' : 'autumn';
+    const moved = this.hero.lodging.district !== sn.district;
+    let best: number[] = [], top = -1;
+    C.forEach((c, i) => {
+      if (st.usedConnectives.includes(i)) return;
+      if (c.gap && c.gap !== gap) return;
+      if (c.season && c.season !== season) return;
+      if (c.moved && !moved) return;
+      if (c.mood && c.mood !== mood) return;
+      const score = (c.gap ? 1 : 0) + (c.season ? 1 : 0) + (c.moved ? 2 : 0) + (c.mood ? 1 : 0) + (gap !== 'next' && c.gap ? 2 : 0);
+      if (score > top) { top = score; best = [i]; } else if (score === top) best.push(i);
+    });
+    if (!best.length) best = C.map((_, i) => i).filter(i => !C[i].gap && !C[i].season && !C[i].moved && !C[i].mood);
+    const i = best[this.pickIndex(best.length)];
+    st.usedConnectives = [...st.usedConnectives, i].slice(-Math.min(12, C.length - 1));
+    return this.fill(C[i].text);
+  }
+  /** The month's milestones join its chapter, or make one of their own. */
+  private flushMonth() {
+    const st = this.st, m = st.month;
+    if (m.passages.length) {
+      if (st.monthChapter !== undefined && st.story[st.monthChapter]) st.story[st.monthChapter].passages.push(...m.passages);
+      else this.openChapter(m.heading ?? 'In which Time passes', 'milestone', m.heading ?? '', m.passages);
+    }
+    st.month = { passages: [] }; st.monthChapter = undefined;
+  }
+  /** A rumour that did something adds a footnote to the chapter its Venture wrote (Ruling 3). */
+  private hindsight(r: Letter) {
+    const ch = r.chapter !== undefined ? this.st.story[r.chapter] : undefined; if (!ch) return;
+    const strip = (x: string) => x.replace(/<[^>]+>/g, '');
+    const note = r.hindsight
+      ? { text: r.hindsight, authored: true }
+      : { text: this.fill(this.world.story.hindsight_editor, { from: strip(r.from), date: dateLabel(r.at), text: strip(r.text) }), authored: false };
+    if (ch.notes.length < 2) ch.notes.push(note);
+    else if (note.authored) { const k = ch.notes.findIndex(n => !n.authored); if (k < 0) return; ch.notes[k] = note; }
+    else return;
+    this.st.storyNew = true;
+  }
+  /** Someone named in a Hook the hero gained: a life the hero altered (Ruling 5). */
+  private alter(hook: string) { const p = personOf(hook); if (p && !this.st.altered.includes(p)) this.st.altered.push(p); }
+  private notePeak() {
+    const H = this.hero, pk = this.st.peak;
+    pk.celebrity = Math.max(pk.celebrity, H.celebrity); pk.rank = Math.max(pk.rank, rankIndex(H.claimedRank));
+  }
+  /** The score, in Subscribers, part by part (spec, Ruling). */
+  score(how: Ending): [string, number][] {
+    const S = this.world.settings.score, H = this.hero, pk = this.st.peak, arr = rankIndex(this.st.arrival);
+    return [
+      [`Peak Celebrity, ${pk.celebrity}`, pk.celebrity * S.celebrity],
+      [`Ranks climbed, ${Math.max(0, pk.rank - arr)}`, Math.max(0, pk.rank - arr) * S.climbed],
+      [`Ranks fallen, ${Math.max(0, pk.rank - rankIndex(H.claimedRank))}`, Math.max(0, pk.rank - rankIndex(H.claimedRank)) * S.fallen],
+      [`Lives altered, ${this.st.altered.length}`, this.st.altered.length * S.altered],
+      [`The ending, ${ENDING_NAME[how]}`, S.endings[how]],
+    ];
+  }
+  /** The run ends: a closing passage, the month's chapter, and the bound Memoir (Ruling 4). */
+  end(how: Ending) {
+    const E = this.world.story.endings[how];
+    this.notePeak();
+    this.milestoneText(E.closing);
+    this.st.month.heading ??= ENDING_HEADING[how];
+    this.flushMonth();
+    this.st.phase = 'ended'; this.st.ended = { how, at: this.st.at }; this.st.current = undefined; this.st.bills = undefined;
+    this.st.memoir = this.bind(how);
+    this.st.log.push(`Turn ${this.st.turn}: the end, ${ENDING_NAME[how]}`);
+  }
+  /** The Memoir: title page, dedication, volumes, and the list of Subscribers (Ruling 5). */
+  bind(how: Ending): Memoir {
+    const st = this.st, H = this.hero, W = this.world.story, E = W.endings[how];
+    const otherwise = H.persona !== H.styled ? `, otherwise ${H.persona}` : '';
+    const patron = how === 'ruin' ? null : patronOf(H.hooks);
+    const breakdown = this.score(how), total = breakdown.reduce((a, [, n]) => a + n, 0);
+    const COPIES = ['', 'two Copies', 'three Copies', 'four Copies', 'six Copies'];
+    const named = st.altered.map(p => { const k = this.pickIndex(COPIES.length); return COPIES[k] ? `${p}, ${COPIES[k]}` : p; });
+    const pool = [...W.subscribers];
+    for (let i = pool.length - 1; i > 0; i--) { const j = this.pickIndex(i + 1); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    const shown = [...named, ...pool].slice(0, Math.min(40, total));
+    const vols = st.volumes.map(v => ({ ...v, chapters: st.story.filter(c => c.vol === v.no).map(c => ({ no: c.no, heading: c.heading, passages: c.passages, notes: c.notes.map(n => n.text) })) }));
+    return {
+      id: (st.seed.toString(36) + st.at.toString(36) + st.turn.toString(36)).slice(0, 16), finished: st.at, how, hero: H.name, seed: st.seed,
+      title: {
+        framing: this.fill(E.framing), name: `${H.styled.split(' ')[0]} ${H.name}${otherwise}`,
+        subtitle: this.fill(W.subtitles[this.pickIndex(W.subtitles.length)]),
+        volumes: `In ${['One Volume', 'Two Volumes', 'Three Volumes', 'Four Volumes', 'Five Volumes', 'Six Volumes'][Math.min(5, vols.length - 1)]}`,
+        imprint: `${W.imprint} ${roman(when(st.at).year)}.`,
+      },
+      dedication: how === 'ruin' ? E.dedication : patron ? this.fill(E.dedication, { patron }) : W.dedication_public,
+      volumes: vols,
+      subscribers: { total, breakdown, names: shown, others: Math.max(0, total - shown.length) },
+    };
+  }
+
   // ----- in the town -----
 
   /** Moving lodgings delays every rumour in the post by a week (systems spec, Proposed).
@@ -1127,15 +1377,27 @@ export class Campaign {
     if (H.confined) return false;
     if (H.lodging.district === district && H.lodging.room === room) return true;
     if (!force && H.lodging.district === 'The Savoy' && district !== 'The Savoy' && !this.canLeaveSavoy()) return false;
-    if (H.lodging.district === 'The Savoy' && district !== 'The Savoy') { H.writs = []; H.savoySince = undefined; }
-    if (district === 'The Savoy' && H.lodging.district !== 'The Savoy') H.savoySince = this.st.at;
+    if (H.lodging.district === 'The Savoy' && district !== 'The Savoy') { H.writs = []; H.savoySince = undefined; this.milestone('savoy_out'); }
+    if (district === 'The Savoy' && H.lodging.district !== 'The Savoy') { H.savoySince = this.st.at; this.milestone('savoy_in'); }
     H.lodging = { district, room };
     for (const r of this.st.post) r.at += 1;
     this.st.log.push(`Turn ${this.st.turn}: moved to a ${room} in ${district}`);
     return true;
   }
 
-  retire() { this.st.phase = 'ended'; this.st.ended = { how: 'Retirement', at: this.st.at }; }
+  /** Retire from the world: Apotheosis if earned, otherwise Retirement; never from Book I (canon). */
+  canRetire() { return bookOf(this.hero.claimedRank) !== 'I'; }
+  retire(): string | null {
+    if (!this.canRetire()) return 'A hero in Low Life cannot retire: there is nothing yet to retire upon.';
+    this.end(this.apotheosisEarned() ? 'apotheosis' : 'retirement');
+    return null;
+  }
+  apotheosisEarned() { return !!this.st.apotheosis || rankIndex(this.hero.trueRank) >= rankIndex('Baronet or Knight'); }
+  /** In prison, the hero may give up, and end the run in Ruin. */
+  giveUp(): string | null {
+    if (!this.hero.confined) return 'You are not in prison.';
+    this.end('ruin'); return null;
+  }
 
   // ----- the hero's affairs, in the town -----
 

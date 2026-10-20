@@ -278,22 +278,8 @@
       "description": "Prose. Blank lines separate paragraphs. [[term]] marks a glossary word; {fn *} a footnote marker; {if …}…{else}…{end} a condition; {expr} a value."
     },
     "passage": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "sm",
-        "st"
-      ],
-      "properties": {
-        "sm": {
-          "type": "string",
-          "description": "The Story, after Smollett."
-        },
-        "st": {
-          "type": "string",
-          "description": "The Story, after Sterne."
-        }
-      }
+      "type": "string",
+      "description": "A passage of the Story: third person, past tense, in the Story's one voice (ruled 20 October 2026)."
     },
     "start": {
       "type": "object",
@@ -907,6 +893,10 @@
             "the Town"
           ],
           "description": "Whose talk it is; defaults to the Venture's circle."
+        },
+        "hindsight": {
+          "type": "string",
+          "description": "A footnote in the Story's voice, added to this Venture's chapter when the rumour lands (Step 9)."
         }
       }
     },

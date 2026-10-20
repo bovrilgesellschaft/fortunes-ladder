@@ -74,12 +74,8 @@ chapter:
 story:
   title: The History of Miss Kitty Glover, otherwise the Honourable Mrs Delacourt
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
-  preface:
-    sm: In the December of the year 1724, Miss Catherine Glover, a clergyman’s daughter of Wiltshire, who had quitted her father’s parish upon an occasion that does her more credit in the telling than it did at the time, was established in a lodging over a perruquier’s in Tavistock Street, under the name and dignity of the Honourable Mrs Delacourt, a widow of Dublin.
-    st: Of Miss Kitty Glover’s leaving Wiltshire I shall tell you nothing in this chapter, — nor in the next, — and very possibly not at all; for there are clouds, madam, which it is the whole art of a biographer to leave hanging. It is enough that by the December of 1724 she had become the Honourable Mrs Delacourt, and lodged over a perruquier’s.
-  close:
-    sm: She came home to Tavistock Street at three in the morning, and sat up till four reckoning what the evening had cost her; which, as is usual with evenings, was a good deal more than she had allowed for, and in a different coin.
-    st: And so she went home. — Whether she had gained by the evening, or lost, the reader shall judge for himself; I have tried, and cannot.
+  preface: In the December of the year 1724, Miss Catherine Glover, a clergyman’s daughter of Wiltshire, who had quitted her father’s parish upon an occasion that does her more credit in the telling than it did at the time, was established in a lodging over a perruquier’s in Tavistock Street, under the name and dignity of the Honourable Mrs Delacourt, a widow of Dublin.
+  close: She came home to Tavistock Street at three in the morning, and sat up till four reckoning what the evening had cost her; which, as is usual with evenings, was a good deal more than she had allowed for, and in a different coin.
 
 reckoning:
   num: V
@@ -183,12 +179,8 @@ beats:
               - { adj: composure, by: -3, why: a forgery doubted at the door }
             text: "The steward holds your letter to a candle and observes that it is written in a very good hand: rather too good, he thinks, for a countess. You are saved only by the arrival of a foreign envoy and twenty of his suite, among whom you are carried up the stairs like a leaf on a flood."
         story:
-          T:
-            sm: She presented at the door a letter of her own composing, in so fair a hand and so warm a recommendation of herself, that Lady Bellaston, who could not read it without her glass and would not be seen to use one, swore she remembered the writer perfectly; though no such person as Lady Clonmore had ever drawn breath.
-            st: Now Lady Clonmore, you must understand, had never existed; — which was her great merit as a correspondent; for a lady who does not exist can never contradict you. Lady Bellaston remembered her perfectly.
-          X:
-            sm: But the steward, a dry Scotch fellow who had served a Writer to the Signet, held the paper to a candle and pronounced it too well written for a countess; so that our heroine owed her admission entirely to a foreign envoy, whose suite, being twenty strong and none of them sober, bore her up the stairs as a spring tide lifts a wherry.
-            st: The steward held it to the candle. — Too good a hand, said he, for a countess. — And here I must leave her upon the stair a moment, while I consider whether there is any sharper reproach in the world than to be found out by one’s own excellence.
+          T: She presented at the door a letter of her own composing, in so fair a hand and so warm a recommendation of herself, that Lady Bellaston, who could not read it without her glass and would not be seen to use one, swore she remembered the writer perfectly; though no such person as Lady Clonmore had ever drawn breath.
+          X: But the steward, a dry Scotch fellow who had served a Writer to the Signet, held the paper to a candle and pronounced it too well written for a countess; so that our heroine owed her admission entirely to a foreign envoy, whose suite, being twenty strong and none of them sober, bore her up the stairs as a spring tide lifts a wherry.
         next: room
       - label: Go round to the area steps, where Betty Slyfield has promised to let you in through the kitchens.
         gate:
@@ -247,12 +239,8 @@ beats:
               - { adj: composure, by: -1, why: an unfortunate escort }
             text: The arm you take belongs to young Mr Rakewell, whom every person in the room knows to keep an actress in Bow Street. You are announced together. Several fans go up at once.
         story:
-          T:
-            sm: The arm she seized belonged to a tall Irish gentleman in a laced coat, who, perceiving her design in an instant, carried her past the porter with the air of a husband of ten years’ standing, and whispered upon the stair that he was Captain O’Rourke, and as great a cheat as herself.
-            st: — Captain O’Rourke, madam, at your service, and at your mercy. — It was the first true thing either of them had said all evening; and they both knew it; and both, I think, were a little frightened by it.
-          X:
-            sm: Of all the gentlemen alighting in Hanover Square she must needs fasten upon young Mr Rakewell, notorious for keeping an actress in Bow Street; and they were announced together, to the elevation of more fans at once than had stirred since the old Queen’s funeral.
-            st: Of all the arms in Hanover Square, — and there were, I compute, upwards of three hundred, — she took the one arm in it that every lady present had resolved never to be seen upon.
+          T: The arm she seized belonged to a tall Irish gentleman in a laced coat, who, perceiving her design in an instant, carried her past the porter with the air of a husband of ten years’ standing, and whispered upon the stair that he was Captain O’Rourke, and as great a cheat as herself.
+          X: Of all the gentlemen alighting in Hanover Square she must needs fasten upon young Mr Rakewell, notorious for keeping an actress in Bow Street; and they were announced together, to the elevation of more fans at once than had stirred since the old Queen’s funeral.
         next: room
       - label: Send up your card as Mrs Delacourt, and wait to be asked in.
         gate:
@@ -317,12 +305,8 @@ beats:
               - { adj: composure, by: -2, why: a slip about Dublin }
             text: In your fluency you place the Delacourt town house in a street which, Mrs O’Hara observes with deep satisfaction, was pulled down in the year of the Boyne.
         story:
-          T:
-            sm: She furnished the late Colonel upon the instant with a Kildare family, a Papist branch, a regiment of dragoons and a fever at a siege; and Mrs O’Hara, who would have died upon the rack rather than own she had never heard of them, declared that she remembered him very well, and that he had been a fine figure of a man.
-            st: Thus was a man who never lived furnished, in the space of one minute, with a family, a fever and a figure; — which is more, madam, than most of us contrive in a lifetime.
-          X:
-            sm: But in the heat of invention she lodged the Delacourts in a street of Dublin which Mrs O’Hara, with the joy of a terrier at a rat-hole, proved to have been pulled down in the year of the Boyne.
-            st: — Pulled down, said Mrs O’Hara, in the year of the Boyne. — There is no answer to a date. I have searched the whole of rhetoric for one, and there is none.
+          T: She furnished the late Colonel upon the instant with a Kildare family, a Papist branch, a regiment of dragoons and a fever at a siege; and Mrs O’Hara, who would have died upon the rack rather than own she had never heard of them, declared that she remembered him very well, and that he had been a fine figure of a man.
+          X: But in the heat of invention she lodged the Delacourts in a street of Dublin which Mrs O’Hara, with the joy of a terrier at a rat-hole, proved to have been pulled down in the year of the Boyne.
         next: glanville
       - label: Turn the talk to Mr Pope’s Iliad, which Mrs O’Hara has plainly not read.
         gate:
@@ -421,12 +405,8 @@ beats:
               - { tag: Absurd (the Quality), why: a torn gown }
             text: In the turn of the dance he treads on your train. Rose lustring tears like a sigh. The room turns to look, and you walk out of the figure with a yard of silk over your arm and the mantua-maker’s bill entirely intact.
         story:
-          T:
-            sm: Lord Glanville, a nobleman of sixty with forty thousand pounds and a cough upon which half the Town had laid wagers, danced with her, talked of himself through the whole of the minuet, and at the close begged leave to wait upon her the next day; at which Miss Pinchbeck’s mother shut her fan with a report like a pistol.
-            st: He talked of his gout. He talked of the Excise. He talked of his late wife, at some length, and with more tenderness than I believe he ever showed her living; — and at the end of it all he asked whether he might call. She said yes. She would have said yes to the Excise.
-          X:
-            sm: In the turn of the dance his lordship set his foot upon her train, and the lustring parted from waist to hem with a sound like a sigh, which every person in the room heard and none forgot.
-            st: Rrrrrip. — I have endeavoured to set down that sound with the exactness it deserves, and find the alphabet unequal to it.
+          T: Lord Glanville, a nobleman of sixty with forty thousand pounds and a cough upon which half the Town had laid wagers, danced with her, talked of himself through the whole of the minuet, and at the close begged leave to wait upon her the next day; at which Miss Pinchbeck’s mother shut her fan with a report like a pistol.
+          X: In the turn of the dance his lordship set his foot upon her train, and the lustring parted from waist to hem with a sound like a sigh, which every person in the room heard and none forgot.
         next:
           - { when: flags.suspicious or flags.letterKept, go: steward }
           - { go: pounce }
@@ -477,12 +457,8 @@ beats:
               - { adj: debts, by: "= 3600 - flags._paid", why: a debt of honour to Lord Glanville }
             text: You lose fifteen pounds you do not have, and must give your note of hand for the balance to a peer of the realm. It is the first time you have owed money to a man who could, if he chose, simply forget about it. He does not look like a man who forgets.{fn ‡}
         story:
-          T:
-            sm: She sat down to quadrille at his lordship’s table and won twenty guineas of him in an hour, making him laugh thrice in the doing of it, which his physician had expressly forbid.
-            st: Twenty guineas, — and three laughs, which his physician had forbidden; and I am not sure, upon reflection, which of the two he valued more, or which cost him dearer.
-          X:
-            sm: But the cards ran against her with a malice peculiar to houses where the servants are paid out of the card-money, and she rose from the table fifteen pounds in debt to a peer of the realm, with nothing to offer him but her note of hand.
-            st: Fifteen pounds. — Let the reader who has never lost fifteen pounds he did not possess, at a table he was not invited to, to a man he meant to marry, throw the first card.
+          T: She sat down to quadrille at his lordship’s table and won twenty guineas of him in an hour, making him laugh thrice in the doing of it, which his physician had expressly forbid.
+          X: But the cards ran against her with a malice peculiar to houses where the servants are paid out of the card-money, and she rose from the table fifteen pounds in debt to a peer of the realm, with nothing to offer him but her note of hand.
         next:
           - { when: flags.suspicious or flags.letterKept, go: steward }
           - { go: pounce }
@@ -501,9 +477,7 @@ beats:
             - { hook: "Lord Glanville proposes a house in Marylebone, a chariot, and £300 a year “at pleasure”", why: an understanding reached by fan }
           text: It is done with the fan and the eyes and nothing else at all. By supper Lord Glanville has made, through a very small and very old Frenchman who is his secretary, a proposal that is not a proposal of marriage. A house in Marylebone. A chariot. Three hundred a year, at pleasure. “At pleasure,” you observe to the Frenchman, “is a very short phrase.” He bows, and says that it may be lengthened by a lawyer.
         story:
-          M:
-            sm: "Before supper his lordship had made her, by the mouth of a little old Frenchman who was his secretary, a proposal which was not a proposal of marriage: a house in Marylebone, a chariot, and three hundred a year at pleasure; and she, who had been bred to the catechism, perceived that she had now begun upon a different book."
-            st: — At pleasure, said she. — It is the shortest phrase in the language, madam, and the most expensive; and I have known it outlast a marriage.
+          M: "Before supper his lordship had made her, by the mouth of a little old Frenchman who was his secretary, a proposal which was not a proposal of marriage: a house in Marylebone, a chariot, and three hundred a year at pleasure; and she, who had been bred to the catechism, perceived that she had now begun upon a different book."
         next:
           - { when: flags.suspicious or flags.letterKept, go: steward }
           - { go: pounce }
@@ -586,12 +560,8 @@ beats:
                   effect: Exposure +3 (Mrs Delacourt) · the Secret is out
             text: “Why, it is Kitty Glover!” cries Dr Pounce, delighted, in the voice he uses for the back of a cathedral. “The curate’s girl! Does your poor father know you are in town?”
         story:
-          T:
-            sm: Here she was spied by Dr Pounce, a fat divine who had dined at her father’s table a hundred times; but she walked up to him with so fine an assurance, and asked so tenderly after the Bishop’s gout, that the Doctor concluded, like a prudent churchman, that he had seen nothing at all.
-            st: Dr Pounce looked at her. She looked at Dr Pounce. — And here, madam, a whole sermon passed between them without a word spoken; at the end of which the Doctor decided he had never seen her in his life; which was the best sermon he ever preached.
-          X:
-            sm: “Kitty Glover!” cried the Doctor, in the voice he kept for the back of a cathedral; and the name went round Lady Bellaston’s rooms faster than the negus.
-            st: — Kitty Glover! — Two words. I have known whole Acts of Parliament do less.
+          T: Here she was spied by Dr Pounce, a fat divine who had dined at her father’s table a hundred times; but she walked up to him with so fine an assurance, and asked so tenderly after the Bishop’s gout, that the Doctor concluded, like a prudent churchman, that he had seen nothing at all.
+          X: “Kitty Glover!” cried the Doctor, in the voice he kept for the back of a cathedral; and the name went round Lady Bellaston’s rooms faster than the negus.
         next: reckon
       - label: "Press on: take him aside, and remind him in a low voice of the churchwardens’ accounts at Tisbury."
         check:
@@ -647,12 +617,8 @@ beats:
                   effect: Exposure +3 (Mrs Delacourt) · Notoriety +1
             text: He hears you out, and then speaks quietly of the consistory court, of the Bridewell, and of what is done there to young women who forget themselves.
         story:
-          T:
-            sm: She drew the Doctor aside, and in a low voice put him in mind of certain irregularities in the churchwardens’ accounts at Tisbury; upon which the good man discovered that he had never set eyes on her before, and thanked her heartily for the reminder.
-            st: What she whispered I shall not set down; there are churchwardens yet living. It is enough that the Doctor turned the colour of the punch, and found that he was wanted elsewhere.
-          X:
-            sm: But the Doctor, so far from being frighted, spoke to her very quietly of the consistory court, and of the Bridewell, and of what is done there to young women who forget themselves; and she went in to supper with no appetite at all.
-            st: — The Bridewell, said the Doctor gently. — It is remarkable, madam, how gently a clergyman can say the Bridewell.
+          T: She drew the Doctor aside, and in a low voice put him in mind of certain irregularities in the churchwardens’ accounts at Tisbury; upon which the good man discovered that he had never set eyes on her before, and thanked her heartily for the reminder.
+          X: But the Doctor, so far from being frighted, spoke to her very quietly of the consistory court, and of the Bridewell, and of what is done there to young women who forget themselves; and she went in to supper with no appetite at all.
         next: reckon
       - label: Take Lord Glanville’s arm, and ask to be taken in to supper now.
         gate:
@@ -755,12 +721,8 @@ beats:
                   effect: Exposure +3 (Mrs Delacourt) · Notoriety +1
             text: Lady Bellaston screams. It is not a loud scream, but it is a scream, and in Hanover Square that is enough.
         story:
-          T:
-            sm: Seeing her letter delivered up, she crossed the room before her hostess could open her mouth, and confessed the whole as a frolic, so prettily that Lady Bellaston resolved the joke should be her own; and by two in the morning was telling it with improvements, and had taken her up as the cleverest woman in London.
-            st: Confess everything, — said a small voice within her, — it is the one lie they will never expect. And so she did; and Lady Bellaston laughed, and kept her; which is the whole history of Lady Bellaston’s friendships, and of most others.
-          X:
-            sm: Lady Bellaston screamed. It was not a loud scream; but in Hanover Square a small scream will carry as far as a cannon at Woolwich.
-            st: Lady Bellaston screamed. * * * * * * * * — I leave the reader these asterisks, to scream into on her behalf.
+          T: Seeing her letter delivered up, she crossed the room before her hostess could open her mouth, and confessed the whole as a frolic, so prettily that Lady Bellaston resolved the joke should be her own; and by two in the morning was telling it with improvements, and had taken her up as the cleverest woman in London.
+          X: Lady Bellaston screamed. It was not a loud scream; but in Hanover Square a small scream will carry as far as a cannon at Woolwich.
         next: reckon
       - label: Have Betty Slyfield mislay the letter, and put a genuine one from her ladyship’s escritoire in its place.
         gate:
@@ -819,12 +781,8 @@ beats:
               - { adj: notoriety, by: 1, why: a slap in the card room }
             text: Mrs O’Hara crosses the card room and slaps you, with a ring on the hand, in front of four tables of quadrille. Nobody has ever seen anything so delightful.
         story:
-          T:
-            sm: She declared the letter a forgery got up by a jealous rival, and looked so meaningly at Mrs O’Hara, that before supper the whole room was persuaded that lady had forged a letter to ruin a poor widow; and Mrs O’Hara went home in tears, which was the only injustice of the evening that nobody regretted.
-            st: Poor Mrs O’Hara! — I own I pity her; — I pitied her for very nearly a page, which is more than anyone in the room did.
-          X:
-            sm: Whereupon Mrs O’Hara crossed the card-room and boxed her ears, with a ring upon the hand, before four tables of quadrille, who all agreed afterwards that they had never seen anything so delightful.
-            st: — Slap. — There are some sounds even I cannot improve upon.
+          T: She declared the letter a forgery got up by a jealous rival, and looked so meaningly at Mrs O’Hara, that before supper the whole room was persuaded that lady had forged a letter to ruin a poor widow; and Mrs O’Hara went home in tears, which was the only injustice of the evening that nobody regretted.
+          X: Whereupon Mrs O’Hara crossed the card-room and boxed her ears, with a ring upon the hand, before four tables of quadrille, who all agreed afterwards that they had never seen anything so delightful.
         next: reckon
       - label: "Withdraw: slip out through the card room and down the back stairs, losing a shoe on the way."
         withdraw: true

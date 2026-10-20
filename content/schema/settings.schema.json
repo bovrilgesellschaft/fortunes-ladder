@@ -11,7 +11,8 @@
     "start_range",
     "factions",
     "humours",
-    "tags"
+    "tags",
+    "score"
   ],
   "properties": {
     "turn_weeks": {
@@ -331,6 +332,18 @@
           }
         }
       }
+    },
+    "score": {
+      "type": "object",
+      "required": [
+        "celebrity",
+        "climbed",
+        "fallen",
+        "altered",
+        "endings",
+        "ruin_weeks",
+        "last_year"
+      ]
     }
   }
 }

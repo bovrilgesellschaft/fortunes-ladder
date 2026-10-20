@@ -75,12 +75,8 @@ chapter:
 story:
   title: The History of Mr Cornelius Byrne
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
-  preface:
-    sm: There is no place in London where a man is looked at so closely, and seen so little, as in a great man’s anteroom on a Tuesday morning; and it was into such a room that our hero now made his way, in his best coat and his boldest story.
-    st: A levee, madam, is a crowd of men standing up in order to be told that they may sit down another day.
-  close:
-    sm: Such was our hero’s first levee; and he came down the steps into St James’s Square with the air of a man who has been noticed, which, in that square, is the next thing to having been paid.
-    st: — And so out into the Square; where the sun was shining, as it does upon the just and the unjust, and upon the Irish.
+  preface: There is no place in London where a man is looked at so closely, and seen so little, as in a great man’s anteroom on a Tuesday morning; and it was into such a room that our hero now made his way, in his best coat and his boldest story.
+  close: Such was our hero’s first levee; and he came down the steps into St James’s Square with the air of a man who has been noticed, which, in that square, is the next thing to having been paid.
 
 reckoning:
   num: V
@@ -141,12 +137,8 @@ beats:
             effects: [{ adj: exposure, by: 1, why: turned away at the door }, { adj: purse, by: -10s, why: "vails, doubled" }, { set: vailed }]
             text: He stops you, loudly, and asks your name, loudly, and repeats it to the footman, loudly, before he takes your ten shillings. The officers on the steps will remember it.
         story:
-          T:
-            sm: He walked past the porter with so perfect an assurance that the fellow rose out of his chair and bowed; and a gentleman upon the stairs, asking who that was, received for answer that nobody knew; which in St James’s Square is the beginning of a reputation.
-            st: Assurance, madam, is the only coin that porters do not count.
-          X:
-            sm: The porter stopped him upon the threshold, and demanded his name in a voice that carried to the Square, and repeated it to the footman, and the footman to the stairs; so that {persona} went up to His Grace the most announced man in London, and the least welcome.
-            st: — His name, madam, went up the stairs before him, like a herald; — and a herald, I may observe, is the last thing a man in his situation requires.
+          T: He walked past the porter with so perfect an assurance that the fellow rose out of his chair and bowed; and a gentleman upon the stairs, asking who that was, received for answer that nobody knew; which in St James’s Square is the beginning of a reputation.
+          X: The porter stopped him upon the threshold, and demanded his name in a voice that carried to the Square, and repeated it to the footman, and the footman to the stairs; so that {persona} went up to His Grace the most announced man in London, and the least welcome.
         next: secretary
       - label: Present a letter of introduction to His Grace.
         gate: { when: has_item_like("letter of introduction") or has_hook("Lady Bellaston"), need: "a letter of introduction, or Lady Bellaston’s interest" }
@@ -188,12 +180,8 @@ beats:
             effects: [{ adj: exposure, by: 1, why: caught in a lie }, { adj: hum.Melancholic, by: 1, why: found out by a clerk }, { rumour: { id: secretary, delay: 1, from: His Grace’s anteroom, circle: the Quality, text: "It is said in St James’s Square that {persona} does not know which year his own regiment was at Belgrade.", effect: "Exposure +2 ({persona})" } }]
             text: He asks about Belgrade, and you place it in the wrong war. A clergyman beside you laughs, and then pretends he was coughing.
         story:
-          T:
-            sm: To the secretary’s question he answered with his whole history, regiments and sieges and a wound at Belgrade, told with such spirit that the man forgot to write; and it was resolved upon the spot that His Grace should hear it himself.
-            st: The secretary stopped writing, madam. — I have it on good authority that he had not done so since the Peace of Utrecht.
-          X:
-            sm: But the secretary, asking after Belgrade, received an answer that placed the siege in the wrong war and the wrong decade; and a clergyman at his elbow was taken with a fit of coughing that lasted the rest of the morning.
-            st: — Belgrade, madam, has been besieged so often that I do not blame him; — but the secretary did.
+          T: To the secretary’s question he answered with his whole history, regiments and sieges and a wound at Belgrade, told with such spirit that the man forgot to write; and it was resolved upon the spot that His Grace should hear it himself.
+          X: But the secretary, asking after Belgrade, received an answer that placed the siege in the wrong war and the wrong decade; and a clergyman at his elbow was taken with a fit of coughing that lasted the rest of the morning.
         next: patron
       - label: Name the houses where you are known, and let him ask there.
         gate: { when: known_in("the Quality"), need: "known in the Quality · {if circles_known}known only in {circles_known}{else}known nowhere yet{end}" }
@@ -287,12 +275,8 @@ beats:
             effects: [{ adj: exposure, by: 3, why: laughed at a duke’s table }, { adj: celebrity, by: -1, why: laughed at }, { rumour: { id: dinner, delay: 1, from: Every drawing room in St James’s, circle: the Quality, text: "{persona} claimed a rank at His Grace’s table, and His Grace laughed.", effect: "Exposure +2 ({persona})" } }]
             text: You are announced by your new style, and His Grace, who has a better memory than you hoped, laughs aloud. It is not an unkind laugh. It is much worse than an unkind laugh.
         story:
-          T:
-            sm: On the Thursday he dined with His Grace, and was seated three places from the head of the table, and called by his new style twice before the fish; so that by the time the cloth was drawn the company had forgotten he had ever been anything less, and so, very nearly, had he.
-            st: It is a curious thing, madam, that a man may be raised a rank between the soup and the fish; — and a more curious thing that he may be lowered again between the fish and the soup.
-          X:
-            sm: But His Grace, hearing him announced by a style that had grown since Tuesday, laughed aloud; not unkindly, for he was a good-natured man, but in such a manner that the whole table laughed with him, and {persona} was a byword in St James’s before the candles were lit.
-            st: — He laughed, madam. — Dukes do not need to do more.
+          T: On the Thursday he dined with His Grace, and was seated three places from the head of the table, and called by his new style twice before the fish; so that by the time the cloth was drawn the company had forgotten he had ever been anything less, and so, very nearly, had he.
+          X: But His Grace, hearing him announced by a style that had grown since Tuesday, laughed aloud; not unkindly, for he was a good-natured man, but in such a manner that the whole table laughed with him, and {persona} was a byword in St James’s before the candles were lit.
         next: reckon
       - label: "Withdraw: go on Thursday as you are, and be glad of the dinner."
         withdraw: true

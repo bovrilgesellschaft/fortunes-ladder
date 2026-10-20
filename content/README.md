@@ -117,8 +117,8 @@ Each beat offers a mix of the four kinds the design asks for:
     R: { … }                         # Reversal
     X: { … }                         # Catastrophe
   story:                             # the Story, written on Triumph and Catastrophe
-    T: { sm: …, st: … }              # after Smollett, after Sterne
-    X: { sm: …, st: … }
+    T: Our hero, being…              # one passage, in the Story's voice
+    X: …
   next: lamps
 
 # Locked: a gate the player cannot meet yet, and no outcome; shown as a lure
@@ -196,8 +196,16 @@ Every glossary word must be in `glossary.yaml` before a Venture uses it.
 
 ## The Story
 
-Every Triumph and Catastrophe should have a Story passage in both voices, describing the same
-event with the same facts (style guide). The Venture's `story` block gives the History's title,
+The Story has one voice (ruled 20 October 2026): third person, past tense, brisk and low-comic.
+A passage is a single string: `story: { T: "…", X: "…" }`, or `M:` for a milestone on a certain
+option, and the Venture's `story` block gives a `preface` and a `close`. A rumour may carry a
+`hindsight:` passage, added as a footnote to the Venture's chapter when the rumour lands; without
+one, the Editor writes a plain note. Book openings, milestones, the connectives that open each
+chapter, the endings and the subscription list are in `content/story.yaml`. A Venture can end the
+run by setting `ends_death` or `ends_transportation`, or make Apotheosis possible with
+`ends_apotheosis`.
+
+Every Triumph and Catastrophe should have a Story passage telling the same facts (style guide). The Venture's `story` block gives the History's title,
 a preface (written when the first passage is) and a close (added at the Reckoning).
 
 ## Names

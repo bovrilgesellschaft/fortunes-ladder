@@ -23,7 +23,6 @@ export const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<'
 
 export class Chrome {
   longS = false;
-  voice: 'sm' | 'st' = 'sm';
   onStory: () => void = () => {};
 
   constructor(readonly key: string, readonly glossary: Record<string, GlossaryEntry>) {
@@ -57,9 +56,6 @@ export class Chrome {
     $('.tabs').addEventListener('keydown', e => {
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const st = $('#storyPane').hidden; this.switchTab(st ? 'story' : 'play'); (st ? $('#tabStory') : $('#tabPlay')).focus(); }
     });
-    $('#vSm').onclick = () => this.setVoice('sm'); $('#vSt').onclick = () => this.setVoice('st');
-    if (store.get(key + '-voice') === 'st') this.voice = 'st';
-    this.setVoice(this.voice);
 
     // the Ledger is open on wide screens
     const mq = matchMedia('(min-width: 861px)'); const lb = $<HTMLDetailsElement>('#ledgerBox');
@@ -72,10 +68,6 @@ export class Chrome {
 
   setDev(on: boolean) { document.body.classList.toggle('devon', on); $('#devBtn').setAttribute('aria-pressed', String(on)); store.set(this.key + '-dev', on ? '1' : '0'); }
   setLS(on: boolean) { this.longS = on; $('#longsBtn').setAttribute('aria-pressed', String(on)); this.applyLongS(document.querySelector('main')!); store.set(this.key + '-ls', on ? '1' : '0'); }
-  setVoice(x: 'sm' | 'st') {
-    this.voice = x; $('#vSm').setAttribute('aria-pressed', String(x === 'sm')); $('#vSt').setAttribute('aria-pressed', String(x === 'st'));
-    store.set(this.key + '-voice', x); this.onStory();
-  }
 
   applyLongS(root: Node) {
     const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.parentElement!.closest('.prose,.chap') && !n.parentElement!.closest('.dev') ? 1 : 3) });
@@ -94,12 +86,13 @@ export class Chrome {
     const top = $('.tabs').getBoundingClientRect().top; if (top < 0) $('.tabs').scrollIntoView({ block: 'start' });
   }
 
-  /** The Story tab: chapters, each a heading and its passages in the chosen voice. */
-  renderStory(chapters: { no: string; heading: string; passages: (Passage & { fresh?: boolean })[] }[]) {
+  /** The Story tab: chapters, each a heading and its passages; a run's volumes and footnotes too. */
+  renderStory(chapters: { no: string; heading: string; passages: { text: string; fresh?: boolean }[]; vol?: string; notes?: string[]; noteFresh?: boolean }[]) {
     const pane = $('#storyBody');
     const full = chapters.filter(c => c.passages.length);
     if (!full.length) { pane.innerHTML = '<p class="empty">Nothing novel-worthy has happened yet. The Story is written only when Fortune’s Wheel lands on Triumph or Catastrophe, or when a milestone is passed.</p>'; return; }
-    pane.innerHTML = full.map(c => `<div class="chap"><div class="no">${c.no}</div><div class="in">${c.heading}</div></div><div class="prose storyprose">${c.passages.map((p, i) => `<p class="${i === 0 ? 'first' : ''}${p.fresh ? ' fresh' : ''}">${p[this.voice]}</p>`).join('')}</div>`).join('');
+    const SYM = ['*', '†', '‡', '§'];
+    pane.innerHTML = full.map(c => `${c.vol ?? ''}<div class="chap"><div class="no">${c.no}</div><div class="in">${c.heading}</div></div><div class="prose storyprose">${c.passages.map((p, i) => `<p class="${i === 0 ? 'first' : ''}${p.fresh ? ' fresh' : ''}">${p.text}${i === c.passages.length - 1 ? (c.notes ?? []).map((_, k) => `<sup class="fn">${SYM[k] ?? k + 1}</sup>`).join('') : ''}</p>`).join('')}</div>${c.notes?.length ? `<div class="notes prose storynotes${c.noteFresh ? ' fresh' : ''}">${c.notes.map((n, k) => `<p>${SYM[k] ?? k + 1} ${n}</p>`).join('')}</div>` : ''}`).join('');
     this.applyLongS(pane);
     if (!$('#storyPane').hidden) setTimeout(() => full.forEach(c => c.passages.forEach(p => (p.fresh = false))), 100);
   }

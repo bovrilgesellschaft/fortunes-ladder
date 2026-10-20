@@ -16,7 +16,7 @@ export interface State {
   attrs: Record<string, number>; hum: Record<string, number>;
   conditions: string[]; tags: string[]; items: string[]; hooks: string[];
   flags: Record<string, number>; log: string[]; rumours: (Rumour & { week: number; persona: string })[];
-  spoils: number; story: (Passage & { fresh?: boolean })[]; storyAdded: boolean;
+  spoils: number; story: { text: string; fresh?: boolean }[]; storyAdded: boolean;
   /** The name the hero passes under in this Venture. */
   persona: string;
   /** Pledged and noted during the Venture, for the run to keep. */
@@ -312,7 +312,7 @@ export class Run {
 
   addStory(p: Passage) {
     const S = this.S;
-    const ink = (x: Passage) => ({ sm: this.inline(x.sm), st: this.inline(x.st), fresh: true });
+    const ink = (x: Passage) => ({ text: this.inline(x), fresh: true });
     if (!S.story.length && this.v.story) S.story.push(ink(this.v.story.preface));
     S.story.push(ink(p)); S.storyAdded = true;
     this.fx.push({ t: '❧ The Story is enlarged', tone: 'neu' }); S.log.push('Story passage written');
@@ -393,7 +393,7 @@ export class Run {
       if ('do' in s) this.apply(s.do);
       else lines.push(this.prose(s.say));
     }
-    if (this.v.story && this.S.story.length) this.S.story.push({ sm: this.inline(this.v.story.close.sm), st: this.inline(this.v.story.close.st), fresh: true });
+    if (this.v.story && this.S.story.length) this.S.story.push({ text: this.inline(this.v.story.close), fresh: true });
     const chapter = this.chapter();
     for (const it of this.v.kit?.returned ?? []) {
       const i = this.S.items.indexOf(it);

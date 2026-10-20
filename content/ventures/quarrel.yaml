@@ -69,12 +69,8 @@ chapter:
 story:
   title: The History of Mr Cornelius Byrne
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
-  preface:
-    sm: Our hero had now been for some weeks in that state of the bile in which a man reads every look as an insult and every insult as a summons; and the Strand at noon, which is full of men going somewhere in a hurry, was the worst place in London for him to be.
-    st: The choler, madam, is a humour; — that is to say, a liquid; — and a man full of it to the brim must spill it somewhere.
-  close:
-    sm: So ended the affair of the wall; and our hero walked on with his choler, for the present, discharged, like a gun that has gone off and must be loaded again before it can do more mischief.
-    st: — And whether the wall was his or the other man’s, madam, the wall itself has never said.
+  preface: Our hero had now been for some weeks in that state of the bile in which a man reads every look as an insult and every insult as a summons; and the Strand at noon, which is full of men going somewhere in a hurry, was the worst place in London for him to be.
+  close: So ended the affair of the wall; and our hero walked on with his choler, for the present, discharged, like a gun that has gone off and must be loaded again before it can do more mischief.
 
 reckoning:
   num: V
@@ -134,12 +130,8 @@ beats:
             effects: [{ adj: hum.Choleric, by: 1, why: in the kennel }, { adj: celebrity, by: -1, why: laughed at in the Strand }]
             text: It is you who goes into the kennel, and the street that laughs.
         story:
-          T:
-            sm: A gentleman in a laced hat refusing him the wall, our hero shouldered him so roundly that he went into the kennel up to his buckles; and the Strand, which loves a fall better than a play, laughed till the hackney-coaches stopped to see what was the matter.
-            st: — Into the kennel, madam. — I set it down without comment; it is a thing the reader will wish to have seen, and I have done my best.
-          X:
-            sm: But the gentleman, proving a good deal heavier than his lace, stood like a church; and it was our hero who went into the kennel, to the great delight of a crowd of chairmen.
-            st: The kennel, madam, is no respecter of persons; — that is its whole merit as an institution.
+          T: A gentleman in a laced hat refusing him the wall, our hero shouldered him so roundly that he went into the kennel up to his buckles; and the Strand, which loves a fall better than a play, laughed till the hackney-coaches stopped to see what was the matter.
+          X: But the gentleman, proving a good deal heavier than his lace, stood like a church; and it was our hero who went into the kennel, to the great delight of a crowd of chairmen.
         next: words
       - label: Look at him as a man of fashion looks at a mercer.
         gate: { when: "appearances >= 11", need: "Appearances 11 · {if appearances}you show {appearances}{else}a run’s Appearances{end}" }
@@ -270,12 +262,8 @@ beats:
             effects: [{ set: drew }, { condition: "Wounded (a sword-cut, left hand)", why: a quarrel in the Strand }, { adj: notoriety, by: 1, why: swords drawn in the street }]
             text: His point opens the back of your hand. There is a great deal of blood, and a constable, and a long afternoon.
         story:
-          T:
-            sm: The gentleman drawing, our hero drew; and in three passes sent his adversary’s sword to keep company with his hat in the kennel; at which the crowd set up such a huzza as brought the whole Strand to its windows, and our hero felt the choler go out of him like wind out of a bladder.
-            st: — Three passes, madam! — I have read of duels that lasted an hour and settled less.
-          X:
-            sm: But the gentleman’s point, entering under his guard, laid open the back of his hand; so that the quarrel ended, as quarrels in the Strand commonly do, with a constable, a surgeon, and a magistrate who wished both parties at the devil.
-            st: Blood, madam, upon the cobbles of the Strand; — and a little upon the constable, who has never forgiven it.
+          T: The gentleman drawing, our hero drew; and in three passes sent his adversary’s sword to keep company with his hat in the kennel; at which the crowd set up such a huzza as brought the whole Strand to its windows, and our hero felt the choler go out of him like wind out of a bladder.
+          X: But the gentleman’s point, entering under his guard, laid open the back of his hand; so that the quarrel ended, as quarrels in the Strand commonly do, with a constable, a surgeon, and a magistrate who wished both parties at the devil.
         next: reckon
       - label: "Press on: throw down the sword, and offer him your fists."
         dev: Press on · Constitution against 4

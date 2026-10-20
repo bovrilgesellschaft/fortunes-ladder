@@ -1,0 +1,313 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "The Story's own words (Step 9)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "books",
+    "milestones",
+    "connectives",
+    "endings",
+    "dedication_public",
+    "subtitles",
+    "imprint",
+    "hindsight_editor",
+    "subscribers"
+  ],
+  "properties": {
+    "books": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "I",
+        "II",
+        "III"
+      ],
+      "properties": {
+        "I": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "opening",
+            "again"
+          ],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "opening": {
+              "type": "string"
+            },
+            "again": {
+              "type": "string"
+            }
+          }
+        },
+        "II": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "opening",
+            "again"
+          ],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "opening": {
+              "type": "string"
+            },
+            "again": {
+              "type": "string"
+            }
+          }
+        },
+        "III": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "opening",
+            "again"
+          ],
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "opening": {
+              "type": "string"
+            },
+            "again": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "milestones": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "heading",
+          "variants"
+        ],
+        "properties": {
+          "heading": {
+            "type": "string"
+          },
+          "variants": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "text"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "mood": {
+                  "enum": [
+                    "mockheroic",
+                    "easy",
+                    "rueful",
+                    "moralising"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "connectives": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "gap": {
+            "enum": [
+              "next",
+              "months",
+              "year"
+            ]
+          },
+          "season": {
+            "enum": [
+              "spring",
+              "summer",
+              "autumn",
+              "winter",
+              "frost"
+            ]
+          },
+          "moved": {
+            "type": "boolean"
+          },
+          "mood": {
+            "enum": [
+              "mockheroic",
+              "easy",
+              "rueful",
+              "moralising"
+            ]
+          }
+        }
+      }
+    },
+    "endings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "apotheosis",
+        "retirement",
+        "ruin",
+        "transportation",
+        "death",
+        "calendar"
+      ],
+      "properties": {
+        "apotheosis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "framing",
+            "closing",
+            "dedication"
+          ],
+          "properties": {
+            "framing": {
+              "type": "string"
+            },
+            "closing": {
+              "type": "string"
+            },
+            "dedication": {
+              "type": "string"
+            }
+          }
+        },
+        "retirement": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "framing",
+            "closing",
+            "dedication"
+          ],
+          "properties": {
+            "framing": {
+              "type": "string"
+            },
+            "closing": {
+              "type": "string"
+            },
+            "dedication": {
+              "type": "string"
+            }
+          }
+        },
+        "ruin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "framing",
+            "closing",
+            "dedication"
+          ],
+          "properties": {
+            "framing": {
+              "type": "string"
+            },
+            "closing": {
+              "type": "string"
+            },
+            "dedication": {
+              "type": "string"
+            }
+          }
+        },
+        "transportation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "framing",
+            "closing",
+            "dedication"
+          ],
+          "properties": {
+            "framing": {
+              "type": "string"
+            },
+            "closing": {
+              "type": "string"
+            },
+            "dedication": {
+              "type": "string"
+            }
+          }
+        },
+        "death": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "framing",
+            "closing",
+            "dedication"
+          ],
+          "properties": {
+            "framing": {
+              "type": "string"
+            },
+            "closing": {
+              "type": "string"
+            },
+            "dedication": {
+              "type": "string"
+            }
+          }
+        },
+        "calendar": {
+          "type": "string"
+        }
+      }
+    },
+    "dedication_public": {
+      "type": "string"
+    },
+    "subtitles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "imprint": {
+      "type": "string"
+    },
+    "hindsight_editor": {
+      "type": "string"
+    },
+    "subscribers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 10
+    }
+  }
+}

@@ -66,12 +66,8 @@ chapter:
 story:
   title: The History of Mr Cornelius Byrne
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
-  preface:
-    sm: It was about this time that our hero, finding that the life of a gentleman cost a great deal more than a gentleman had, began to consider those professions in which a gentleman’s qualities are rewarded at once, and in ready money.
-    st: I must now take the reader into low company, madam; — I give you notice of it, that you may hold your handkerchief to your nose, and keep the other hand upon your purse.
-  close:
-    sm: He went home by daylight, with an acquaintance he had not sought and a brace of pistols he could not well afford, and the firm resolution, which young men always form on such occasions, never to use either.
-    st: And so ended his evening at the Blue Boar; — of which the less said, madam, the better; and I have said, I think, a great deal less than happened.
+  preface: It was about this time that our hero, finding that the life of a gentleman cost a great deal more than a gentleman had, began to consider those professions in which a gentleman’s qualities are rewarded at once, and in ready money.
+  close: He went home by daylight, with an acquaintance he had not sought and a brace of pistols he could not well afford, and the firm resolution, which young men always form on such occasions, never to use either.
 
 reckoning:
   num: V
@@ -135,12 +131,8 @@ beats:
             effects: [{ set: drunk }, { adj: purse, by: -10s, why: robbed while drunk }, { adj: hum.Melancholic, by: 1, why: gin }]
             text: You wake on the settle with your purse ten shillings lighter and a duchess’s garter in your hand. Nobody in the room has ever seen a duchess.
         story:
-          T:
-            sm: He sat down among them and drank glass for glass with a carter, a coiner and a lady who styled herself a duchess, and was the last of the company upon his legs; which won him the respect of the house, and the duchess’s, and, what is rarer in St Giles, the safe return of his handkerchief.
-            st: He drank them all under the table, madam; — I do not commend it; — I record it, as a historian must, with the same face I would put upon a victory in Flanders.
-          X:
-            sm: The gin, which in that house was sold by the quartern and drunk by the pint, prevailed over him at last; and he woke upon the settle ten shillings the poorer, with a garter in his hand which nobody would own.
-            st: Of the garter, madam, I know nothing; — and I beg you will not ask {styled}, who knows less.
+          T: He sat down among them and drank glass for glass with a carter, a coiner and a lady who styled herself a duchess, and was the last of the company upon his legs; which won him the respect of the house, and the duchess’s, and, what is rarer in St Giles, the safe return of his handkerchief.
+          X: The gin, which in that house was sold by the quartern and drunk by the pint, prevailed over him at last; and he woke upon the settle ten shillings the poorer, with a garter in his hand which nobody would own.
         next: will
       - label: Take a stool in the corner, and listen.
         dev: Certain
@@ -188,12 +180,8 @@ beats:
             effects: [{ adj: purse, by: -15s, why: lost at all-fours }, { adj: hum.Choleric, by: 1, why: fleeced by a silent man }]
             text: He wins fifteen shillings without speaking a word, and you realise, too late, that he has been reading your cards in the brass of the warming-pan.
         story:
-          T:
-            sm: He sat down to all-fours with an old highwayman called Will Gallow, and beat him six games in seven; at which the old man laughed aloud, a thing not heard in that house since the old Queen’s time, and declared that a gentleman who could count cards could count coaches.
-            st: Six games in seven, madam! — and from a man who had robbed the Bristol mail. I set it down to {styled}’s credit, which, as the reader knows, stood in need of it.
-          X:
-            sm: Will Gallow won fifteen shillings off him at all-fours without once opening his mouth; and {styled} learned afterwards that the old rogue had read every card in his hand in the bottom of a brass warming-pan which hung behind his chair.
-            st: — The warming-pan, madam. — I mention it only as a warning to young persons of either sex, who are generally more careful of their cards than of what hangs behind them.
+          T: He sat down to all-fours with an old highwayman called Will Gallow, and beat him six games in seven; at which the old man laughed aloud, a thing not heard in that house since the old Queen’s time, and declared that a gentleman who could count cards could count coaches.
+          X: Will Gallow won fifteen shillings off him at all-fours without once opening his mouth; and {styled} learned afterwards that the old rogue had read every card in his hand in the bottom of a brass warming-pan which hung behind his chair.
         next: pistols
       - label: Tell him you are already a gentleman of the road, and a bold one.
         dev: Risky · Nerve against 5 · a bluff
@@ -291,12 +279,8 @@ beats:
                   effect: Notoriety +2
             text: You lose your temper, and with it the haggle. She takes a pound off you, and sells your face to Mr Wild’s people for a crown before you are out of the court.
         story:
-          T:
-            sm: The hostess, one Mrs Gammon, produced a brace of pistols and a crape mask, and named fifteen shillings; but our hero, who had seen his father buy horses at every fair in Connaught, beat her down to five, and she, in admiration, threw in a powder-horn and the best advice he was ever given, which was to keep the worse pistol for show.
-            st: Five shillings, madam, for the means of a highway robbery; — I have paid more for a sermon, and been less moved by it.
-          X:
-            sm: In beating down Mrs Gammon he so far forgot himself as to call her a name she did not deserve, or at least had not earned that evening; whereupon she raised her price to a pound, and sold his description to Mr Wild’s people for a crown before he was out of the court.
-            st: She sold him for a crown, madam. — I have known better men go cheaper; but seldom to so good a judge of the market.
+          T: The hostess, one Mrs Gammon, produced a brace of pistols and a crape mask, and named fifteen shillings; but our hero, who had seen his father buy horses at every fair in Connaught, beat her down to five, and she, in admiration, threw in a powder-horn and the best advice he was ever given, which was to keep the worse pistol for show.
+          X: In beating down Mrs Gammon he so far forgot himself as to call her a name she did not deserve, or at least had not earned that evening; whereupon she raised her price to a pound, and sold his description to Mr Wild’s people for a crown before he was out of the court.
         next: wild
       - label: Thank her, and leave the bundle where it lies.
         dev: Certain · no pistols, so heath will not be offered
@@ -351,12 +335,8 @@ beats:
                   effect: Notoriety +1
             text: He comes straight to your table, sits down without being asked, and talks for ten minutes about the weather in {county}, of which he seems to know a great deal. Then he goes. You do not sleep that night.
         story:
-          T:
-            sm: At this juncture there entered one of the people of Mr Jonathan Wild, the thief-taker, who looked round the room as a farmer looks over a fold; but our hero met his eye, and yawned in his face, with so perfect an air of fashionable weariness that the fellow took him for a young lord upon a frolic, and passed on.
-            st: He yawned, madam. — It is the most dangerous thing a man can do in the face of authority, and the most effective; — I have seen it done to a bishop.
-          X:
-            sm: The thief-taker’s man, singling him out, sat down at his table uninvited, and discoursed for ten minutes upon the weather in the county of {county}, with a familiarity which our hero found more alarming than any threat.
-            st: The weather in {county}, madam! — He had never been there; — and that, I think, was the worst of it.
+          T: At this juncture there entered one of the people of Mr Jonathan Wild, the thief-taker, who looked round the room as a farmer looks over a fold; but our hero met his eye, and yawned in his face, with so perfect an air of fashionable weariness that the fellow took him for a young lord upon a frolic, and passed on.
+          X: The thief-taker’s man, singling him out, sat down at his table uninvited, and discoursed for ten minutes upon the weather in the county of {county}, with a familiarity which our hero found more alarming than any threat.
         next: reckon
       - label: "Withdraw: up the back stairs, and out across the leads."
         withdraw: true

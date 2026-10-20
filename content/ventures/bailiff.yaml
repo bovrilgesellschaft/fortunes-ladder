@@ -61,12 +61,8 @@ chapter:
 story:
   title: The History of an Adventurer
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
-  preface:
-    sm: It was now that the bills of our hero’s tradesmen, which had hitherto followed him at a respectful distance, like a footman, came up with him all at once, like a creditor.
-    st: There is a knock, madam, which every gentleman in London knows, though he has never heard it; — it is a heavy knock, and it comes early.
-  close:
-    sm: Thus ended the visit; which, like most visits paid before breakfast, was more remarkable for its consequences than its conversation.
-    st: — And the bailiff? — He went home to his dinner, madam, which is more than I can say of his acquaintance.
+  preface: It was now that the bills of our hero’s tradesmen, which had hitherto followed him at a respectful distance, like a footman, came up with him all at once, like a creditor.
+  close: Thus ended the visit; which, like most visits paid before breakfast, was more remarkable for its consequences than its conversation.
 
 reckoning:
   num: V
@@ -123,12 +119,8 @@ beats:
             effects: [{ set: taken }, { adj: hum.Melancholic, by: 1, why: taken in a nightshirt }]
             text: The landlady has a second key, and gives it him, and he has you by the arm before your stockings are on.
         story:
-          T:
-            sm: Our hero kept so still that a spider, as he afterwards maintained, began a web between his nose and the bed-post; and the officer, after knocking at intervals for a quarter of an hour, went away persuaded that his man was at Bath, where the landlady, out of a kindness she later charged for, had sent him.
-            st: He kept still, madam. — It is the whole art of being out, and few men master it; for the conscience, as I have observed, creaks louder than any floorboard.
-          X:
-            sm: But the landlady, who had a second key and a long account against her lodger, gave it up without a struggle; and our hero was taken by the arm in his nightshirt, with one stocking on, which he afterwards declared to be the greatest indignity of his life.
-            st: One stocking, madam. — I have often thought that a man taken in both would bear it better, and a man taken in neither would not bear it at all.
+          T: Our hero kept so still that a spider, as he afterwards maintained, began a web between his nose and the bed-post; and the officer, after knocking at intervals for a quarter of an hour, went away persuaded that his man was at Bath, where the landlady, out of a kindness she later charged for, had sent him.
+          X: But the landlady, who had a second key and a long account against her lodger, gave it up without a struggle; and our hero was taken by the arm in his nightshirt, with one stocking on, which he afterwards declared to be the greatest indignity of his life.
         next: [{ when: flags.bribed or flags.taken, go: reckon }, { go: writ }]
       - label: Open the door, as a gentleman with nothing to fear.
         dev: Certain
@@ -253,12 +245,8 @@ beats:
             effects: [{ set: taken }, { adj: hum.Melancholic, by: 1, why: taken in the gutter }, { adj: notoriety, by: 1, why: a scuffle in the court }]
             text: You get as far as the court, and slip, and the bailiff sits on you. A crowd collects. It is the most popular thing that has happened in the court all year.
         story:
-          T:
-            sm: Our hero, without a word, went out of the window and over the leads with an agility that would have done honour to a cat, came down a water-pipe, threaded three back courts, and walked in at the gate of the Savoy at a gentleman’s pace; where he turned and bowed to the officer, who had stopped at the line of the Liberty as though at the edge of a precipice.
-            st: He bowed to the bailiff, madam, from inside the Liberty; — which is the only bow a debtor may make to his creditor with any satisfaction.
-          X:
-            sm: But slipping in the kennel of the court, he fell, and the officer sat upon him, to the great delight of the neighbourhood, which turned out to a man to see a gentleman taken, and agreed that it had never been done better.
-            st: The bailiff sat upon him, madam. — I record it without comment; for I have found that there is nothing to be said about being sat upon, that the being sat upon does not say better.
+          T: Our hero, without a word, went out of the window and over the leads with an agility that would have done honour to a cat, came down a water-pipe, threaded three back courts, and walked in at the gate of the Savoy at a gentleman’s pace; where he turned and bowed to the officer, who had stopped at the line of the Liberty as though at the edge of a precipice.
+          X: But slipping in the kennel of the court, he fell, and the officer sat upon him, to the great delight of the neighbourhood, which turned out to a man to see a gentleman taken, and agreed that it had never been done better.
         next: reckon
       - label: "Withdraw: give him your arm, and go quietly, with your hat on."
         withdraw: true

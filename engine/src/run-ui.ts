@@ -2,7 +2,8 @@
 // themselves, the bills, and the end. The headless rules live in campaign.ts.
 
 import { money, parseMoney } from './core';
-import { Campaign, SAVE_VERSION, dateLabel, type CampaignState, type Letter } from './campaign';
+import { Campaign, ENDING_NAME, SAVE_VERSION, bookOf, dateLabel, type CampaignState, type Letter, type Memoir, type Volume } from './campaign';
+import { Library, epub, htmlBook, memoirBody, titleLine, words, type MemoirMeta } from './library';
 import { seedFrom } from './rng';
 import { drawNames, type Names } from './names';
 import type { Rank, Room, World } from './types';
@@ -19,7 +20,8 @@ export function roman(n: number): string {
   let s = ''; for (const [v, r] of t) while (n >= v) { s += r; n -= v; } return s;
 }
 /** Books follow Claimed Rank (systems spec, Proposed). */
-const book = (r: Rank) => (RANKS.indexOf(r) >= RANKS.indexOf('Baronet or Knight') ? 'III' : RANKS.indexOf(r) >= RANKS.indexOf('Gentleman') ? 'II' : 'I');
+const book = (r: Rank) => bookOf(r);
+void RANKS;
 
 export function mountRun(world: World) {
   const chrome = new Chrome('fl-run', world.glossary);
@@ -95,14 +97,36 @@ export function mountRun(world: World) {
       conditions: h.conditions, tags: tagsByFaction(), items: possessions(), hooks: h.hooks, circumstances: circumstances(), ...economy(),
     };
   }
-  const chapterNo = () => `Chap. ${roman(c!.st.story.length + 1)}.`;
+  /** The number the Venture in play will have, if it writes a chapter: the next in the current volume. */
+  const chapterNo = () => {
+    const st = c!.st, vol = st.volumes.at(-1), b = book(H().claimedRank);
+    return `Chap. ${roman(vol && vol.book === b ? st.story.filter(x => x.vol === vol.no).length + 1 : 1)}.`;
+  };
+  const volHTML = (v: Volume) => `<div class="volhead"><div class="vno">Book ${v.book}</div><div class="vt">${esc(v.title)}</div><p class="vopen">${v.opening}</p></div>`;
   function chapters() {
     if (!c) return [];
-    const out = c.st.story.map(ch => ({ no: `Chap. ${roman(ch.no)}.`, heading: ch.heading, passages: ch.passages }));
+    let last = 0;
+    const out: Parameters<Chrome['renderStory']>[0] = c.st.story.map(ch => {
+      const v = c!.st.volumes.find(x => x.no === ch.vol), head = ch.vol !== last && v ? volHTML(v) : undefined;
+      last = ch.vol;
+      return { no: `Chap. ${roman(ch.no)}.`, heading: ch.heading.replace(/\.*$/, '') + '.', passages: ch.passages.map(text => ({ text })), notes: ch.notes.map(n => n.text), vol: head };
+    });
     if (view && view.run.S.story.length) out.push({ no: chapterNo(), heading: $('#chapIn').textContent ?? '', passages: view.run.S.story });
     return out;
   }
-  chrome.onStory = () => chrome.renderStory(chapters());
+  chrome.onStory = () => {
+    if (reading) return showMemoir(reading);
+    if (c?.st.phase === 'ended' && c.st.memoir) return showMemoir(c.st.memoir);
+    if (c) c.st.storyNew = false;
+    chrome.renderStory(chapters());
+  };
+  /** A Memoir in the Story tab: title page, dedication, volumes and subscribers. */
+  let reading: Memoir | null = null;
+  function showMemoir(m: Memoir) {
+    $('#storyTitle').textContent = titleLine(m.title).replace(/<[^>]+>/g, '');
+    $('#storyBody').innerHTML = `<div class="memoir prose">${memoirBody(m)}</div>`;
+    chrome.applyLongS($('#storyBody'));
+  }
 
   function chapter(show: boolean, no = '', text = '') {
     $('#chapBox').hidden = !show; $('#chapNo').textContent = no;
@@ -120,6 +144,7 @@ export function mountRun(world: World) {
     void n; return h.persona !== h.styled ? `${h.history}, otherwise ${h.persona}` : h.history;
   };
   function header() {
+    if (c?.st.storyNew) $('#storyNew').hidden = false;
     $('#runheadText').innerHTML = c ? history() : 'Picaresque';
     $('#storyTitle').textContent = c ? history() : 'The History of an Adventurer';
   }
@@ -127,6 +152,7 @@ export function mountRun(world: World) {
   // ---------- screens ----------
   function render() {
     if (c && reliefTurn !== c.st.turn) { reliefNote = ''; reliefTurn = c.st.turn; }
+    if (c && c.st.phase !== 'ended') reading = null;
     view = null; header(); chrome.switchTab('play'); ledger.reset();
     if (!c) return renderStart();
     if (c.st.phase === 'venture') return renderVenture();
@@ -180,7 +206,12 @@ export function mountRun(world: World) {
         </div>
         <div class="actions"><button class="btn primary" type="button" id="go">Set out for London</button></div>
         ${saved ? '<div id="confirmBox"></div>' : ''}
+      </section>
+      <section class="screen">
+        <h2><span class="phase">The Library</span>Memoirs of finished runs</h2>
+        <div id="libBox"><p class="small">Opening the Library…</p></div>
       </section>`;
+    void renderLibrary($('#libBox'));
     $('#cont')?.addEventListener('click', () => { c = saved; render(); });
     const val = (id: string) => ($<HTMLInputElement>(id).value || '').trim();
     const show = () => {
@@ -360,6 +391,7 @@ export function mountRun(world: World) {
         <p class="lead">You owe ${money(due)} that the law can recover, and have ${money(h.purse)}. ${h.purse >= due ? 'You could pay it all and walk out today.' : 'The door opens when the creditors are paid, or compose.'}</p>
         ${st.news.length ? `<div class="letters">${st.news.map(r => letterHTML(r, true)).join('')}</div>` : ''}
         ${h.purse >= due ? `<div class="actions"><button class="btn primary" type="button" id="payout">Pay ${money(due)} and walk out</button></div>` : ''}
+        <p class="small">A year within the walls without release ends the run in Ruin; you have been here since ${dateLabel(conf.since)}. <button class="btn" type="button" id="giveup">Give up, and make the prison your home</button></p>
       </section>
       <section class="screen">
         <h2><span class="phase">This month</span>Within the walls</h2>
@@ -383,6 +415,7 @@ export function mountRun(world: World) {
     $('#idle').onclick = () => { c!.idle(); save(); render(); top(); };
     $('#side').onclick = () => act(() => c!.setSide(conf.side === 'room' ? 'common' : 'room'));
     $('#payout')?.addEventListener('click', () => act(() => c!.payOut()));
+    $('#giveup').onclick = () => act(() => c!.giveUp());
     wireAffairs();
   }
 
@@ -441,8 +474,8 @@ export function mountRun(world: World) {
       </section>
       <section class="screen">
         <h2><span class="phase">Or</span>Retire from the world</h2>
-        <p class="lead">End the run here, and have the Story bound as it stands.</p>
-        <div class="actions"><button class="btn" type="button" id="retire">Retire</button></div>
+        ${c!.canRetire() ? `<p class="lead">End the run here, and have the Story bound as a Memoir: ${c!.apotheosisEarned() ? '<i>The Life and Fortunate Adventures</i>, for you have arrived' : `<i>Memoirs of ${H().sex === 'woman' ? 'a Gentlewoman' : 'a Gentleman'}</i>`}.</p>
+        <div class="actions"><button class="btn" type="button" id="retire">Retire</button></div>` : '<p class="lead">A hero in Low Life cannot retire: there is nothing yet to retire upon. The run ends when something ends it, or with the year 1745.</p>'}
         <div id="confirmBox"></div>
         <div class="dev" style="margin-top:14px">seed ${st.seed} · rng ${st.rng}\n${st.log.join('\n')}</div>
       </section>`;
@@ -457,11 +490,41 @@ export function mountRun(world: World) {
     wireNames(); wireRelief();
     root.querySelectorAll<HTMLInputElement>('input[name=living]').forEach(r => (r.onchange = () => act(() => c!.setLiving(r.value as 'claimed' | 'pinching'))));
     wireAffairs();
-    $('#retire').onclick = () => {
+    if (document.querySelector('#retire')) $('#retire').onclick = () => {
       $('#confirmBox').innerHTML = `<div class="confirm"><p>Retire now? The run ends, and cannot be taken up again.</p><button class="btn primary" type="button" id="yes">Retire</button><button class="btn" type="button" id="no">Not yet</button></div>`;
       $('#yes').onclick = () => { c!.retire(); save(); render(); top(); };
       $('#no').onclick = () => { $('#confirmBox').innerHTML = ''; };
     };
+  }
+
+  // ---------- the Library (Step 9) ----------
+  const library = new Library();
+  let libNote = '';
+  async function keep(m: Memoir) { await library.put(m); }
+  async function exportBook(m: Memoir, kind: 'html' | 'epub') {
+    const base = titleLine(m.title).replace(/<[^>]+>/g, '').replace(/[^A-Za-z0-9 ,.'-]/g, '').slice(0, 80).trim();
+    const r = kind === 'html' ? await Library.save(base + '.html', htmlBook(m), 'text/html') : await Library.save(base + '.epub', epub(m), 'application/epub+zip');
+    libNote = r === 'saved' ? 'Saved.' : r === 'declined' ? 'Not saved.' : 'This view of the page cannot save files. Open the page in Claude to export.';
+    const n = document.querySelector('#libNote'); if (n) n.textContent = libNote;
+  }
+  async function shareBook(m: Memoir) {
+    const a = await library.share(m);
+    libNote = a ? `Shared. Anyone who can open this page can read it at the page's link followed by ${a}` : 'This view of the page cannot share Memoirs. Open the page in Claude, signed in, to share.';
+    const n = document.querySelector('#libNote'); if (n) n.textContent = libNote;
+  }
+  const memoirActions = (id: string) => `<div class="actions"><button class="btn" type="button" data-read="${id}">Read the Memoir ❧</button><button class="btn" type="button" data-html="${id}">Export as a book (HTML)</button><button class="btn" type="button" data-epub="${id}">Export as an EPUB</button><button class="btn" type="button" data-share="${id}">Share</button></div>`;
+  function wireMemoir(get: (id: string) => Promise<Memoir | null>) {
+    const on = (sel: string, f: (m: Memoir) => void) => root.querySelectorAll<HTMLButtonElement>(sel).forEach(b => (b.onclick = async () => { const m = await get(Object.values(b.dataset)[0]!); if (m) f(m); }));
+    on('[data-read]', m => { reading = c?.st.memoir?.id === m.id ? null : m; chrome.switchTab('story'); if (reading) showMemoir(m); });
+    on('[data-html]', m => void exportBook(m, 'html'));
+    on('[data-epub]', m => void exportBook(m, 'epub'));
+    on('[data-share]', m => void shareBook(m));
+  }
+  async function renderLibrary(box: HTMLElement) {
+    const list: MemoirMeta[] = await library.list();
+    if (!list.length) { box.innerHTML = '<p class="lead">No Memoirs yet. Every finished run is bound and shelved here.</p>'; return; }
+    box.innerHTML = `<p class="small">Kept ${library.where === 'database' ? 'with this page, for you alone' : 'in this browser only'}.</p>${list.map(m => `<div class="card libcard"><div class="cd">${ENDING_NAME[m.how as keyof typeof ENDING_NAME] ?? m.how} · ${dateLabel(m.finished).replace(/^the /, '')}</div><div class="ct">${titleLine(m.title)}</div><div class="cb">${words(m.total)} Subscribers</div>${memoirActions(m.id)}</div>`).join('')}<p class="small" id="libNote">${esc(libNote)}</p>`;
+    wireMemoir(id => library.get(id));
   }
 
   function renderVenture() {
@@ -514,20 +577,30 @@ export function mountRun(world: World) {
   }
 
   function renderEnd() {
-    const st = c!.st;
+    const st = c!.st, m = st.memoir!;
     chapter(false);
     ledger.render(heroLedger());
+    void keep(m);
     root.innerHTML = `
       <section class="screen">
-        <h2><span class="phase">${st.ended?.how ?? 'The end'}</span>Finis</h2>
-        <p class="lead">${esc(H().name)} retires from the world in ${dateLabel(st.at)}, after ${st.turn} turn${st.turn === 1 ? '' : 's'} and ${st.story.length} chapter${st.story.length === 1 ? '' : 's'}. The Memoir, its title page and its Subscribers come in Step 9.</p>
-        <div class="actions"><button class="btn" type="button" id="read">Read the Story ❧</button><button class="btn primary" type="button" id="again">Begin a new run</button></div>
+        <h2><span class="phase">${ENDING_NAME[st.ended!.how]} · ${dateLabel(st.at)}</span>Finis</h2>
+        <p class="lead">The run is over, after ${st.turn} turn${st.turn === 1 ? '' : 's'} and ${st.story.length} chapter${st.story.length === 1 ? '' : 's'}. The Story is bound as <i>${titleLine(m.title)}</i>, and has been put in the Library.</p>
+        <div class="tablewrap"><table class="account"><thead><tr><th>The Subscribers</th><th class="n"></th></tr></thead><tbody>
+          ${m.subscribers.breakdown.map(([k, n]) => `<tr><td>${esc(k)}</td><td class="n">${n}</td></tr>`).join('')}
+          <tr><td><b>In all</b></td><td class="n"><b>${m.subscribers.total}</b></td></tr>
+        </tbody></table></div>
+        ${memoirActions(m.id)}
+        <p class="small" id="libNote">${esc(libNote)}</p>
+        <div class="actions"><button class="btn primary" type="button" id="again">Begin a new run</button></div>
       </section>`;
-    $('#read').onclick = () => chrome.switchTab('story');
-    $('#again').onclick = () => { store.del(KEY); c = null; render(); top(); };
+    wireMemoir(async () => m);
+    $('#again').onclick = () => { store.del(KEY); c = null; reading = null; render(); top(); };
   }
 
   // the start screen offers to continue a saved run
   render();
+  // a shared Memoir opens from its anchor: #m-<id>
+  const shared = /^#m-([A-Za-z0-9]+)$/.exec(location.hash);
+  if (shared) void library.shared(shared[1]).then(m => { if (m) { reading = m; chrome.switchTab('story'); showMemoir(m); } });
   chrome.restoreLongS();
 }

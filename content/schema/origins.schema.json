@@ -336,17 +336,13 @@
                 "additionalProperties": false,
                 "required": [
                   "heading",
-                  "sm",
-                  "st"
+                  "text"
                 ],
                 "properties": {
                   "heading": {
                     "type": "string"
                   },
-                  "sm": {
-                    "type": "string"
-                  },
-                  "st": {
+                  "text": {
                     "type": "string"
                   }
                 }
@@ -401,17 +397,13 @@
                     "additionalProperties": false,
                     "required": [
                       "heading",
-                      "sm",
-                      "st"
+                      "text"
                     ],
                     "properties": {
                       "heading": {
                         "type": "string"
                       },
-                      "sm": {
-                        "type": "string"
-                      },
-                      "st": {
+                      "text": {
                         "type": "string"
                       }
                     }

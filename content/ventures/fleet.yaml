@@ -62,12 +62,8 @@ chapter:
 story:
   title: The History of an Adventurer
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
-  preface:
-    sm: Our hero now made the acquaintance of that part of London which is built for the reception of those who have spent too freely of the rest of it.
-    st: I take the reader now into a prison, madam; — fear nothing; the door is open on our side.
-  close:
-    sm: So passed another month within the walls; which, as every prisoner knows, is the same length as a month outside, and a great deal longer.
-    st: "And the month ended, madam, as months do in prison: without anybody noticing, except the warden, who sent in his bill."
+  preface: Our hero now made the acquaintance of that part of London which is built for the reception of those who have spent too freely of the rest of it.
+  close: So passed another month within the walls; which, as every prisoner knows, is the same length as a month outside, and a great deal longer.
 
 reckoning:
   num: V
@@ -122,12 +118,8 @@ beats:
             effects: [{ set: letters }, { adj: hum.Melancholic, by: 1, why: an unanswered post }]
             text: One letter comes back, unopened, with “Not known” written across your father’s name in your brother’s hand.
         story:
-          T:
-            sm: From the prison he wrote to every soul in {county} who had ever known his father, and was answered by an aunt whom the whole family had long believed dead, with three pounds and four close pages upon the subject of his father’s character; of which the pages were the more remarkable, and the pounds the more useful.
-            st: An aunt, madam! — There is always an aunt; — it is the one consolation of a large family.
-          X:
-            sm: Of all the letters he sent, one only came back, unopened, with “Not known” written across it in his elder brother’s hand; which our hero kept, and looked at often, and never spoke of.
-            st: — Not known. — I will not make a jest of it, madam; and nor, I think, will you.
+          T: From the prison he wrote to every soul in {county} who had ever known his father, and was answered by an aunt whom the whole family had long believed dead, with three pounds and four close pages upon the subject of his father’s character; of which the pages were the more remarkable, and the pounds the more useful.
+          X: Of all the letters he sent, one only came back, unopened, with “Not known” written across it in his elder brother’s hand; which our hero kept, and looked at often, and never spoke of.
         next: attorney
       - label: Stand the ward a pot of beer, to be thought a good fellow.
         cost: 6d
@@ -258,12 +250,8 @@ beats:
             effects: [{ adj: hum.Melancholic, by: 1, why: terms refused }]
             text: They refuse, and the attorney adds that one of them has sworn to keep you in until you die, which he believes to be a figure of speech.
         story:
-          T:
-            sm: At the month’s end he proposed to his creditors so artful a composition, at five shillings in the pound, that the attorney carried it away with the air of a man who has been robbed, and is not quite sure by whom.
-            st: Five shillings in the pound, madam; — which is to say that his debts were worth a quarter of their face; — as, I find, are most men’s.
-          X:
-            sm: His proposals were refused with indignation, and he learned besides that one of his creditors had sworn to keep him within the walls until he died; which the attorney, who had a feeling heart, assured him was only a manner of speaking.
-            st: — Until he died. — It is a long time, madam; but creditors are a patient race, and outlive most of us.
+          T: At the month’s end he proposed to his creditors so artful a composition, at five shillings in the pound, that the attorney carried it away with the air of a man who has been robbed, and is not quite sure by whom.
+          X: His proposals were refused with indignation, and he learned besides that one of his creditors had sworn to keep him within the walls until he died; which the attorney, who had a feeling heart, assured him was only a manner of speaking.
         next: reckon
       - label: "Withdraw: wait. Something may turn up."
         withdraw: true

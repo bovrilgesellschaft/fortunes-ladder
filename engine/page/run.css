@@ -49,3 +49,35 @@
 .names .field{max-width:100%;min-width:0}
 .names select{font:inherit;font-family:var(--body);font-size:.92rem;color:var(--ink);background:var(--leaf);border:1px solid var(--ink2);padding:2px 4px;max-width:100%}
 .names td:first-child{min-width:9.5em}
+/* the Story in volumes, and its footnotes (Step 9) */
+.volhead{text-align:center;margin:30px 0 18px;padding-top:18px;border-top:1px solid var(--rule)}
+.volhead .vno{font-family:var(--caps);letter-spacing:.1em;color:var(--rubric);font-size:.92rem}
+.volhead .vt{font-family:var(--display);font-size:1.6rem;line-height:1.15;margin:2px 0 8px;text-wrap:balance}
+.volhead .vopen{font-style:italic;color:var(--ink2);max-width:34em;margin:0 auto}
+.storynotes{font-size:.86rem;color:var(--ink2);border-top:1px solid var(--rule);margin-top:8px;padding-top:6px}
+.storynotes p{margin:4px 0}
+.storynotes.fresh{background:color-mix(in srgb, var(--rubric) 7%, transparent)}
+/* the Memoir */
+.memoir section{margin:0 0 40px}
+.memoir .mtitle{text-align:center;padding:24px 0 30px;border:1px solid var(--rule);outline:1px solid var(--rule);outline-offset:4px}
+.memoir .mframing{font-family:var(--caps);letter-spacing:.08em;margin:0}
+.memoir .mname{font-family:var(--display);font-weight:normal;font-size:clamp(1.4rem,4vw,1.9rem);line-height:1.2;margin:.3em .6em;text-wrap:balance}
+.memoir .msub,.memoir .mvols{font-style:italic;margin:.3em 0}
+.memoir .mimprint{font-family:var(--caps);font-size:.86rem;letter-spacing:.04em}
+.memoir .mded{text-align:center;font-style:italic;max-width:30em;margin-left:auto;margin-right:auto}
+.memoir .mdedhead,.memoir .mvolno,.memoir .mchapno{font-family:var(--caps);letter-spacing:.08em;text-align:center;color:var(--rubric);font-style:normal;margin:0}
+.memoir .mvolt{font-family:var(--display);font-weight:normal;text-align:center;font-size:1.5rem;margin:.1em 0 .4em}
+.memoir .mvolopen{font-style:italic;color:var(--ink2)}
+.memoir .mchap{margin:26px 0}
+.memoir .mchapin{text-align:center;font-style:italic;margin:0 0 10px}
+.memoir .mnotes{font-size:.86rem;color:var(--ink2);border-top:1px solid var(--rule);margin-top:8px}
+.memoir .msubs h2{font-family:var(--display);font-weight:normal;text-align:center}
+.memoir .msubs ul{list-style:none;padding:0;columns:2 14em;column-gap:24px;font-size:.92rem}
+.memoir .mtotal,.memoir .mothers,.memoir .finis{text-align:center}
+.memoir .finis{font-family:var(--caps);letter-spacing:.1em;margin-top:24px}
+.libcard{margin-bottom:12px}
+.libcard .actions{margin-top:8px}
+.memoir .mchap p{text-indent:1.5em;margin:0;padding:2px 0;line-height:1.72}
+.memoir .mchap p.first,.memoir .mchap .mchapno,.memoir .mchap .mchapin,.memoir .mnotes p{text-indent:0}
+.memoir .mchap p.first::first-letter{font-family:var(--display);float:left;font-size:3.5em;line-height:.82;padding:.06em .08em 0 0;color:var(--rubric)}
+.memoir .mchapin{margin-bottom:10px}

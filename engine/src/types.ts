@@ -49,11 +49,14 @@ export interface Rumour {
   /** What it does to the hero on delivery. If left out, the engine reads simple effects
    *  ("Exposure +3", "Notoriety +1", "Celebrity −1") from the effect text. */
   on_delivery?: Effect[];
+  /** A footnote in the Story's voice for this Venture's chapter, when the rumour lands (Step 9). */
+  hindsight?: string;
   /** Whose talk it is (Step 7); defaults to the Venture's circle. */
   circle?: string;
 }
 
-export interface Passage { sm: string; st: string }
+/** A passage of the Story, in its one voice (ruled 20 October 2026). */
+export type Passage = string;
 
 export interface Outcome { effects?: Effect[]; text: string }
 
@@ -228,7 +231,7 @@ export interface Origin {
 }
 
 export interface Told { from: string; text: string }
-export interface Written { heading: string; sm: string; st: string }
+export interface Written { heading: string; text: string }
 export interface SecretOut {
   credit_rank?: Rank; weeks?: number; tag?: string; hook?: string;
   letter: Told; story: Written;
@@ -280,10 +283,24 @@ export interface Settings {
   factions: string[];
   humours: HumourSettings;
   tags: TagSettings;
+  score: { celebrity: number; climbed: number; fallen: number; altered: number; endings: Record<Ending, number>; ruin_weeks: number; last_year: number };
+}
+
+export type Mood = 'mockheroic' | 'easy' | 'rueful' | 'moralising';
+export type Ending = 'apotheosis' | 'retirement' | 'ruin' | 'transportation' | 'death';
+export interface StoryVariant { text: string; mood?: Mood }
+export interface StoryWords {
+  books: Record<'I' | 'II' | 'III', { title: string; opening: string; again: string }>;
+  milestones: Record<string, { heading: string; variants: StoryVariant[] }>;
+  connectives: { text: string; gap?: 'next' | 'months' | 'year'; season?: 'spring' | 'summer' | 'autumn' | 'winter' | 'frost'; moved?: boolean; mood?: Mood }[];
+  endings: Record<Ending, { framing: string; closing: string; dedication: string }> & { calendar: string };
+  dedication_public: string; subtitles: string[]; imprint: string; hindsight_editor: string; subscribers: string[];
 }
 
 /** Everything a run page needs. */
 export interface World {
+  /** The Story's own words (Step 9). */
+  story: StoryWords;
   ventures: Venture[];
   origins: Origin[];
   settings: Settings;

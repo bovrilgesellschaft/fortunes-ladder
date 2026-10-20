@@ -250,3 +250,13 @@ tags:
     Fortune-hunter: { valence: bad, lasts: 24 }
     Savoyard:       { valence: bad, lasts: for good }
     Brother:        { valence: good, lasts: for good }
+
+# ---------- the score (systems spec, Ruling; Step 9) ----------
+score:
+  celebrity: 10        # Subscribers per point of peak Celebrity
+  climbed: 20          # per rank climbed from arrival to the peak
+  fallen: 20           # per rank lost from the peak to the end
+  altered: 5           # per named character altered (a person named in a Hook gained; Step 9)
+  endings: { apotheosis: 50, retirement: 20, transportation: 20, ruin: 10, death: 0 }
+  ruin_weeks: 48       # a year in prison without release ends the run in Ruin (Step 9)
+  last_year: 1745      # the run ends with this year (canon's window)

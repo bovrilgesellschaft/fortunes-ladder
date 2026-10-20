@@ -66,12 +66,8 @@ chapter:
 story:
   title: The History of Mr Cornelius Byrne
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
-  preface:
-    sm: There comes a morning in the life of every gentleman in London when he discovers that he has an uncle; that is to say, a pawnbroker, who receives him with the tenderness of a relation and the arithmetic of a Lombard, and lends him a third of what anything is worth.
-    st: I would spare {styled} this chapter, madam, if I could; — but a history that omitted the pawnbroker would be a romance, and I have promised you the truth.
-  close:
-    sm: Thus ended our hero’s first acquaintance with the three balls; which, like most acquaintances made in want, he resolved to drop as soon as he could afford it, and renewed as soon as he could not.
-    st: — And so to the street again; lighter by a sword, or a coat, or a scruple; I will not say which; — it varies with the reader.
+  preface: There comes a morning in the life of every gentleman in London when he discovers that he has an uncle; that is to say, a pawnbroker, who receives him with the tenderness of a relation and the arithmetic of a Lombard, and lends him a third of what anything is worth.
+  close: Thus ended our hero’s first acquaintance with the three balls; which, like most acquaintances made in want, he resolved to drop as soon as he could afford it, and renewed as soon as he could not.
 
 reckoning:
   num: V
@@ -175,12 +171,8 @@ beats:
             effects: [{ adj: hum.Choleric, by: 1, why: a broker’s insolence }, { adj: hum.Melancholic, by: 1, why: a kindness that misfired }]
             text: The broker, offended, gives her two shillings instead of three, and she goes out weeping, and it is your fault, and you know it.
         story:
-          T:
-            sm: Hearing a young woman beat down below her needs by the broker, our hero put in a word for her with such an air of the old gentry that the fellow gave her six shillings to be rid of them both; and she thanked him so warmly, before the whole shop, that the broker coloured to the ears, a thing not seen in that alley within living memory.
-            st: Six shillings, madam. — It is a small sum to set down in a history; — but I have weighed it against the sums I have set down elsewhere, and I find it heavier than most of them.
-          X:
-            sm: His interference did her more harm than good; for the broker, piqued, gave her two shillings in place of three, and she went out in tears; and {styled} learned that day what every reformer learns at last, that a gentleman’s indignation is very often paid for by somebody else.
-            st: — She wept. — I will not make a joke of it, madam, and neither, to his credit, did he.
+          T: Hearing a young woman beat down below her needs by the broker, our hero put in a word for her with such an air of the old gentry that the fellow gave her six shillings to be rid of them both; and she thanked him so warmly, before the whole shop, that the broker coloured to the ears, a thing not seen in that alley within living memory.
+          X: His interference did her more harm than good; for the broker, piqued, gave her two shillings in place of three, and she went out in tears; and {styled} learned that day what every reformer learns at last, that a gentleman’s indignation is very often paid for by somebody else.
         next: watch
       - label: Say nothing. It is none of your business, and you have business of your own.
         dev: Certain
@@ -309,12 +301,8 @@ beats:
                 else: [{ adj: hum.Choleric, by: 1, why: suspected }]
             text: "{if flags.watch}The footman takes the watch out of your pocket himself, quite quickly, and calls you a thief in a voice they can hear in Fleet Street. You are out of the shop before he has finished saying it, which helps, but not much.{else}The footman, finding the watch in the drawer, decides you look like the sort of man who sells watches, and says so.{end}"
         story:
-          T:
-            sm: "At this moment entered a footman in search of his young master’s watch, with five guineas in his hand; whereupon our hero, with an inspiration worthy of Mr Wild himself, produced the article from his own pocket, received the reward, and left the broker contemplating the instability of trade."
-            st: "He bought it for two pounds and sold it for five guineas, madam, to its rightful owner; — which is, I am told, how the whole City of London does its business, and is called commerce."
-          X:
-            sm: "But the footman, who had been in service long enough to know a receiver when he saw one, took the watch out of {styled}’s pocket with his own hand, and cried thief with such a voice that our hero was halfway to Temple Bar before the word was out."
-            st: "— Thief! cried the footman. — It is a word, madam, which has more effect upon the legs than upon the conscience; and I have never known it fail of either."
+          T: "At this moment entered a footman in search of his young master’s watch, with five guineas in his hand; whereupon our hero, with an inspiration worthy of Mr Wild himself, produced the article from his own pocket, received the reward, and left the broker contemplating the instability of trade."
+          X: "But the footman, who had been in service long enough to know a receiver when he saw one, took the watch out of {styled}’s pocket with his own hand, and cried thief with such a voice that our hero was halfway to Temple Bar before the word was out."
         next: reckon
       - label: "Withdraw: slip out by the side door into the alley."
         withdraw: true

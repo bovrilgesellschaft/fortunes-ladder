@@ -49,7 +49,8 @@ async function playRun(seed: string, actions: number, reloadEvery: number) {
       dom.window.close();
       dom = open('dist/index.html', store); doc = dom.window.document; reloads++;
       const cont = doc.querySelector<HTMLButtonElement>('#cont');
-      if (!cont) { errors.push(`seed ${seed}: no Continue after reload`); break; }
+      // a run that ended, and was put away with "Begin a new run", leaves nothing to continue
+      if (!cont) { if (store['picaresque-run']) { errors.push(`seed ${seed}: no Continue after reload`); break; } doc.querySelector<HTMLButtonElement>('#go')!.click(); await sleep(30); continue; }
       cont.click(); await sleep(30);
       continue;
     }

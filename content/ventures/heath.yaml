@@ -87,12 +87,8 @@ chapter:
 story:
   title: The History of Mr Cornelius Byrne, otherwise Captain O’Rourke
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
-  preface:
-    sm: In the October of the year 1724, Mr {name}, a younger son of an Irish squire, who had brought to London a good leg, a better name than he was entitled to, and no estate whatever, went by the style of {alias_long}, and owed four-and-twenty pounds to a tailor in the Strand for the coat in which he proposed to make his fortune.
-    st: Of {alias_long}’s regiment I can tell you nothing, madam, for he had none; — and of his estate less, for there was none of that either. He had a coat, and a debt for the coat, and the moon; and with these three, in the October of 1724, he went out upon the Hampstead road.
-  close:
-    sm: He came home to Holborn before the town was stirring, and lay a long while considering the night’s work; which, like most of his undertakings, had been begun for money and ended in a great deal else.
-    st: And so he went to bed. — Whether he had robbed the coach, or the coach him, I leave the reader to settle; I have tried it both ways, and both are true.
+  preface: In the October of the year 1724, Mr {name}, a younger son of an Irish squire, who had brought to London a good leg, a better name than he was entitled to, and no estate whatever, went by the style of {alias_long}, and owed four-and-twenty pounds to a tailor in the Strand for the coat in which he proposed to make his fortune.
+  close: He came home to Holborn before the town was stirring, and lay a long while considering the night’s work; which, like most of his undertakings, had been begun for money and ended in a great deal else.
 
 reckoning:
   num: V
@@ -240,12 +236,8 @@ beats:
                   effect: Exposure +2 · Notoriety +1
             text: You are halfway down the hill before you discover that you have left one pistol on the settle. It is, of course, the reliable one.
         story:
-          T:
-            sm: He went first into the taproom of the Spaniards to steady his nerves, and drank two glasses of brandy and no more, which is the only instance of moderation recorded in his life; and was rewarded upon the instant by a coachman at the next settle, who complained to the whole room that Sir Gregory Pyke kept him out till all hours, and that the baronet’s ward wore her mother’s pearls upon the road.
-            st: Two glasses, — and no more. — I set it down, madam, because it never happened again; and because a man who stops at two glasses will sometimes overhear what a man at the fourth never does.
-          X:
-            sm: He went into the Spaniards to steady his nerves, and steadied them so thoroughly that he was halfway down the hill before he perceived he had left a pistol upon the settle; and, by that malice which governs all such accidents, it was the one that would fire.
-            st: He left the good pistol on the settle. — It is always the good one. I have inquired into this, and can find no instance in history of a man leaving behind the pistol that misfires.
+          T: He went first into the taproom of the Spaniards to steady his nerves, and drank two glasses of brandy and no more, which is the only instance of moderation recorded in his life; and was rewarded upon the instant by a coachman at the next settle, who complained to the whole room that Sir Gregory Pyke kept him out till all hours, and that the baronet’s ward wore her mother’s pearls upon the road.
+          X: He went into the Spaniards to steady his nerves, and steadied them so thoroughly that he was halfway down the hill before he perceived he had left a pistol upon the settle; and, by that malice which governs all such accidents, it was the one that would fire.
         next: lamps
       - label: Send word to the gang at the Blue Boar for a proper ambuscade.
         gate:
@@ -302,12 +294,8 @@ beats:
               - { set: willGone }
             text: There is a flash in the dark. When you look round for Will Gallow, you find only the place where Will Gallow was. He has [[lope|loped]], as he has always loped, in no hurry at all.
         story:
-          T:
-            sm: Will Gallow came out of the dark like a heron upon a frog, and had the outrider’s blunderbuss in the furze before the fellow could cry out; whereupon the postilion, perceiving which way the wind sat, followed it into the bushes of his own accord.
-            st: Will said nothing. Will never said anything. — There are men, madam, who make their whole careers out of a talent for silence; and I have never known one of them hanged.
-          X:
-            sm: But at the flash of a pan Will Gallow vanished as completely as if the earth had opened for him, leaving the {alias_title} alone in the road with an armed outrider, and a strong suspicion, afterwards confirmed, that old acquaintance is the worst security in the world.
-            st: And Will was gone. — Not fled, you understand; Will never fled; he merely ceased, without the smallest hurry, to be anywhere in particular.
+          T: Will Gallow came out of the dark like a heron upon a frog, and had the outrider’s blunderbuss in the furze before the fellow could cry out; whereupon the postilion, perceiving which way the wind sat, followed it into the bushes of his own accord.
+          X: But at the flash of a pan Will Gallow vanished as completely as if the earth had opened for him, leaving the {alias_title} alone in the road with an armed outrider, and a strong suspicion, afterwards confirmed, that old acquaintance is the worst security in the world.
         next: door
       - label: Ride out of the dark, fire a shot past the outrider’s ear, and cry “Stand and deliver!”
         check:
@@ -353,12 +341,8 @@ beats:
               - { condition: "Wounded (a ball-graze, left arm)", why: the outrider’s blunderbuss }
             text: Both pieces go off together. Your ball goes into the night. The outrider’s goes into you, or at least into the sleeve of the coat that is not paid for, taking a strip of you with it.
         story:
-          T:
-            sm: Riding out of the dark, he fired so close past the outrider’s ear that the fellow heard it for a week; upon which outrider and postilion made off towards Highgate by separate roads, and left the coach becalmed in the highway like a stranded whale.
-            st: Stand and deliver! — Three words, madam; and I defy any orator in Westminster to produce a better effect with three hundred.
-          X:
-            sm: Both pieces went off together; his own ball went to the stars, and the outrider’s into his left arm, carrying off a strip of the {alias_title} together with a sleeve of the coat for which he had not yet paid; so that the tailor, as it fell out, was the first sufferer by the night’s work.
-            st: The ball took the sleeve, — and a little of the {alias_title} with it. I have often thought the tailor had the worse of the two; for the {alias_title} grew new skin, and the coat never did.
+          T: Riding out of the dark, he fired so close past the outrider’s ear that the fellow heard it for a week; upon which outrider and postilion made off towards Highgate by separate roads, and left the coach becalmed in the highway like a stranded whale.
+          X: Both pieces went off together; his own ball went to the stars, and the outrider’s into his left arm, carrying off a strip of the {alias_title} together with a sleeve of the coat for which he had not yet paid; so that the tailor, as it fell out, was the first sufferer by the night’s work.
         next: door
       - label: Pay the toll-keeper half a guinea to close his gate and be elsewhere.
         gate:
@@ -448,12 +432,8 @@ beats:
               - { adj: composure, by: -3, why: shot at in the coach door }
             text: Sir Gregory, it transpires, knows not only the Lord Chief Justice but also the use of a pocket pistol. The ball goes through your hat. The horses bolt a yard, the outrider shouts, and the business becomes, all at once, a different business.
         story:
-          T:
-            sm: He went through the coach with a dispatch that would have done credit to the Excise, and came away with two purses, a gold repeater and three rings; and, upon Sir Gregory’s swearing that one of the rings had been his late wife’s, handed it back with a bow, being, whatever the world may say of him, no monster.
-            st: He returned the ring. — I would have you remember this of him, madam, when you come to the worse things; for a biographer must take his hero’s virtues where he finds them, and they are not thick upon the ground.
-          X:
-            sm: But Sir Gregory, who knew the Lord Chief Justice, knew also the use of a pocket pistol, and put a ball through our adventurer’s hat at a range of a yard; whereupon the horses plunged, the outrider bawled, and the whole business turned, in the twinkling of an eye, from a robbery to a rout.
-            st: Sir Gregory fired. — Through the hat. — I have measured it, madam, and there was the breadth of a hat-brim between the {alias_title} and immortality; which is less than most of us are allowed, and more than he deserved.
+          T: He went through the coach with a dispatch that would have done credit to the Excise, and came away with two purses, a gold repeater and three rings; and, upon Sir Gregory’s swearing that one of the rings had been his late wife’s, handed it back with a bow, being, whatever the world may say of him, no monster.
+          X: But Sir Gregory, who knew the Lord Chief Justice, knew also the use of a pocket pistol, and put a ball through our adventurer’s hat at a range of a yard; whereupon the horses plunged, the outrider bawled, and the whole business turned, in the twinkling of an eye, from a robbery to a rout.
         next:
           - { when: flags.sirPistol or flags.outriderArmed, go: chase }
           - { go: known }
@@ -520,12 +500,8 @@ beats:
               - { tag: Absurd (the Quality), why: a fall in the gorse }
             text: You bow, step back, and go full length into the gorse. The maid stops screaming in order to laugh. It is the longest silence of your life, and it is not silent.{fn †}
         story:
-          T:
-            sm: He returned the lady her purse, begged the honour of a dance, and footed a minuet with her upon the turf by the light of the coach lamps, the postilion humming the air; at the end of which Sir Gregory, with the face of a man passing a stone, paid him thirty pounds for the lady’s dignity.
-            st: They danced. — Upon a heath; at one in the morning; by a coach lamp; to a postilion’s humming. — And if you tell me, madam, that you have danced a better minuet at Court, I shall believe you; but you did not dance it with a highwayman.
-          X:
-            sm: Our adventurer, making a leg with more ambition than footing, went backward into a furze-bush with such violence that he rose stuck all over like a hedgehog, to the inexpressible delight of the waiting-woman.
-            st: — Of the gorse, madam, I shall say nothing. There are falls from which a gentleman recovers, and falls from which only his biographer profits; and this, you will allow, was of the second kind.
+          T: He returned the lady her purse, begged the honour of a dance, and footed a minuet with her upon the turf by the light of the coach lamps, the postilion humming the air; at the end of which Sir Gregory, with the face of a man passing a stone, paid him thirty pounds for the lady’s dignity.
+          X: Our adventurer, making a leg with more ambition than footing, went backward into a furze-bush with such violence that he rose stuck all over like a hedgehog, to the inexpressible delight of the waiting-woman.
         next:
           - { when: flags.sirPistol or flags.outriderArmed, go: chase }
           - { go: known }
@@ -638,12 +614,8 @@ beats:
                   effect: Exposure +3 ({alias}) · Notoriety +1
             text: “{alias_surname}!” roars Sir Gregory, who has followed none of it until this moment. “By God, I’ll see you on the [[nubbing-cheat]]!” The name goes off into the dark like a ball, and you have no means of calling it back.
         story:
-          T:
-            sm: Miss Harland, who had heard his history of Flanders at Lady Bellaston’s and forgot none of it, gave him her hand to kiss, and left a glove in it; observing that Flanders was a long way off, and that she would endeavour to forget where it lay.
-            st: She left a glove in his hand. — A glove, madam! — I have known whole campaigns in Flanders decided by less; and I suspect this one was.
-          X:
-            sm: Sir Gregory, who had followed none of the conversation, caught at last the one word in it that signified, and roared out the name of {alias_surname} so that it went across the heath like a cannon-shot, and set every dog in Hampstead barking.
-            st: — {alias_surname}! — The name went off into the dark; and I have observed, madam, that a name once fired can never be called back, though a man spend the rest of his life running after it.
+          T: Miss Harland, who had heard his history of Flanders at Lady Bellaston’s and forgot none of it, gave him her hand to kiss, and left a glove in it; observing that Flanders was a long way off, and that she would endeavour to forget where it lay.
+          X: Sir Gregory, who had followed none of the conversation, caught at last the one word in it that signified, and roared out the name of {alias_surname} so that it went across the heath like a cannon-shot, and set every dog in Hampstead barking.
         next: reckon
       - label: "Press on: put your pistol to Sir Gregory’s wig, and tell her what will happen if she remembers anything."
         check:
@@ -710,12 +682,8 @@ beats:
               - { lose_matching: pistol, why: knocked out of your hand }
             text: Click. Sir Gregory, discovering a courage he did not know he had, knocks the pistol out of your hand and into the coach, where it is kept as evidence.
         story:
-          T:
-            sm: He set his pistol to Sir Gregory’s wig, and told the young lady plainly what would follow if she remembered him. She said that she had a very bad memory for faces. He rode away with his secret safe; and it was the one part of that night’s work he never afterwards told in company.
-            st: I will not make a jest of this. — He held a pistol to a girl’s guardian to keep her silent, and she kept silent; and that is all, madam, and it is enough.
-          X:
-            sm: But the pistol, being the doubtful one, answered the trigger with no more than a damp click; and Sir Gregory, discovering in himself a courage he had never suspected, struck it out of the {alias_title}’s hand into the coach, where it was kept to be sworn to.
-            st: Click. — Nothing more; — a click; the smallest sound in this history, and the most expensive.
+          T: He set his pistol to Sir Gregory’s wig, and told the young lady plainly what would follow if she remembered him. She said that she had a very bad memory for faces. He rode away with his secret safe; and it was the one part of that night’s work he never afterwards told in company.
+          X: But the pistol, being the doubtful one, answered the trigger with no more than a damp click; and Sir Gregory, discovering in himself a courage he had never suspected, struck it out of the {alias_title}’s hand into the coach, where it was kept to be sworn to.
         next: reckon
       - label: Show her the letters, and suggest that all three of you keep your secrets.
         gate:
@@ -802,12 +770,8 @@ beats:
               - { adj: debts, by: £10, why: "the Bell’s grey, lost" }
             text: The grey goes over and you go over the grey. You come to in a ditch with nothing in your pockets but furze. The outrider leads the prancer back to Hampstead in triumph. It carries the Bell’s brand on its quarter.
         story:
-          T:
-            sm: He put the grey at the heath and let her choose her own road, which she did better than he could have done; so that they went down among the ponds like a pair of ghosts, and left the outrider and the postilion disputing in the highway whose fault it was.
-            st: The grey knew the way. — Horses generally do, madam; it is their riders who are lost.
-          X:
-            sm: A rabbit-hole undid him. The grey went over, and he over the grey, and came to himself in a ditch with nothing in his pockets but furze; while the outrider led the horse back to Hampstead in triumph, with the Bell’s brand upon her quarter for any justice to read.
-            st: Down went the grey, — and down went the {alias_title}, — and down, madam, went every purse he had taken that night, into the furze; where, for all I know, they lie still.
+          T: He put the grey at the heath and let her choose her own road, which she did better than he could have done; so that they went down among the ponds like a pair of ghosts, and left the outrider and the postilion disputing in the highway whose fault it was.
+          X: A rabbit-hole undid him. The grey went over, and he over the grey, and came to himself in a ditch with nothing in his pockets but furze; while the outrider led the horse back to Hampstead in triumph, with the Bell’s brand upon her quarter for any justice to read.
         next: reckon
       - label: "Press on: wheel about and face him."
         check:
@@ -849,12 +813,8 @@ beats:
               - { set: wounded }
             text: You turn into the full light of the coach lamps with your mask round your neck. The outrider fires, the postilion stares, and both will be able to describe you to a magistrate down to the buttons.
         story:
-          T:
-            sm: He wheeled about and rode straight at the lamps, roaring like a bull at a gate; and the outrider, who was paid by the week and saw no profit in being shot by the night, made a sound calculation, and left.
-            st: He turned and charged. — It was the bravest thing he did that year; and he did it, I am persuaded, because he had not time to think of anything else.
-          X:
-            sm: He turned full into the light of the coach lamps with his mask about his neck, and took the outrider’s charge in the shoulder; so that both servants could afterwards describe him to a justice down to his buttons, which they did, at length.
-            st: He turned into the light. — Never, madam, turn into the light. It is the whole of my advice to young men; and I had it, as you see, from the {alias_title}.
+          T: He wheeled about and rode straight at the lamps, roaring like a bull at a gate; and the outrider, who was paid by the week and saw no profit in being shot by the night, made a sound calculation, and left.
+          X: He turned full into the light of the coach lamps with his mask about his neck, and took the outrider’s charge in the shoulder; so that both servants could afterwards describe him to a justice down to his buttons, which they did, at length.
         next: reckon
       - label: Fling him a purse over your shoulder, and ride on.
         gate:

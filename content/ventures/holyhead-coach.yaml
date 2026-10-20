@@ -66,12 +66,8 @@ chapter:
 story:
   title: The History of Mr Cornelius Byrne
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
-  preface:
-    sm: Mr {name}, the younger son of a squire in the county of {county}, came up to London in the new year with a sword that had been his father’s, a coat that was still the tailor’s, and five pounds, which were his own and would not long remain so.
-    st: I have been asked, madam, why a younger son should come to London at all; — and I answer, that a younger son must go somewhere, and London is the only place large enough to hold his expectations.
-  close:
-    sm: Such was our hero’s first night in the capital; in which, if he made no fortune, he at least made a beginning, and learned the price of a bed, which is the first lesson London teaches.
-    st: And so he slept. — It is the one thing a man may do in London without paying a tradesman for it, and even that, I find, is reckoned in the rent.
+  preface: Mr {name}, the younger son of a squire in the county of {county}, came up to London in the new year with a sword that had been his father’s, a coat that was still the tailor’s, and five pounds, which were his own and would not long remain so.
+  close: Such was our hero’s first night in the capital; in which, if he made no fortune, he at least made a beginning, and learned the price of a bed, which is the first lesson London teaches.
 
 reckoning:
   num: V
@@ -141,12 +137,8 @@ beats:
             effects: [{ set: [stranger, fleeced] }, { adj: purse, by: -£2, why: robbed in the yard }, { adj: hum.Melancholic, by: 1, why: a first lesson }]
             text: He is so very obliging. He carries the trunk, admires the sword, and shakes your hand at the door with real feeling. Two pounds go with the hand. You do not find out until the evening, by which time he has shaken several more.
         story:
-          T:
-            sm: Our hero had scarce set foot in the yard before a gentleman in a bottle-green coat made him an offer of his services; but {styled}, who had been raised among horse-copers, caught the obliging hand at his purse-strings, and the two parted the best friends in the world, each with a high opinion of the other’s talents.
-            st: — Sir, said the gentleman in green. — Sir, said {styled}, holding his wrist. — And there, madam, was the foundation laid of a friendship which neither of them, to the end of his days, could account for.
-          X:
-            sm: In the yard he fell in with a gentleman so obliging, so warm in his offers and so tender in his parting, that {styled} went up to his garret two pounds the lighter, and spent the evening composing a letter of thanks to a man he would never see again.
-            st: Two pounds, madam. — I set it down plainly, for I find there is no way of setting it down that makes it less.
+          T: Our hero had scarce set foot in the yard before a gentleman in a bottle-green coat made him an offer of his services; but {styled}, who had been raised among horse-copers, caught the obliging hand at his purse-strings, and the two parted the best friends in the world, each with a high opinion of the other’s talents.
+          X: In the yard he fell in with a gentleman so obliging, so warm in his offers and so tender in his parting, that {styled} went up to his garret two pounds the lighter, and spent the evening composing a letter of thanks to a man he would never see again.
         next: dice
 
   - id: stranger
@@ -182,12 +174,8 @@ beats:
             effects: [{ adj: purse, by: -£1 5s, why: lost at hazard }, { set: fleeced }, { adj: hum.Melancholic, by: 1, why: a cold run }]
             text: You lose twenty-five shillings in a quarter of an hour, which is a week of living like a gentleman, and the stout man is so sorry for you that he buys you a glass of the usquebaugh. It does not help.
         story:
-          T: &diceT
-            sm: Being invited to the dice, he threw such a run of mains that the company paid the reckoning among them with the faces of men at a funeral; and {styled} went up to bed three pounds the richer, persuaded, as every young man is who wins on his first night, that he had a genius for play.
-            st: He won, madam. — I could wish he had lost; for a man who loses on his first night in London is cured, and a man who wins is merely postponed.
-          X: &diceX
-            sm: At the dice he lost five-and-twenty shillings in a quarter of an hour, with such good humour that the company swore he was the best-bred Irishman they had ever robbed.
-            st: — Seven, said the caster. — And I will spare the reader the rest of the arithmetic, as Fortune did not spare {styled}.
+          T: &diceT Being invited to the dice, he threw such a run of mains that the company paid the reckoning among them with the faces of men at a funeral; and {styled} went up to bed three pounds the richer, persuaded, as every young man is who wins on his first night, that he had a genius for play.
+          X: &diceX At the dice he lost five-and-twenty shillings in a quarter of an hour, with such good humour that the company swore he was the best-bred Irishman they had ever robbed.
       - label: Stand the table a bowl of punch, to be thought a gentleman.
         cost: 3s
         dev: Costed · certain · Celebrity-adjacent goodwill
@@ -251,9 +239,7 @@ beats:
             - { adj: celebrity, by: 1, why: an officer in the tap-room }
           text: You write it large. The landlord reads it upside down and stands a little straighter. Tozer raises his glass to your late master. Nobody asks which regiment, which is fortunate, because you have not yet decided.
         story:
-          M:
-            sm: Being asked his name by the landlord, he wrote himself down {alias_long}, {alias_claim}; a commission which cost him nothing, which no army had granted, and which was to serve him better than most that are bought.
-            st: "{alias_long}. — Of what regiment? — Madam, of the regiment of younger sons, which is the largest in Europe, and the worst paid."
+          M: Being asked his name by the landlord, he wrote himself down {alias_long}, {alias_claim}; a commission which cost him nothing, which no army had granted, and which was to serve him better than most that are bought.
         next: coffee
       - label: Write your own name, plain {name}.
         dev: Certain · no Persona
@@ -294,12 +280,8 @@ beats:
             effects: [{ set: coffee }, { adj: hum.Choleric, by: 2, why: a quarrel in the Piazza }, { adj: notoriety, by: 1, why: a scuffle with the Watch }]
             text: There is a quarrel, then a scuffle, then the Watch. You never learn what it was about. You spend the rest of the night in the round-house, and come out at dawn with your coat torn and a reputation.
         story:
-          T:
-            sm: Thence, by the persuasion of Mr Tozer, he went on to the coffee houses of Covent Garden, where he told the story of his journey so well that a table of wits paid for his coffee to hear it again, and an actress of Drury Lane asked him whether all the gentlemen of Ireland were made upon so large a plan.
-            st: She asked, madam, whether all the gentlemen of Ireland were so tall; — and he answered, that he was the shortest of his family; — which was a lie, and the first he told in London, and by no means the last.
-          X:
-            sm: In the Piazza a dispute arose, upon what occasion no one could afterwards remember, which ended in a general engagement and the arrival of the Watch; and our hero passed the remainder of his first night in London in the round-house, in company with a chairman, two apprentices and a parson, all of whom protested their innocence with equal warmth.
-            st: The round-house, madam. — I would rather not describe it; and indeed I need not, for every reader of sensibility has spent a night there in imagination, and the rest in fact.
+          T: Thence, by the persuasion of Mr Tozer, he went on to the coffee houses of Covent Garden, where he told the story of his journey so well that a table of wits paid for his coffee to hear it again, and an actress of Drury Lane asked him whether all the gentlemen of Ireland were made upon so large a plan.
+          X: In the Piazza a dispute arose, upon what occasion no one could afterwards remember, which ended in a general engagement and the arrival of the Watch; and our hero passed the remainder of his first night in London in the round-house, in company with a chairman, two apprentices and a parson, all of whom protested their innocence with equal warmth.
         next: reckon
       - label: "Withdraw: plead the journey, and go up to the garret."
         withdraw: true

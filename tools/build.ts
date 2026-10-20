@@ -13,7 +13,7 @@ import * as esbuild from 'esbuild';
 import { compile, paths, calls } from '../engine/src/expr';
 import { parseMoney } from '../engine/src/core';
 import { NAME_ROOTS } from '../engine/src/names';
-import type { Content, Effect, GlossaryEntry, Option, Origin, Settings, Venture, World } from '../engine/src/types';
+import type { Content, Effect, GlossaryEntry, Option, Origin, Settings, StoryWords, Venture, World } from '../engine/src/types';
 import { SEGMENTS } from '../engine/src/types';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
@@ -53,6 +53,9 @@ export function loadAll() {
   if (!sSchema(settings)) report.errors.push(...sSchema.errors!.map(e => `settings.yaml ${e.instancePath} ${e.message}`));
   REGISTER = settings.tags?.register ?? null;
   const origins = loadYaml(C('origins.yaml')) as Origin[];
+  const stSchema = ajv.compile(JSON.parse(fs.readFileSync(C('schema/story.schema.json'), 'utf8')));
+  const story = loadYaml(C('story.yaml')) as StoryWords;
+  if (!stSchema(story)) report.errors.push(...stSchema.errors!.map(e => `story.yaml ${e.instancePath} ${e.message}`));
   if (!oSchema(origins)) report.errors.push(...oSchema.errors!.map(e => `origins.yaml ${e.instancePath} ${e.message}`));
 
   const ventures: Venture[] = [];
@@ -72,12 +75,12 @@ export function loadAll() {
     checkVenture(v, glossary, report, f);
     ventures.push(v);
   }
-  checkRun(origins, settings, ventures, startSchema, report);
-  const world: World = { ventures, origins, settings, glossary };
+  checkRun(origins, settings, ventures, startSchema, report, story);
+  const world: World = { story, ventures, origins, settings, glossary };
   return { glossary, ventures, origins, settings, world, report };
 }
 
-function checkRun(origins: Origin[], settings: Settings, ventures: Venture[], startSchema: any, r: Report) {
+function checkRun(origins: Origin[], settings: Settings, ventures: Venture[], startSchema: any, r: Report, story: StoryWords) {
   const ids = new Set(ventures.map(v => v.id));
   for (const d of Object.keys(settings.lodging ?? {})) if (!DISTRICTS.includes(d)) r.errors.push(`settings.yaml lodging: “${d}” is not one of the ten districts`);
   for (const o of origins ?? []) {
@@ -94,6 +97,16 @@ function checkRun(origins: Origin[], settings: Settings, ventures: Venture[], st
       else if (!v.offer?.arrival) r.errors.push(`${at}: “${o.arrival}” should have offer.arrival: true`);
     }
   }
+  // the Story's own words (Step 9): every slot must be one the engine fills
+  const SLOTS = new Set([...NAME_ROOTS, 'hero', 'Hero', 'adventurer', 'he', 'his', 'him', 'himself', 'He', 'His', 'his_cap', 'himself_cap', 'a_gentleman', 'rank', 'old_rank', 'persona', 'district', 'prison', 'name_blown', 'patron', 'from', 'date', 'text']);
+  const walk = (x: unknown, where: string): void => {
+    if (typeof x === 'string') { for (const m of x.matchAll(/\{(\w+)\}/g)) if (!SLOTS.has(m[1])) r.errors.push(`story.yaml ${where}: unknown slot {${m[1]}}`); }
+    else if (Array.isArray(x)) x.forEach((y, i) => walk(y, `${where}[${i}]`));
+    else if (x && typeof x === 'object') for (const [k, y] of Object.entries(x)) walk(y, where ? `${where}.${k}` : k);
+  };
+  walk(story, '');
+  for (const o of origins ?? []) walk(o.hero?.secret_out, `(origins.yaml ${o.id} secret_out)`);
+
   // the false self (Step 7)
   const P = settings.personas, circles = new Set(settings.factions ?? []);
   const kinds = new Set((P?.kinds ?? []).map(k => k.id));
@@ -189,6 +202,7 @@ function checkVenture(v: Venture, glossary: Record<string, GlossaryEntry>, r: Re
       else if ('tag' in e) tag(e.tag, where);
       else if ('rumour' in e) {
         text(e.rumour.text, where);
+        if (e.rumour.hindsight) text(e.rumour.hindsight, where + '.hindsight');
         effects(e.rumour.on_delivery, where + '.on_delivery');
         if (e.rumour.week !== undefined && e.rumour.delay !== undefined) r.errors.push(at(`${where}: rumour “${e.rumour.id}” has both week and delay`));
         if (e.rumour.week !== undefined) r.warnings.push(at(`${where}: rumour “${e.rumour.id}” uses an absolute week; rumours arrive 1–3 weeks after the Venture (ruling D13): use delay`));
@@ -220,7 +234,7 @@ function checkVenture(v: Venture, glossary: Record<string, GlossaryEntry>, r: Re
       if (o.do) { effects(o.do.effects, `${w}.do`); text(o.do.text, `${w}.do.text`); }
       if (o.outcomes) for (const s of SEGMENTS) { effects(o.outcomes[s].effects, `${w}.outcomes.${s}`); text(o.outcomes[s].text, `${w}.outcomes.${s}.text`); }
       if (o.story) for (const [k, ps] of Object.entries(o.story)) {
-        text(ps!.sm, `${w}.story.${k}.sm`); text(ps!.st, `${w}.story.${k}.st`);
+        text(ps!, `${w}.story.${k}`);
         if (k === 'M' && o.check) r.errors.push(at(`${w}.story: M (milestone) is for certain options; a Wheel check uses T or X`));
         if (k !== 'M' && !o.check) r.errors.push(at(`${w}.story: ${k} needs a Wheel check; use M for a certain option`));
       }
@@ -239,7 +253,7 @@ function checkVenture(v: Venture, glossary: Record<string, GlossaryEntry>, r: Re
   for (const id of ids) if (!reached.has(id)) r.warnings.push(at(`beat “${id}” is never reached`));
   if (!reached.has('reckon')) r.errors.push(at(`no option leads to the Reckoning`));
 
-  if (v.story) for (const k of ['preface', 'close'] as const) { text(v.story[k].sm, `story.${k}.sm`); text(v.story[k].st, `story.${k}.st`); }
+  if (v.story) for (const k of ['preface', 'close'] as const) text(v.story[k], `story.${k}`);
   const R = v.reckoning;
   R.steps.forEach((s, i) => { expr(s.when, `reckoning.steps[${i}]`); if ('do' in s) effects(s.do, `reckoning.steps[${i}]`); else text(s.say, `reckoning.steps[${i}]`); });
   text(R.upkeep, 'reckoning.upkeep');

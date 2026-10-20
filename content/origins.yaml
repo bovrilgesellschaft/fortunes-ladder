@@ -45,13 +45,10 @@
           [[Grecian]] has improved the bog by an [[Irish mile]].
       story:
         heading: In which the Town learns the Extent of an Estate
-        sm: >-
+        text: >-
           It was at this juncture that a letter came up from {county}, describing his patrimony with
           a cruel exactness; and the Town, which had lent to {name} upon an estate, discovered that
           it had lent upon a bog.
-        st: >-
-          — An estate, madam, is a wonderful thing; it may be mortgaged, entailed, sold, or, — as in
-          the present case, — merely described.
       reversal:
         hook: An elder brother in    # the Hook that must be held
         chance: 0.15                 # at each new year (Proposed)
@@ -65,11 +62,10 @@
             your creditors were told before you were.
         story:
           heading: In which our Hero comes into his Inheritance, and his Creditors into theirs
-          sm: >-
+          text: >-
             News came from {county} that his brother was dead; and {name}, who had for so long passed
             for a man of estate, found himself one at last, with this difference only, that the estate
             was real and the money was not.
-          st: — Dead! — I will not pretend, madam, that he wept; he was a younger son; he had been rehearsing this moment since he was seven.
     # a Gentleman's expected 8 exactly (Proposed)
     dress:
       Coat: { tier: 3, name: "A fine coat, made in Dublin and not paid for" }

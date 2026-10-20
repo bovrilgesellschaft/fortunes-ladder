@@ -1,0 +1,197 @@
+# yaml-language-server: $schema=schema/story.schema.json
+#
+# The Story’s own words (Step 9): the Books, the milestones, the connectives that open each
+# chapter, the five endings, the dedications and the subscription list. One voice (ruled
+# 20 October 2026): brisk, physical, low-comic, fond of the hero and never fooled.
+#
+# Slots, besides the names ({name}, {styled}, {county}, {alias}…):
+#   {hero} our hero / our heroine       {Hero} the same, capitalised
+#   {adventurer} adventurer / adventuress
+#   {he} {his} {him} {himself}, and {He} {His}
+#   {rank} the Claimed Rank, with its article: "a Gentleman"; {old_rank} the one before
+#   {prison} the Fleet or the Marshalsea; {district} the lodging; {name_blown}; {persona}
+#   {patron} the dedicatee
+# A variant may name a mood (mockheroic, easy, rueful, moralising); one that does is preferred
+# when the mood matches, and the rest are the fallback.
+
+books:
+  I:
+    title: Low Life
+    opening: Of {hero}’s beginnings in the town the less said the better; but this history has promised to say everything, and will.
+    again: And so {hero} came down again among the low, where the floors are nearer and the company franker; which the reader may take for a fall, and {he} for a homecoming, and both be right.
+  II:
+    title: The Town
+    opening: "{Hero} was now, by {his} own account and the tailor’s, a gentleman: that is to say, {he} was admitted to rooms where nobody asked how {he} came there, so long as {he} looked as if {he} had always been in them."
+    again: It was as a gentleman, then, that {hero} came back into the Town, a little worn at the cuffs, and a great deal wiser about the price of everything.
+  III:
+    title: The Great World
+    opening: And now {hero} stood among the great, where the rooms are larger, the candles more numerous, and the falls, as the reader will see, a good deal longer.
+    again: "{Hero} climbed back among the great, who received {him} with that perfect politeness which, among the great, means nothing whatever."
+
+milestones:
+  rank_up:
+    heading: In which our Hero rises in the World
+    variants:
+      - text: About this time {hero} was received as {rank}; which is to say that nobody objected when {he} said so, and several people believed it.
+      - mood: mockheroic
+        text: Fortune, who had hitherto treated {hero} like a poor relation, now took {him} up as a favourite; and {he} found {himself} {rank}, with all the honour of the style and all the expense of it.
+  rank_down:
+    heading: In which our Hero comes down in the World
+    variants:
+      - text: So {hero} fell from {old_rank} to {rank} in a single week, which is a good deal quicker than {he} had risen, as falls generally are.
+      - mood: moralising
+        text: Thus was {hero} reduced from {old_rank} to {rank}; and if the reader is inclined to pity {him}, let the reader first count what {he} owed while {he} was the other thing.
+  name_blown:
+    heading: In which a Name is found out
+    variants:
+      - text: The name of {name_blown} was now so thoroughly blown upon that not a waiter in London would answer to it; and {hero}, like a snake pulled out of its skin, was obliged to go about in {his} own.
+      - mood: rueful
+        text: Thus perished {name_blown}, after a short life and a merry one, much regretted by the tailors.
+  prison_taken:
+    heading: In which our Hero is carried to Prison
+    variants:
+      - text: The bailiff, who had waited for {him} with the patience of a heron, took {hero} at last, and carried {him} first to a sponging-house, where {he} paid handsomely for the privilege of being a prisoner in comfort, and then to {prison}, where comfort was not to be had at any price.
+      - mood: moralising
+        text: And so {hero} went into {prison}, as many a better man had gone before, and many a worse; which is the one thing to be said for a debtors’ prison, that it is no respecter of persons.
+  prison_released:
+    heading: In which our Hero walks out of Prison
+    variants:
+      - text: "{Hero} came out of {prison} into the street like a man coming up from the bottom of a well, blinking at the light, and astonished to find that the town had gone on very comfortably without {him}."
+  savoy_in:
+    heading: In which our Hero takes Sanctuary
+    variants:
+      - text: "{Hero} now retired into the Liberty of the Savoy, where a man may owe what he likes so long as he stays indoors, and took a garret there among a company of other gentlemen, who had all, by their own account, been very unfortunate."
+  savoy_season:
+    heading: In which our Hero becomes a Savoyard
+    variants:
+      - text: By the end of a season in the Savoy {hero} had been so long out of the world that the world had quite forgotten {him}; which is the Savoy’s one infallible cure, and the reason so few take it twice.
+  savoy_out:
+    heading: In which our Hero leaves the Savoy
+    variants:
+      - text: "{Hero} came out of the Savoy at last, with {his} debts no smaller and {his} credit a little larger, and walked up the Strand like a man who has been ill and is not yet sure of his legs."
+
+# Each chapter after the first opens with one of these. gap: next (the month after the last
+# chapter), months (two to nine), year (ten or more). season: spring, summer, autumn, winter, or
+# frost (the Great Frost, 1739–40). moved: a new district since the last chapter.
+connectives:
+  - { gap: next, text: "It was about this time that {hero}, having nothing better to do with {his} fortune, resolved to try it again." }
+  - { gap: next, text: "The next month found {hero} much where the last had left {him}: in debt, in good spirits, and in want of a scheme." }
+  - { gap: next, text: "Our {adventurer} was not one to let a month go idle when there was a chance of losing it to better purpose." }
+  - { gap: next, text: "Some weeks after this, {hero} was once more abroad in the town." }
+  - { gap: next, text: "Not long afterwards, {hero} was again upon the town, with the air of one who has just remembered an appointment with Fortune." }
+  - { gap: next, text: "The bells of St Clement’s had rung in another month before {hero} stirred again." }
+  - { gap: next, text: "Having slept upon the matter, which in {hero}’s case was the same as forgetting it, {he} went out again." }
+  - { gap: months, text: "Some months passed in this manner, of which the reader is spared the particulars, since {hero} remembered few of them {himself}." }
+  - { gap: months, text: "Several months went by, as months will in London, between the tailor and the tavern." }
+  - { gap: months, text: "{Hero} let some months slip by, like a man who drops coins through a hole in his pocket and only counts them afterwards." }
+  - { gap: months, text: "Here this history must pass over some months, for the sake of brevity and of {hero}’s reputation." }
+  - { gap: months, mood: moralising, text: "Months went by in this dismal fashion, which the reader may picture, and {hero} would rather not." }
+  - { gap: year, text: "A year or more went by, of which this history keeps no account, since {hero} kept none either." }
+  - { gap: year, text: "Time, which spares nobody, had by now spent a year upon {hero}, and had not been generous with it." }
+  - { gap: year, text: "When this history next looks in upon {hero}, more than a year had passed, and {he} was older, if not wiser." }
+  - { season: spring, text: "The spring came on, and with it the mud, the Lenten fare and the town’s returning company; and {hero} put on {his} best coat to meet them." }
+  - { season: spring, text: "It was now spring, when the Park fills with fashion and the kennels with everything else, and {hero} was abroad in both." }
+  - { season: summer, text: "The summer was now come, and the Quality gone to Bath and their estates, leaving London to those who had neither, of whom {hero} was one." }
+  - { season: summer, text: "It was a hot summer, and the kennels of the Strand gave notice of it to every nose; but {hero}, who had business in the town, held {his} and went on." }
+  - { season: autumn, text: "The autumn now drew on, and the town filled again with those who had been everywhere and were glad to be back to say so." }
+  - { season: autumn, text: "With the falling of the leaves came the return of the Quality and of the tailor’s bill, both punctually." }
+  - { season: autumn, mood: mockheroic, text: "It was a golden autumn for {hero}, in every sense but the purse." }
+  - { season: winter, text: "It was now the depth of winter, when the river smokes in the mornings and the poor freeze in the evenings, and {hero} kept {his} feet warm as best {he} could." }
+  - { season: winter, text: "Winter had set in, with its fogs, its fires and its coal-merchants’ bills." }
+  - { season: winter, mood: rueful, text: "The winter found {hero} short of coals, short of credit, and long of creditors." }
+  - { season: frost, text: "This was the winter of the Great Frost, when the cold was so bitter that the watermen sat idle and the coal-merchants grew rich, and {hero}, like the rest of London, had nothing to do but keep warm or keep moving." }
+  - { moved: true, text: "{Hero} had by now shifted {his} lodging to {district}, as gentlemen do who would rather their creditors called on the landlord than on them." }
+  - { moved: true, text: "Being now lodged in {district}, {hero} found {himself} among new neighbours, all of whom were curious about {him}, and none of whom {he} could afford to satisfy." }
+  - { mood: mockheroic, text: "Fortune, that fickle jade, had lately smiled on {hero}; and {he}, like a man unused to smiles, made the most of it while it lasted." }
+  - { mood: mockheroic, text: "Flushed with these successes, {hero} now held {his} head as high as {his} wig would allow." }
+  - { mood: mockheroic, text: "Sing, Muse, of {hero} in the full tide of {his} prosperity; or rather do not, for the tide was about to turn, and the Muse is expensive." }
+  - { mood: easy, text: "Matters now stood much as they had, with {hero} neither richer nor poorer, and a great deal more confident than either condition warranted." }
+  - { mood: easy, text: "In this middling condition, which is the most dangerous to a person of spirit, {hero} looked about {him} for something to do." }
+  - { mood: rueful, text: "Our {adventurer}’s affairs were now somewhat out at the elbows, like {his} coat." }
+  - { mood: rueful, text: "It must be owned that {hero}’s fortunes had lately taken a turn for the worse, as the tailor was the first to point out." }
+  - { mood: rueful, text: "{Hero} was now in that condition, familiar to the reader of this history, of owing more than {he} had and expecting more than {he} deserved." }
+  - { mood: moralising, text: "Let the reader who has never been in {hero}’s case cast the first stone; and let the reader who has, pass {him} the bread." }
+  - { mood: moralising, text: "There is a lesson in all this for the young, which {hero} was at no pains to learn." }
+  - { mood: moralising, text: "From the bottom of a well, they say, the stars may be seen by day; but {hero}, looking up from the bottom of {his} fortunes, saw only {his} creditors." }
+  - { text: "To return to {hero}, whom this history has left too long alone, which was never safe." }
+
+endings:
+  apotheosis:
+    framing: The Life and Fortunate Adventures of
+    closing: And so {hero}, who came to London with nothing but a good leg and a borrowed name, ended among the great, with a title to {his} name and a house to put it on; and if the reader thinks this unjust, the reader may write a history of {his} own, and see how far honesty carries it.
+    dedication: To {patron}, without whose Favour this History would have ended a great deal sooner, it is, with the most profound Respect, Dedicated by the Author.
+  retirement:
+    framing: Memoirs of {a_gentleman}, Written by {himself_cap}
+    closing: Here {hero} resolved to try {his} fortune no further, and retired from the world while the world was still speaking to {him}; which, of all the wise things {he} ever did, was the only one {he} did on purpose.
+    dedication: To {patron}, who knows better than any Reader how much of this History is true, it is Dedicated, in the Hope that the said Person will say nothing.
+  ruin:
+    framing: A Narrative of the Misfortunes of
+    closing: "{Hero} ended {his} days, or at least this history, within the walls of {prison}, among a company of gentlemen who had all been very unlucky; and the reader who wishes to know the rest may inquire there, where {he} will be found at home any day but Sunday."
+    dedication: To my Creditors, who were the first to believe in me and the last to give me up, this Narrative is gratefully Dedicated.
+  transportation:
+    framing: The Remarkable Voyage of
+    closing: And so {hero} took ship for the plantations at the King’s expense, travelling for the first time in {his} life without a debt; and what befell {him} in the New World is another history, which may one day be written.
+    dedication: To the Gentlemen of the Jury, whose Verdict made this Voyage possible, it is respectfully Dedicated.
+  death:
+    framing: The Last Dying Speech and Confession of
+    closing: Thus died {hero}, in the full career of {his} schemes, owing a great deal and owed very little; and the town, which talked of nothing else for a week, found something else to talk of the week after.
+    dedication: To the Reader, who has come this far, and may profit by it.
+  # appended when a run is still going at the end of 1745
+  calendar: It was now the end of the year 1745, when the Highland army had come as far as Derby and gone home again, and the town, having been frightened half out of its wits, was in no humour for adventurers; and here this history takes its leave of {hero}.
+
+# When no Hook names anyone worth dedicating to.
+dedication_public: To the Public, the only Patron who never asks what an Author is worth, but only what he costs, this History is Dedicated.
+
+subtitles:
+  - Interspersed with Reflections, Moral and Otherwise
+  - Containing a Faithful Account of {his_cap} Rise, Progress and Present Condition
+  - Wherein are Discovered Many Curious Particulars of the Town
+  - With Some Account of {his_cap} Creditors
+
+imprint: London, Printed for the Author, and sold by the Booksellers of the Strand.
+
+# A rumour without an authored hindsight passage gets the Editor’s note.
+hindsight_editor: "This was not the last the Town heard of it. A letter from {from}, delivered in {date}, ran thus: “{text}”"
+
+# Names for the subscription list, after the people the run altered. Invented; none real.
+subscribers:
+  - Mr Abraham Bostock, of the Inner Temple
+  - Lady Haverford
+  - Sir Thomas Wellbury, Bart.
+  - The Rev. Mr Aldwinckle
+  - Mrs Prudence Toller
+  - Captain Hezekiah Drum
+  - Mr Ebenezer Quarles, of Garraway’s
+  - Mr Timothy Whitlow, Attorney
+  - Dr Septimus Gall
+  - Mrs Arabella Fenn
+  - Mr Josiah Pinnock, Bookseller
+  - The Hon. Mrs Dorrington
+  - Mr Jeremiah Lusk, Mercer
+  - Miss Letitia Spratt
+  - Colonel Ambrose Hake
+  - Mr Gideon Tallis, of the Customs House
+  - Mrs Honoria Vane, of Bath
+  - Mr Nathaniel Crump, Peruke-maker
+  - Lord Pendlebury
+  - Mr Obadiah Fairweather
+  - Mrs Charity Sowerby
+  - Sir Roger Blewitt
+  - Mr Lancelot Gedge, Surgeon
+  - Miss Euphemia Doble
+  - Mr Matthias Holt, Stationer
+  - Mrs Barbara Kettle, of the Bell in Wood Street
+  - Mr Silas Penhallow, Merchant
+  - The Rev. Dr Cobbe
+  - Mr Isaac Thrupp, Tobacconist
+  - Lady Maria Fothergill
+  - Mr Benjamin Swale, Gentleman
+  - Mrs Grace Ollerenshaw
+  - Mr Philip Ludlam, of the Middle Temple
+  - Captain Thomas Brack, late of the Marines
+  - Mr Walter Cheyne, Apothecary
+  - Mrs Dorothy Pugh
+  - Mr Humphrey Wadd
+  - Sir John Mallory
+  - Mr Edmund Tiffin, Coachmaker
+  - Miss Judith Ashe

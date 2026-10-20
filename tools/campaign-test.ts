@@ -10,7 +10,8 @@
 //   - heath is offered in October 1724 to a hero who has the Persona, the pistols and the mask
 // and reports how often each Venture was offered and played, and the money at the end.
 
-import { Campaign, type CampaignState } from '../engine/src/campaign';
+import { Campaign, SAVE_VERSION, type CampaignState } from '../engine/src/campaign';
+import { epub, htmlBook } from '../engine/src/library';
 import { odds } from '../engine/src/core';
 import { Rng } from '../engine/src/rng';
 import { SEGMENTS } from '../engine/src/types';
@@ -100,7 +101,7 @@ function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
         const res = run.resolve(o, seg); run.fx = luckFx.concat(run.fx);
         if (BAD.test(strip(res.html))) problems.push(`${where()}: outcome: ${strip(res.html).slice(0, 120)}`);
         // the canon sample names must not leak into a run that drew others
-        const all = res.html + run.S.story.map(x => x.sm + x.st).join('') + run.prose(beat.text);
+        const all = res.html + run.S.story.map(x => x.text).join('') + run.prose(beat.text);
         for (const [n, w] of [[c.hero.names.surname, 'Byrne'], [c.hero.names.alias_surname, 'O’Rourke'], [c.hero.names.given, 'Cornelius']])
           if (n !== w && all.includes(w)) problems.push(`${where()}: “${w}” appears in a run whose hero is ${c.hero.name}, alias ${(c.extra() as Record<string, unknown>).alias}`);
         c.record({ beat: at, opt: i, seg, luck });
@@ -139,6 +140,15 @@ function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
       if (Object.values(H.records).filter(x => x.state !== 'sold').reduce((a, x) => a + x.debts, 0) > H.debts) problems.push(`seed ${seed}: the names owe more than the books`);
       for (const e of c.st.bills?.events ?? []) { if (/is blown/.test(e)) count('names blown'); if (/Secret is out/.test(e)) count('Secrets out'); if (/is sold for/.test(e)) count('names sold'); if (/stopped talking/.test(e)) count('Exposure cooled'); if (/scandal/.test(e)) count('scandals'); if (/received as/.test(e)) count('claims raised'); if (/retired\./.test(e)) count('names retired over the limit'); }
       if (c.st.bills?.weeks.some(w => w.letters.some(l => l.venture === 'reversal'))) count('brothers died');
+      // the Story (Step 9): volumes and chapters numbered in order, no stray slots
+      const vols = c.st.volumes.map(v => v.no);
+      for (const ch of c.st.story) {
+        if (!vols.includes(ch.vol)) problems.push(`seed ${seed}: a chapter in no volume`);
+        if (/\{\w+\}|undefined|\[\[/.test(ch.passages.join('') + ch.notes.map(n => n.text).join(''))) problems.push(`seed ${seed}: stray slots in chapter ${ch.vol}.${ch.no}: ${ch.passages.join(' ').slice(0, 100)}`);
+      }
+      for (const v of c.st.volumes) { const nos = c.st.story.filter(x => x.vol === v.no).map(x => x.no); if (nos.some((n, i) => n !== i + 1)) problems.push(`seed ${seed}: chapters out of order in volume ${v.no}`); }
+      if (c.st.story.some(ch => ch.notes.length > 2)) problems.push(`seed ${seed}: more than two notes on a chapter`);
+      count('chapters'); if (c.st.story.some(ch => ch.notes.length)) count('turns with hindsight notes');
       // humours and Reputation (Step 8)
       for (const hu of ['Sanguine', 'Choleric', 'Melancholic', 'Phlegmatic'] as const) {
         const af = c.afflicted(hu);
@@ -161,6 +171,7 @@ function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
       if (H.confined) count('turns in prison');
       c.nextTurn();
     }
+    if (c.st.phase === 'ended') { count('runs ended: ' + c.st.ended!.how); break; }
     // the save must survive a round trip at every turn boundary
     const st2 = JSON.parse(JSON.stringify(c.st));
     if (JSON.stringify(st2) !== JSON.stringify(c.st)) problems.push(`seed ${seed}: save does not round-trip`);
@@ -250,8 +261,8 @@ function scenarios() {
       outs++;
       if (!H.tags.includes('Fortune-hunter (the Quality)') || !H.hooks.some(h => h.startsWith('An elder brother in'))) fail('the Secret out without its tag and Hook');
       if (c.credit() !== c.appearances() * 120) fail(`Credit with the Secret out should be a Tradesman’s: ${c.credit()}`);
-      if (!c.st.story.some(ch => ch.venture === 'secret')) fail('no chapter for the Secret');
-      if (/\{|\[\[/.test(c.st.story.at(-1)!.passages[0].sm + ((c as any).lettersNow[0]?.text ?? ''))) fail('template syntax in the Secret');
+      if (!c.st.month.passages.length) fail('no passage for the Secret');
+      if (/\{|\[\[/.test(c.st.month.passages.join('') + ((c as any).lettersNow[0]?.text ?? ''))) fail('template syntax in the Secret');
     }
   }
   if (outs === 0 || outs === 40) fail(`the Secret came out ${outs} times in 40 blow-ups`);
@@ -367,14 +378,81 @@ function scenarios() {
   { const c = fresh(); const st = JSON.parse(JSON.stringify(c.st)); st.v = 3; delete st.hero.tagSince; delete st.hero.timed;
     st.hero.records[st.hero.styled].circles = ['the City', 'the Trade']; st.hero.closed = { 'the Trade': 999 }; st.hero.tags = ['Wit (the Town)'];
     const m = new Campaign(world, st);
-    if (m.st.v !== 4 || m.hero.records[m.hero.styled].circles.join() !== 'the Projectors,the Town' || !m.hero.closed['the Town'] || m.hero.tagSince['Wit (the Town)'] === undefined) fail('migration from version 3');
+    if (m.st.v !== SAVE_VERSION || m.hero.records[m.hero.styled].circles.join() !== 'the Projectors,the Town' || !m.hero.closed['the Town'] || m.hero.tagSince['Wit (the Town)'] === undefined) fail('migration from version 3');
+  }
+
+  // ---------- Step 9 ----------
+  const ended = (c: Campaign) => c.st.phase === 'ended' && !!c.st.memoir;
+  // no retiring from Book I; retiring from Book II is Retirement, with a Memoir
+  { const c = fresh(); const H = c.hero; H.claimedRank = 'Tradesman';
+    if (!c.retire()) fail('retired from Book I');
+    H.claimedRank = 'Gentleman'; H.celebrity = 4; c.st.peak.celebrity = 6;
+    if (c.retire() || !ended(c) || c.st.ended!.how !== 'retirement') fail('retiring from Book II');
+    const m = c.st.memoir!;
+    if (!/^Memoirs of a Gentleman, Written by Himself$/.test(m.title.framing)) fail(`Retirement's title: ${m.title.framing}`);
+    const want = 6 * 10 + 0 + 0 + c.st.altered.length * 5 + 20;
+    if (m.subscribers.total !== want) fail(`the score: ${m.subscribers.total}, expected ${want}`);
+    if (m.subscribers.names.length > 40 || m.subscribers.names.length + m.subscribers.others !== m.subscribers.total) fail('the subscription list');
+    if (!m.volumes.length || !m.volumes.at(-1)!.chapters.length) fail('a Memoir with no chapters');
+    const last = m.volumes.at(-1)!.chapters.at(-1)!; if (!/retired from the world/.test(last.passages.join(' '))) fail('no closing passage');
+    const book = htmlBook(m); if (!/<!doctype html>/.test(book) || !book.includes('A List of the Subscribers')) fail('the HTML book');
+    const e = epub(m); const head = new TextDecoder().decode(e.slice(30, 38));
+    if (e[0] !== 0x50 || e[1] !== 0x4b || head !== 'mimetype') fail('the EPUB: mimetype must come first, stored');
+  }
+  // Apotheosis: retiring with a True Rank of Baronet or above, or after a Venture says so
+  { const c = fresh(); c.hero.trueRank = 'Baronet or Knight'; c.retire(); if (c.st.ended?.how !== 'apotheosis' || !/Fortunate/.test(c.st.memoir!.title.framing)) fail('Apotheosis by rank');
+    const d = fresh(); d.st.apotheosis = true; d.retire(); if (d.st.ended?.how !== 'apotheosis') fail('Apotheosis by a Venture');
+  }
+  // Ruin: a year in prison; and giving up
+  { const c = fresh(); c.confine(); c.hero.confined!.since = c.st.at - 48; (c as any).beginTurn();
+    if (c.st.ended?.how !== 'ruin' || c.st.memoir!.dedication.indexOf('Creditors') < 0) fail('Ruin after a year in prison');
+    const d = fresh(); d.confine(); if (d.giveUp() || d.st.ended?.how !== 'ruin') fail('giving up in prison');
+    const e = fresh(); if (!e.giveUp()) fail('gave up outside prison');
+  }
+  // the calendar's end
+  { const c = fresh(); c.st.at = (1745 - 1719) * 52 + 50; c.st.phase = 'bills'; c.nextTurn();
+    if (!ended(c) || !/Derby/.test(c.st.story.at(-1)!.passages.join(' '))) fail('the end of 1745');
+  }
+  // death, from a Venture's flag
+  { const c = fresh(); c.startVenture('tom-kings'); const run = c.makeRun(); run.S.flags.ends_death = 1; c.finishVenture(run, 'In which our Hero is killed');
+    if (c.st.ended?.how !== 'death' || !/Dying Speech/.test(c.st.memoir!.title.framing)) fail('death by a Venture');
+  }
+  // volumes: a new Book opens a new volume, and chapter numbers start again
+  { const c = fresh(); const oc = (c as any).openChapter.bind(c);
+    oc('In which one', 'x', 'x', ['One.']); oc('In which two', 'x', 'x', ['Two.']);
+    c.hero.claimedRank = 'Baronet or Knight'; c.hero.records[c.hero.persona].rank = 'Baronet or Knight';
+    oc('In which three', 'x', 'x', ['Three.']);
+    const v = c.st.volumes, s3 = c.st.story.at(-1)!;
+    if (v.length !== 2 || v[1].book !== 'III' || s3.vol !== 2 || s3.no !== 1) fail(`volumes: ${JSON.stringify(v.map(x => x.book))}, last chapter ${s3.vol}.${s3.no}`);
+    if (c.st.story[1].passages.length !== 2 || /\{/.test(c.st.story[1].passages[0])) fail('a connective should open the second chapter');
+    c.hero.claimedRank = 'Gentleman'; c.hero.records[c.hero.persona].rank = 'Gentleman'; oc('In which four', 'x', 'x', ['Four.']);
+    if (!c.st.volumes.at(-1)!.again) fail('a Book re-entered should be "again"');
+  }
+  // milestones: prison and the Savoy write passages; a month with no Venture gets its own chapter
+  { const c = fresh(); c.confine(); (c as any).flushMonth();
+    const ch = c.st.story.at(-1); if (!ch || ch.heading !== 'In which our Hero is carried to Prison') fail('the prison milestone');
+  }
+  // hindsight: a footnote on the old chapter, two at most, an authored one preferred
+  { const c = fresh(); const i = (c as any).openChapter('In which a thing', 'x', 'x', ['A thing.']);
+    const L = (h?: string) => ({ id: 'r', from: 'Lady Bellaston’s drawing room', text: 'It is said.', effect: 'Exposure +1', persona: c.hero.persona, at: c.st.at, venture: 'x', chapter: i, hindsight: h });
+    for (let k = 0; k < 3; k++) (c as any).hindsight(L());
+    if (c.st.story[i].notes.length !== 2) fail('more than two notes');
+    (c as any).hindsight(L('He would have done well to remember the potboy.'));
+    if (!c.st.story[i].notes.some(n => n.authored)) fail('the authored note did not displace the Editor’s');
+  }
+  // a Step 8 save (version 4) is brought up to date
+  { const c = fresh(); (c as any).openChapter('In which a thing', 'x', 'x', ['A thing.']);
+    const st = JSON.parse(JSON.stringify(c.st)); st.v = 4; delete st.volumes; delete st.month; delete st.usedConnectives; delete st.peak; delete st.altered; delete st.arrival;
+    st.story = st.story.map((ch: any) => ({ no: 1, venture: ch.venture, title: ch.title, heading: ch.heading, passages: ch.passages.map((p: string) => ({ sm: p, st: 'x' })) }));
+    const m = new Campaign(world, st);
+    if (m.st.v !== SAVE_VERSION || m.st.story[0].passages[0] !== 'A thing.' || m.st.story[0].vol !== 1 || !m.st.volumes.length) fail('migration from version 4');
   }
 
   // a Step 6 save (version 2) is brought up to date
   { const c = fresh(); const st = JSON.parse(JSON.stringify(c.st)); st.v = 2; delete st.hero.records; delete st.hero.secret; delete st.hero.closed;
     st.hero.personas['Capt. Nobody'] = 3; st.hero.persona = 'Capt. Nobody';
     const m = new Campaign(world, st);
-    if (m.st.v !== 4 || !m.hero.records['Capt. Nobody'] || !m.hero.records[m.hero.styled] || m.hero.secret !== 'kept') fail('migration from version 2');
+    if (m.st.v !== SAVE_VERSION || !m.hero.records['Capt. Nobody'] || !m.hero.records[m.hero.styled] || m.hero.secret !== 'kept') fail('migration from version 2');
   }
 }
 scenarios();

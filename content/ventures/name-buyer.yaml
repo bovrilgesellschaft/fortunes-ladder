@@ -71,12 +71,8 @@ chapter:
 story:
   title: The History of Mr Cornelius Byrne
   byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
-  preface:
-    sm: "Among the trades of the Liberty there is one that no directory lists: that of the man who buys up the names of gentlemen who can no longer use them, and sells them to gentlemen who have none; and with such a man our hero now found himself drinking."
-    st: A name, madam, is the only property a man can sell and still have.
-  close:
-    sm: So ended the bargain; and our hero walked back through the precinct with the curious sensation, known to men who have sold a horse they were fond of, of having done well and done wrong at once.
-    st: — And whether he was the richer or the poorer for it, madam, I leave to the casuists; — they are paid to decide such things, and I am not.
+  preface: "Among the trades of the Liberty there is one that no directory lists: that of the man who buys up the names of gentlemen who can no longer use them, and sells them to gentlemen who have none; and with such a man our hero now found himself drinking."
+  close: So ended the bargain; and our hero walked back through the precinct with the curious sensation, known to men who have sold a horse they were fond of, of having done well and done wrong at once.
 
 reckoning:
   num: V
@@ -260,12 +256,8 @@ beats:
             effects: [{ set: sold_name }, { set: named }, { adj: notoriety, by: 1, why: a bargain in the Liberty }, { adj: hum.Melancholic, by: 1, why: a name sold to a fool }]
             text: You shake his hand. The young man from Norwich, it turns out, is waiting outside, and drunk, and greets you by name, his and yours, in front of half the precinct.
         story:
-          T:
-            sm: He shook the dealer’s hand, and walked out into the Liberty a lighter man by a name; and found, to his surprise, that he did not miss it, any more than a snake misses its skin.
-            st: — Sold! — and the purchaser a young man from Norwich. — I hope, madam, that he wore it better than its first owner; — I fear he wore it worse.
-          X:
-            sm: But the purchaser, a young man from Norwich, was waiting in the street, very drunk, and saluted him at the top of his voice by both their names; so that half the precinct learned in a moment what the bargain had been, and the other half by supper.
-            st: A secret, madam, shared between two men, is a secret; — between two men and a bottle, it is a proclamation.
+          T: He shook the dealer’s hand, and walked out into the Liberty a lighter man by a name; and found, to his surprise, that he did not miss it, any more than a snake misses its skin.
+          X: But the purchaser, a young man from Norwich, was waiting in the street, very drunk, and saluted him at the top of his voice by both their names; so that half the precinct learned in a moment what the bargain had been, and the other half by supper.
         next: reckon
       - label: "Withdraw: take your hand back, and keep the name."
         withdraw: true

@@ -70,7 +70,7 @@ for (const v of ventures) {
             if (run.S.story.length) {
               storyPaths++;
               const last = run.S.story.at(-1)!;
-              if (v.story && last.sm !== v.story.close.sm) problems.push(`${where}: the Story did not close`);
+              if (v.story && last.text !== run.inline(v.story.close)) problems.push(`${where}: the Story did not close`);
             }
             ranges(`${where} › reckoning`);
           } catch (e) { problems.push(`${where} › reckoning: ${(e as Error).message}`); }
