@@ -1,0 +1,306 @@
+# yaml-language-server: $schema=../schema/venture.schema.json
+#
+# PLACEHOLDER (Step 8): the quarrel a Quarrelsome hero is offered every month (settings.yaml
+# humours.quarrel). At its Crisis the Withdraw is locked for a Quarrelsome hero. Duels proper are
+# Step 14. Keep, rewrite or drop it in Step 10.
+
+id: quarrel
+title: A Quarrel in the Strand
+names:                     # on this page; a run draws its own
+  given: Cornelius
+  surname: Byrne
+  county: Galway
+  title: Captain
+  short_title: Capt.
+  alias_surname: O’Rourke
+  claim: late of the Imperial service
+test: true
+offer:
+  district: Fleet Street and the Strand
+  circle: the Town
+  blurb: You have been spoiling for it all month, and the Strand at noon is full of men who will not give the wall.
+  when: 'has_condition("Afflicted: Quarrelsome")'
+  repeat: true
+  weight: 1
+runhead: The Life &amp; Adventures of Mr {name}
+sub: Being a Dispute about the Wall, in five Beats
+prospectus: >-
+  <b>A placeholder Venture,</b> written to exercise the Afflictions: a jostle in the street, hard
+  words, a crowd, and a Crisis from which a Quarrelsome man cannot withdraw.
+year: 1725
+week: 14
+loot_flag: purse
+persona: Mr Byrne
+who:
+  name: Cornelius Byrne
+  as: under his own name
+  origin: Younger son of an Irish squire · Book II
+
+start:
+  purse: £1 5s
+  debts: £30
+  luck: 1
+  exposure: 0
+  notoriety: 0
+  celebrity: 1
+  attrs: { Address: 3, Wit: 2, Nerve: 3, Constitution: 2, Countenance: 2, Learning: 1 }
+  hum: { Sanguine: 1, Choleric: 5, Melancholic: 1, Phlegmatic: 0 }
+  conditions: ["Afflicted: Quarrelsome"]
+  tags: []
+  items: [His father’s sword, A good broadcloth coat]
+  hooks: []
+
+first: wall
+
+chapter:
+  no: Chap. VIII.
+  opening: In which our Hero disputes the Wall
+  parts:
+    - { when: flags.shoved, text: shoulders a Stranger }
+    - { when: flags.riposte, text: has the last Word }
+    - { when: flags.crowd, text: wins the Crowd }
+    - { when: flags.drew, text: draws his Sword in the Strand }
+    - { when: flags.fists, text: settles it with his Fists }
+  last:
+    when: flags.withdrew
+    text: begs a Stranger’s Pardon
+    else: goes on his way the better for it, or says so
+
+story:
+  title: The History of Mr Cornelius Byrne
+  byline: Written up whenever Fortune’s Wheel lands on Triumph or Catastrophe
+  preface:
+    sm: Our hero had now been for some weeks in that state of the bile in which a man reads every look as an insult and every insult as a summons; and the Strand at noon, which is full of men going somewhere in a hurry, was the worst place in London for him to be.
+    st: The choler, madam, is a humour; — that is to say, a liquid; — and a man full of it to the brim must spill it somewhere.
+  close:
+    sm: So ended the affair of the wall; and our hero walked on with his choler, for the present, discharged, like a gun that has gone off and must be loaded again before it can do more mischief.
+    st: — And whether the wall was his or the other man’s, madam, the wall itself has never said.
+
+reckoning:
+  num: V
+  phase: The Reckoning
+  title: The Wall Again
+  sid: quarrel.05.reckoning
+  dev: Placeholder · nothing further to settle
+  steps:
+    - say: The Strand goes on about its business, which is not yours. A carter whistles. Somebody sells you an apple you did not want.
+    - when: flags.drew
+      say: You drew a sword in the street at noon. Somewhere a constable is writing it down, slowly, with his tongue between his teeth.
+  post:
+    some: Sealed, and in the post. The Strand remembers a quarrel for about a week, and the newspapers for rather longer.
+    none: Nothing is in the post. The Strand has seen a hundred quarrels this month, and yours was not the best.
+  upkeep: "Upkeep follows: the garret, and a new hat if you lost the old one."
+  again: Go out into the Strand again
+  finis: Finis.
+
+beats:
+  - id: wall
+    num: I
+    phase: The Approach
+    title: The Wall
+    sid: quarrel.01.wall
+    dev: Placeholder · certain, risky and gated options
+    text: |-
+      Noon in the Strand, and the footway is three men wide at best. Ahead of you, coming the other way, is a gentleman in a laced hat who has no intention whatever of giving you the wall.{fn *}
+
+      You have been looking for him, or for someone like him, all month.
+    notes:
+      - "* To take the wall was to walk on the side of the footway nearest the houses, away from the kennel and the carriages. Who gave it to whom was a daily question of rank in London, and a daily cause of quarrels."
+    ask: What do you do?
+    options:
+      - label: Stand your ground, and demand the wall.
+        dev: Certain
+        do:
+          effects: [{ adj: hum.Choleric, by: 1, why: a point of honour }]
+          text: You stop dead in his path. He stops too, a yard off, and looks at you as if you were a post that had been put there to inconvenience him.
+        next: words
+      - label: Shoulder him into the kennel.
+        dev: Risky · Nerve against 3
+        check: { attr: Nerve, diff: 3 }
+        outcomes:
+          T:
+            effects: [{ set: shoved }, { adj: hum.Choleric, by: -1, why: a satisfying shove }]
+            text: He goes into the kennel up to his buckles, and the street laughs. It is the best moment you have had in a month.
+          S:
+            effects: [{ set: shoved }]
+            text: You shoulder him off the wall. He staggers, recovers, and turns.
+          C:
+            effects: [{ set: shoved }, { adj: purse, by: -1s, why: a hat in the kennel }]
+            text: You shoulder him, and he shoulders back, and it is your hat that ends up in the kennel.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: shouldered yourself }]
+            text: He is heavier than he looks. It is you who stagger.
+          X:
+            effects: [{ adj: hum.Choleric, by: 1, why: in the kennel }, { adj: celebrity, by: -1, why: laughed at in the Strand }]
+            text: It is you who goes into the kennel, and the street that laughs.
+        story:
+          T:
+            sm: A gentleman in a laced hat refusing him the wall, our hero shouldered him so roundly that he went into the kennel up to his buckles; and the Strand, which loves a fall better than a play, laughed till the hackney-coaches stopped to see what was the matter.
+            st: — Into the kennel, madam. — I set it down without comment; it is a thing the reader will wish to have seen, and I have done my best.
+          X:
+            sm: But the gentleman, proving a good deal heavier than his lace, stood like a church; and it was our hero who went into the kennel, to the great delight of a crowd of chairmen.
+            st: The kennel, madam, is no respecter of persons; — that is its whole merit as an institution.
+        next: words
+      - label: Look at him as a man of fashion looks at a mercer.
+        gate: { when: "appearances >= 11", need: "Appearances 11 · {if appearances}you show {appearances}{else}a run’s Appearances{end}" }
+        dev: Gated (Appearances 11) · certain
+        do:
+          effects: [{ set: crowd }]
+          text: He takes in your coat, your linen and your wig, and steps off the wall without quite meaning to. Then he remembers himself.
+        next: words
+
+  - id: words
+    num: II
+    phase: The Complication
+    title: Words
+    sid: quarrel.02.words
+    dev: Placeholder · a Withdraw here is allowed even to the Quarrelsome; the Crisis is where it is locked
+    text: |-
+      “Sir,” he says, “you are in my way, and I think you are an Irishman, and I am not sure which I like less.”
+
+      Behind him, a chairman sets down his chair to watch.
+    ask: What do you answer?
+    options:
+      - label: Answer him so that the chairman laughs.
+        dev: Risky · Wit against 4
+        check: { attr: Wit, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: riposte }, { tag: "Wit (the Town)", why: the last word in the Strand }]
+            text: You tell him that an Irishman is only an Englishman who has been to Ireland, and has come back improved. The chairman laughs so hard that he has to sit down in his own chair.
+          S:
+            effects: [{ set: riposte }]
+            text: You say something sharp. The chairman grins. The gentleman colours.
+          C:
+            effects: [{ adj: hum.Choleric, by: 1, why: a hit taken }]
+            text: You answer, and he answers better.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: laughed at }]
+            text: Your answer comes out wrong. The chairman laughs, but not with you.
+          X:
+            effects: [{ adj: hum.Choleric, by: 2, why: laughed at in the street }]
+            text: You stammer. He imitates the stammer. The chairman applauds.
+        next: crowd
+      - label: Swear at him, and take a step closer.
+        dev: Certain
+        do:
+          effects: [{ adj: hum.Choleric, by: 1, why: hot words }]
+          text: You swear at him in two languages. He replies in one, but at greater length.
+        next: crowd
+      - label: "Withdraw: step off the wall, and walk on."
+        withdraw: true
+        dev: Withdraw · certain · ends the Venture
+        do:
+          effects: [{ set: withdrew }, { adj: hum.Choleric, by: 1, why: a quarrel swallowed }]
+          text: You step off the wall. It is the hardest thing you have done all month, and nobody notices.
+        next: reckon
+
+  - id: crowd
+    num: III
+    phase: The Turn
+    title: A Crowd Gathers
+    sid: quarrel.03.crowd
+    dev: Placeholder · costed, risky and gated
+    text: |-
+      There is a crowd now, as there always is in the Strand: chairmen, apprentices, a ballad-seller, two clerks from the Temple who should be at their desks. They want something to happen, and they are not particular what.
+    ask: What will you do with them?
+    options:
+      - label: Pay a chairman sixpence to hold your coat.
+        cost: 6d
+        dev: Costed · certain
+        do:
+          effects: [{ adj: purse, by: -6d, why: a chairman to hold your coat }]
+          text: The chairman takes the coat and the sixpence with equal care. The crowd understands that this is serious.
+        next: crisis
+      - label: Put your case to the crowd.
+        dev: Risky · Address against 4
+        check: { attr: Address, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: crowd }, { adj: celebrity, by: 1, why: the Strand on your side }]
+            text: By the time you have finished, the crowd is calling him a Hanoverian rat, which is unfair to him and very gratifying to you.
+          S:
+            effects: [{ set: crowd }]
+            text: The crowd is with you, more or less.
+          C:
+            effects: []
+            text: The crowd is with whoever wins.
+          R:
+            effects: [{ adj: hum.Choleric, by: 1, why: the crowd against you }]
+            text: The crowd decides it does not like the look of you.
+          X:
+            effects: [{ adj: hum.Choleric, by: 1, why: the crowd against you }, { adj: purse, by: -2s, why: a pocket picked }]
+            text: The crowd does not like the look of you, and while you are making your speech someone in it picks your pocket.
+        next: crisis
+      - label: Let them see who you are.
+        gate: { when: 'has_tag_in("Brave", "the Town") or has_tag_in("Game", "the Underworld")', need: "a name for courage (Brave with the Town, or Game with the Underworld)" }
+        dev: Gated (a Tag read by faction, Step 8) · certain
+        do:
+          effects: [{ set: crowd }]
+          text: A ballad-seller knows your face, and says so. The crowd makes room, the way a crowd makes room for a man with a reputation.
+        next: crisis
+
+  - id: crisis
+    num: IV
+    phase: The Crisis
+    title: Fists or Swords
+    sid: quarrel.04.crisis
+    dev: Placeholder · Press on (two ways) or Withdraw · a Quarrelsome hero cannot Withdraw here
+    text: |-
+      The gentleman takes off his hat and gives it to a boy. “Well, sir?” he says. He has a sword, and so have you, and the Strand is very wide all of a sudden.
+    ask: Press on, or withdraw?
+    options:
+      - label: "Press on: draw, here in the street."
+        dev: Press on · Nerve against 5 · Wounded on a Catastrophe
+        check: { attr: Nerve, diff: 5, bonus: [{ when: flags.crowd, by: 1, why: the crowd with you }] }
+        outcomes:
+          T:
+            effects: [{ set: drew }, { adj: hum.Choleric, by: -2, why: a quarrel won }, { tag: "Brave (the Town)", why: a sword drawn in the Strand }, { adj: celebrity, by: 1, why: a famous quarrel }]
+            text: You draw, and he draws, and in three passes his sword is in the kennel beside his hat. The crowd cheers. You feel, for the first time this month, entirely calm.
+          S:
+            effects: [{ set: drew }, { adj: hum.Choleric, by: -1, why: a quarrel settled }]
+            text: You cross swords for half a minute before a constable arrives and both of you remember urgent business elsewhere.
+          C:
+            effects: [{ set: drew }, { adj: notoriety, by: 1, why: swords drawn in the street }]
+            text: You fight him to a standstill. A constable takes both your names.
+          R:
+            effects: [{ set: drew }, { adj: hum.Choleric, by: 1, why: disarmed }, { adj: celebrity, by: -1, why: disarmed in the Strand }]
+            text: He disarms you very neatly, and hands you back your sword with a bow that is worse than a blow.
+          X:
+            effects: [{ set: drew }, { condition: "Wounded (a sword-cut, left hand)", why: a quarrel in the Strand }, { adj: notoriety, by: 1, why: swords drawn in the street }]
+            text: His point opens the back of your hand. There is a great deal of blood, and a constable, and a long afternoon.
+        story:
+          T:
+            sm: The gentleman drawing, our hero drew; and in three passes sent his adversary’s sword to keep company with his hat in the kennel; at which the crowd set up such a huzza as brought the whole Strand to its windows, and our hero felt the choler go out of him like wind out of a bladder.
+            st: — Three passes, madam! — I have read of duels that lasted an hour and settled less.
+          X:
+            sm: But the gentleman’s point, entering under his guard, laid open the back of his hand; so that the quarrel ended, as quarrels in the Strand commonly do, with a constable, a surgeon, and a magistrate who wished both parties at the devil.
+            st: Blood, madam, upon the cobbles of the Strand; — and a little upon the constable, who has never forgiven it.
+        next: reckon
+      - label: "Press on: throw down the sword, and offer him your fists."
+        dev: Press on · Constitution against 4
+        check: { attr: Constitution, diff: 4 }
+        outcomes:
+          T:
+            effects: [{ set: fists }, { adj: hum.Choleric, by: -2, why: a quarrel won }, { tag: "Game (the Underworld)", why: fought like a chairman }]
+            text: The crowd roars with delight; this is more like it. You knock him down twice, and he stays down the second time.
+          S:
+            effects: [{ set: fists }, { adj: hum.Choleric, by: -1, why: a quarrel settled }]
+            text: You trade blows until both of you are out of breath and in charity with each other.
+          C:
+            effects: [{ set: fists }, { adj: hum.Melancholic, by: 1, why: a black eye }]
+            text: You win, more or less, with a black eye that will last a fortnight.
+          R:
+            effects: [{ set: fists }, { adj: hum.Choleric, by: 1, why: knocked down }]
+            text: He knocks you down. The crowd cheers him.
+          X:
+            effects: [{ set: fists }, { adj: hum.Choleric, by: 1, why: beaten }, { adj: celebrity, by: -1, why: beaten in the Strand }, { adj: purse, by: -5s, why: a surgeon }]
+            text: He was a prize-fighter once, it turns out, at Figg’s. You learn this from the surgeon.
+        next: reckon
+      - label: "Withdraw: beg his pardon, before the whole Strand."
+        withdraw: true
+        dev: Withdraw · certain · locked for a Quarrelsome hero (Step 8)
+        do:
+          effects: [{ set: withdrew }, { tag: "Coward (the Town)", why: begged pardon in the Strand }]
+          text: You beg his pardon. He gives it, loudly, and the crowd goes away disappointed and talking.
+        next: reckon

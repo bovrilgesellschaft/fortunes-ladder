@@ -99,8 +99,7 @@ economy:
 # Ruling, 18 October 2026 (the Step 7 rulings doc), except where marked Proposed.
 personas:
   limit: 2                 # Personas held besides the hero's own name (Ruling)
-  # the five circles of Reputation (design document)
-  circles: [the Quality, the City, the Town, the Trade, the Underworld]
+  # the circles where a name is known are the factions (factions:, below; Step 8, Ruling 5)
   cool_weeks: 8            # Exposure −1 after this many weeks with no gain; not in the Savoy or prison
   closed_weeks: 24         # a blown Persona's circles close to the next one for this long
   blown_celebrity: 2
@@ -202,3 +201,52 @@ personas:
       titles: { man: [{ long: Count, short: Count }], woman: [{ long: Countess, short: Countess }] }
       surnames: [Montalbano, Strahlenfels, Vorlenberg, Taliani, Brisacier, Rosental]
       claims: [of the Holy Roman Empire, of the Empire, by a patent from Vienna]
+
+# ---------- humours and Reputation (Step 8) ----------
+# Ruling, 20 October 2026 (the Step 8 rulings doc).
+
+# The nine factions and the Town, for fame that runs everywhere (design document). Reputation is
+# kept by them, and they are also the circles where a name is known.
+factions: [the Quality, the Church, the Law, the Projectors, the Army & Navy, the Underworld, the Wits, the Trade, the Brethren & the Adepts, the Town]
+
+humours:
+  peak: 5                      # an Affliction begins
+  relieved_at: 3               # and ends when the humour falls this far
+  afflictions: { Sanguine: Prodigal, Choleric: Quarrelsome, Melancholic: Hipped, Phlegmatic: Torpid }
+  prodigal_upkeep: 1.5         # Upkeep ×1.5; certain costed options cost double
+  torpid_offers: 2
+  quarrel: quarrel             # the Venture a Quarrelsome hero is always offered
+  # the engine's own rises, once per humour per turn
+  rises: { spoils: £10, loss: £10 }
+  relief:
+    vice: { by: 2, notoriety: 0.25 }
+    religion: { by: 2, tag: Pious (the Church), moorfields: { year: 1739, week: 17 } }
+    physician: { by: 1, fee: 1 guinea, attr: Constitution, diff: 3, condition: Physicked (bled and purged), weeks: 4 }
+
+tags:
+  limit: 3                     # Tags per faction; a fourth pushes out the oldest
+  lapse: 48                    # weeks after a Tag was last earned
+  # Every Tag the content may use. good/bad is how factions generally take it; except lists those
+  # who take it the other way. lasts: weeks, or "for good"; the default is the lapse above.
+  register:
+    Wit:            { valence: good, opposite: Dull }
+    Dull:           { valence: bad, opposite: Wit }
+    Rake:           { valence: bad, except: [the Town, the Wits, the Trade], opposite: Pious }
+    Pious:          { valence: good, except: [the Wits, the Underworld], opposite: Rake }
+    Brave:          { valence: good, opposite: Coward }
+    Coward:         { valence: bad, opposite: Brave }
+    Generous:       { valence: good }
+    Cheat:          { valence: bad, except: [the Underworld], opposite: Man of Honour }
+    Man of Honour:  { valence: good, opposite: Cheat }
+    Gallant:        { valence: good }
+    Agreeable:      { valence: good }
+    Learned:        { valence: good }
+    Man of Fashion: { valence: good }
+    Game:           { valence: good, opposite: Coward }
+    Absurd:         { valence: bad }
+    Fast:           { valence: bad, except: [the Town, the Trade], opposite: Pious }
+    Cruel:          { valence: bad, except: [the Underworld], opposite: Generous }
+    Ruthless:       { valence: bad, except: [the Underworld], opposite: Generous }
+    Fortune-hunter: { valence: bad, lasts: 24 }
+    Savoyard:       { valence: bad, lasts: for good }
+    Brother:        { valence: good, lasts: for good }

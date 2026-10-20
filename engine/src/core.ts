@@ -22,6 +22,8 @@ export interface State {
   /** Pledged and noted during the Venture, for the run to keep. */
   pledges: { item: string; loan: number }[];
   notes: { to: string; amount: number }[];
+  /** Every Tag earned in the Venture, including ones already held (a renewal, Step 8). */
+  earned: string[];
 }
 
 /** The hero a Venture starts from, when it is played inside a run rather than on its own page. */
@@ -46,6 +48,15 @@ export interface RunOpts {
   exposureOf?: (persona: string) => number | undefined;
   /** In a run: the Exposure a new Persona starts at (1, +1 per rank claimed above the truth). */
   newExposure?: number;
+  // ----- the Afflictions (Step 8) -----
+  /** Prodigal: certain costed options cost double. */
+  prodigal?: boolean;
+  /** Quarrelsome: every Withdraw at the Crisis is locked, for this reason. */
+  noWithdraw?: string;
+  /** Torpid: locked lures are not shown. */
+  hideLures?: boolean;
+  /** Standing with a faction, worked out from the Tag register (Step 8). */
+  standing?: (faction: string) => number;
 }
 
 const LIM: Record<string, [number, number]> = { composure: [0, 8], exposure: [0, 10], luck: [0, 3], celebrity: [0, 10], notoriety: [0, 10] };
@@ -102,6 +113,8 @@ export class Run {
   readonly fns: Record<string, Fn>;
 
   readonly opts: RunOpts;
+  /** The Crisis beats' options, where a Quarrelsome hero cannot withdraw. */
+  private crisis = new Set<Option>();
 
   constructor(content: Content, opts: RunOpts = {}) {
     this.opts = opts;
@@ -126,7 +139,11 @@ export class Run {
       // the false self (Step 7): read from the run's values, or the Venture's sample on its own page
       rank_at_least: (r) => RANKS.indexOf(String(this.scope().claimed_rank ?? 'Gentleman') as Rank) >= RANKS.indexOf(r as Rank),
       known_in: (k) => String(this.scope().circles_known ?? '').split(', ').includes(k as string),
+      // Reputation (Step 8): a Tag held with a faction, or with the Town, which counts everywhere
+      has_tag_in: (t, f) => S().tags.some(x => x.startsWith(`${t} (`) && (x.endsWith(`(${f})`) || x.endsWith('(the Town)'))),
+      standing: (f) => this.opts.standing?.(f as string) ?? 0,
     };
+    for (const b of this.v.beats) if (b.phase === 'The Crisis') for (const o of b.options) this.crisis.add(o);
     this.start();
   }
 
@@ -137,13 +154,13 @@ export class Run {
         purse: o.purse, debts: o.debts, composure: o.attrs.Nerve + 1, luck: o.luck,
         exposure: o.exposure, notoriety: o.notoriety, celebrity: o.celebrity,
         attrs: { ...o.attrs }, hum: { ...o.hum }, conditions: [...o.conditions], tags: [...o.tags], items: [...o.items], hooks: [...o.hooks],
-        flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false, persona: o.persona, pledges: [], notes: [],
+        flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false, persona: o.persona, pledges: [], notes: [], earned: [],
       }
       : {
         purse: this.amount(h.purse), debts: this.amount(h.debts), composure: h.composure ?? h.attrs.Nerve + 1, luck: h.luck,
         exposure: h.exposure, notoriety: h.notoriety, celebrity: h.celebrity,
         attrs: { ...h.attrs }, hum: { ...h.hum }, conditions: [...(h.conditions ?? [])], tags: [...h.tags], items: [...h.items], hooks: [...h.hooks],
-        flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false, persona: this.v.persona, pledges: [], notes: [],
+        flags: {}, log: [], rumours: [], spoils: 0, story: [], storyAdded: false, persona: this.v.persona, pledges: [], notes: [], earned: [],
       };
     // a kit is lent for the Venture: in a run the hero may not own it yet
     for (const it of this.v.kit?.items ?? []) if (!this.S.items.includes(it)) this.S.items.push(it);
@@ -241,7 +258,7 @@ export class Run {
       else if ('set' in e) ([] as string[]).concat(e.set).forEach(f => (S.flags[f] = 1));
       else if ('unset' in e) ([] as string[]).concat(e.unset).forEach(f => (S.flags[f] = 0));
       else if ('calc' in e) { const v = Number(this.eval(e.to)); if (e.calc.startsWith('flags.')) S.flags[e.calc.slice(6)] = v; else (S as any)[e.calc] = v; }
-      else if ('tag' in e) { if (!S.tags.includes(e.tag)) { S.tags.push(e.tag); this.fx.push({ t: 'Tag: ' + e.tag, tone: 'neu' }); S.log.push(`Tag gained: ${e.tag} — ${e.why ?? ''}`); } }
+      else if ('tag' in e) { S.earned.push(e.tag); if (!S.tags.includes(e.tag)) { S.tags.push(e.tag); this.fx.push({ t: 'Tag: ' + e.tag, tone: 'neu' }); S.log.push(`Tag gained: ${e.tag} — ${e.why ?? ''}`); } }
       else if ('condition' in e) { if (!S.conditions.includes(e.condition)) { S.conditions.push(e.condition); this.fx.push({ t: 'Condition: ' + e.condition, tone: 'bad' }); S.log.push(`Condition: ${e.condition} — ${e.why ?? ''}`); } }
       else if ('item' in e) { S.items.push(e.item); if (!e.quiet) { this.fx.push({ t: 'Gained: ' + e.item.split(',')[0], tone: 'good' }); S.log.push(`Item gained: ${e.item} — ${e.why ?? ''}`); } }
       else if ('lose' in e) this.lose(e.lose, e.why ?? '');
@@ -316,9 +333,15 @@ export class Run {
     }
     return p;
   }
+  /** What it will actually take: double, for a Prodigal on a certain option (Step 8). */
+  cost(o: Option): number { return this.price(o) * (this.opts.prodigal && o.do ? 2 : 1); }
   /** A costed option the purse cannot pay is locked (ruling, Step 6). */
-  affordable(o: Option) { return this.price(o) <= Math.max(0, this.S.purse); }
-  locked(o: Option) { return !this.gate(o).ok || (!o.do && !o.check) || !this.affordable(o); }
+  affordable(o: Option) { return this.cost(o) <= Math.max(0, this.S.purse); }
+  /** Why an option is barred by an Affliction, or ''. */
+  barred(o: Option): string { return this.opts.noWithdraw && o.withdraw && this.crisis.has(o) ? this.opts.noWithdraw : ''; }
+  /** A lure: shown locked, with no outcome; hidden from a Torpid hero. */
+  hidden(o: Option) { return !!this.opts.hideLures && !o.do && !o.check; }
+  locked(o: Option) { return !this.gate(o).ok || (!o.do && !o.check) || !this.affordable(o) || !!this.barred(o); }
 
   margin(o: Option) {
     const ch = o.check!;
@@ -350,6 +373,7 @@ export class Run {
       if (seg === 'X' && m >= -1 && this.v.rules?.luck !== false) this.adj('luck', 1, 'Fortune owes you one');
     } else {
       this.apply(o.do!.effects); html = this.prose(o.do!.text);
+      if (this.opts.prodigal && this.price(o) > 0) this.adj('purse', -this.price(o), 'Prodigal: paid twice over');
       story = o.story?.M;
     }
     if (story) this.addStory(story);

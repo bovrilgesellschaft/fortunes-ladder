@@ -212,7 +212,8 @@ export class VentureView {
     let why = '';
     if (o.gate) badges.push(`<span class="badge ${g.ok ? 'ok' : 'no'}">${g.ok ? '✓' : '✗'} Requires ${g.need}</span>`);
     if (o.cost) badges.push(`<span class="badge cost">Costs ${run.inline(o.cost)}</span>`);
-    if (!run.affordable(o)) badges.push(`<span class="badge no">✗ Needs ${money(run.price(o))} · you have ${money(Math.max(0, run.S.purse))}</span>`);
+    if (!run.affordable(o)) badges.push(`<span class="badge no">✗ Needs ${money(run.cost(o))} · you have ${money(Math.max(0, run.S.purse))}</span>`);
+    if (run.barred(o)) badges.push(`<span class="badge no">✗ ${run.barred(o)}</span>`);
     if (o.check) {
       const { m, b: bn, why: w, comp } = run.margin(o); why = w;
       badges.push(`<span class="badge">Wheel · ${o.check.attr} ${run.S.attrs[o.check.attr]}${bn ? (bn > 0 ? ' + ' : ' − ') + Math.abs(bn) : ''} vs ${o.check.diff}${comp ? ' · Composure spent' : ''}</span>${this.stripHTML(odds(m))}`);
@@ -236,7 +237,7 @@ export class VentureView {
    <div class="out"></div>
    ${bt.notes ? `<div class="notes prose">${bt.notes.map(n => `<p>${run.inline(n)}</p>`).join('')}</div>` : ''}`;
     const box = sec.querySelector('.choices')!;
-    bt.options.forEach((o, i) => box.appendChild(this.optEl(o, i, id, live)));
+    bt.options.forEach((o, i) => { if (!run.hidden(o)) box.appendChild(this.optEl(o, i, id, live)); });
     if (this.beatCount === 1) {
       // the opening prose carries the drop cap, unruled
       sec.style.borderTop = '0'; sec.style.marginTop = '0'; sec.style.paddingTop = '0';

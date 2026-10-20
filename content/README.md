@@ -145,7 +145,7 @@ next:
 | `{ adj: purse, by: -2s 6d, why: … }` | Money is written as money: `£24`, `10s 6d`, `20 guineas` |
 | `{ loot: £38, why: … }` | Money gained as spoils (counted for shares and losses) |
 | `{ set: tip }` · `{ unset: will }` | Sets or clears a flag, which later text and conditions can read |
-| `{ tag: Gallant (the Quality), why: … }` | A reputation Tag; always names a faction or the Town |
+| `{ tag: Gallant (the Quality), why: … }` | A reputation Tag; always names a faction or the Town, and must be in the register (`settings.yaml` under `tags:`). Earning it again renews it; earning it removes its opposite; three per faction at most |
 | `{ condition: "Wounded (a ball-graze, left arm)", why: … }` | A wound, disease or Affliction |
 | `{ item: …, why: … }` · `{ lose: …, why: … }` | Possessions; `lose_matching: pistol` loses the first item containing the word |
 | `{ hook: …, why: … }` · `{ unhook: Betty Slyfield, why: … }` | Hooks, written as a person or thing and why it matters; `unhook` spends the first that starts with the words given |
@@ -173,6 +173,7 @@ has_hook("Will Gallow")      has_item("A borrowed fan")      has_tag("Brother")
 has_condition("Wounded")     rumour_says("Exposure")
 exposure > start.exposure    # start = the state at the Approach
 has_persona("Capt")          played("blue-boar")
+has_tag_in("Rake", "the Church")   standing("the Church") >= 1   # a Tag with a faction (or the Town); standing from the register
 rank_at_least("Esquire")     known_in("the Quality")   # the Claimed Rank; the circles where the name worn is known
 appearances >= expected_next # in a run: also claimed_rank, true_rank, secret ("kept" or "out"),
                              # lodging_district, equipage (its tier, 0–3), circles_known, sale_money
@@ -241,6 +242,15 @@ Venture can ask the engine for five things by setting a flag:
 At Exposure 10 a name is blown (debts fall due, Celebrity −2, the Book of the True Rank, its
 circles closed, and a Wheel on Nerve against 5 for the Secret); a name made real, or the hero's
 own, suffers a scandal instead.
+
+## Humours and Afflictions
+
+A humour at 5 brings an Affliction, shown as a Condition (`has_condition("Afflicted: Quarrelsome")`),
+until it falls to 3: Prodigal, Quarrelsome, Hipped and Torpid. The engine raises humours itself for
+a Triumph, large spoils or losses, a writ, a name blown and routine, once each a turn; Ventures
+raise them as before. The quarrel a Quarrelsome hero is offered is `humours.quarrel` in
+`settings.yaml`, with the reliefs' prices. A Quarrelsome hero cannot take a Withdraw at a beat whose
+phase is `The Crisis`; a Torpid one is not shown locked lures.
 
 ## Origins
 

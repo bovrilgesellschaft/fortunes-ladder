@@ -8,7 +8,10 @@
     "living",
     "lodging",
     "room",
-    "start_range"
+    "start_range",
+    "factions",
+    "humours",
+    "tags"
   ],
   "properties": {
     "turn_weeks": {
@@ -130,7 +133,6 @@
       "description": "The false self (Step 7); checked by the build.",
       "required": [
         "limit",
-        "circles",
         "cool_weeks",
         "closed_weeks",
         "blown_celebrity",
@@ -261,6 +263,69 @@
                 "items": {
                   "type": "string"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "factions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2
+    },
+    "humours": {
+      "type": "object",
+      "required": [
+        "peak",
+        "relieved_at",
+        "afflictions",
+        "prodigal_upkeep",
+        "torpid_offers",
+        "quarrel",
+        "rises",
+        "relief"
+      ]
+    },
+    "tags": {
+      "type": "object",
+      "required": [
+        "limit",
+        "lapse",
+        "register"
+      ],
+      "properties": {
+        "register": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "valence"
+            ],
+            "properties": {
+              "valence": {
+                "enum": [
+                  "good",
+                  "bad"
+                ]
+              },
+              "except": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "opposite": {
+                "type": "string"
+              },
+              "lasts": {
+                "type": [
+                  "integer",
+                  "string"
+                ]
               }
             }
           }

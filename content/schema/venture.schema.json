@@ -157,10 +157,15 @@
         "circle": {
           "enum": [
             "the Quality",
-            "the City",
-            "the Town",
+            "the Church",
+            "the Law",
+            "the Projectors",
+            "the Army & Navy",
+            "the Underworld",
+            "the Wits",
             "the Trade",
-            "the Underworld"
+            "the Brethren & the Adepts",
+            "the Town"
           ],
           "description": "The circle the Venture is set in: playing it makes the Persona known there, and its rumours are that circle's talk."
         },
@@ -891,10 +896,15 @@
         "circle": {
           "enum": [
             "the Quality",
-            "the City",
-            "the Town",
+            "the Church",
+            "the Law",
+            "the Projectors",
+            "the Army & Navy",
+            "the Underworld",
+            "the Wits",
             "the Trade",
-            "the Underworld"
+            "the Brethren & the Adepts",
+            "the Town"
           ],
           "description": "Whose talk it is; defaults to the Venture's circle."
         }

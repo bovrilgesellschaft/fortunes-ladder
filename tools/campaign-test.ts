@@ -51,6 +51,8 @@ function affairs(c: Campaign, pick: Rng) {
     if (names.length && !c.wear(names[pick.int(0, names.length - 1)].name, ds[pick.int(0, ds.length - 1)], 'garret')) count('changed name');
   }
   if (r() < 0.05) { const live = Object.values(H.records).filter(x => x.state === 'live' && x.name !== H.persona); if (live.length && !c.retirePersona(live[0].name)) count('retired a name'); }
+  // relief for the humours (Step 8), more often when afflicted
+  if (r() < (H.conditions.some(x => x.startsWith('Afflicted')) ? 0.6 : 0.1)) { const k = (['vice', 'religion', 'physician'] as const)[pick.int(0, 2)]; const m = c.relieve(k); if (!/once this month|costs|fee is/.test(m)) count('relief: ' + k); }
 }
 
 function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
@@ -68,6 +70,8 @@ function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
       if (!c.st.offers.length || pick.next() < 0.08) c.idle();
       else {
         // prefer heath when it is offered, to exercise it
+        if (c.afflicted('Choleric') && c.st.offers[0] !== 'quarrel' && !c.hero.confined) problems.push(`seed ${seed}: Quarrelsome, but no quarrel offered`);
+        if (c.afflicted('Phlegmatic') && c.st.offers.length > 2) problems.push(`seed ${seed}: Torpid, but ${c.st.offers.length} offers`);
         const id = c.st.offers.includes('heath') ? 'heath' : c.st.offers[pick.int(0, c.st.offers.length - 1)];
         c.startVenture(id);
       }
@@ -81,6 +85,7 @@ function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
         const beat = run.beats[at];
         try { const h = strip(run.prose(beat.text)); if (BAD.test(h)) problems.push(`${where()}: text: ${h.slice(0, 120)}`); } catch (e) { problems.push(`${where()}: ${(e as Error).message}`); break; }
         const open = beat.options.map((o, i) => ({ o, i })).filter(({ o }) => { const g = run.gate(o); if (BAD.test(strip(g.need))) problems.push(`${where()}: gate text`); return !run.locked(o); });
+        if (run.opts.noWithdraw && beat.phase === 'The Crisis' && open.some(({ o }) => o.withdraw)) problems.push(`${where()}: a Quarrelsome hero may withdraw`);
         if (!open.length) { problems.push(`${where()}: no option can be chosen`); break; }
         const { o, i } = open[pick.int(0, open.length - 1)];
         let seg; let luck = false;
@@ -134,6 +139,18 @@ function playRun(seed: number, policySeed: number, turns = 20): CampaignState {
       if (Object.values(H.records).filter(x => x.state !== 'sold').reduce((a, x) => a + x.debts, 0) > H.debts) problems.push(`seed ${seed}: the names owe more than the books`);
       for (const e of c.st.bills?.events ?? []) { if (/is blown/.test(e)) count('names blown'); if (/Secret is out/.test(e)) count('Secrets out'); if (/is sold for/.test(e)) count('names sold'); if (/stopped talking/.test(e)) count('Exposure cooled'); if (/scandal/.test(e)) count('scandals'); if (/received as/.test(e)) count('claims raised'); if (/retired\./.test(e)) count('names retired over the limit'); }
       if (c.st.bills?.weeks.some(w => w.letters.some(l => l.venture === 'reversal'))) count('brothers died');
+      // humours and Reputation (Step 8)
+      for (const hu of ['Sanguine', 'Choleric', 'Melancholic', 'Phlegmatic'] as const) {
+        const af = c.afflicted(hu);
+        if (H.hum[hu] >= 5 && !af) problems.push(`seed ${seed}: ${hu} at 5 without its Affliction`);
+        if (af && H.hum[hu] <= 3) problems.push(`seed ${seed}: ${hu} at ${H.hum[hu]} still afflicted`);
+        if (af) count('turns ' + world.settings.humours.afflictions[hu]);
+      }
+      const byF: Record<string, number> = {};
+      for (const t of H.tags) { const f = /\((.+)\)$/.exec(t)?.[1] ?? ''; byF[f] = (byF[f] ?? 0) + 1; if (H.tagSince[t] === undefined) problems.push(`seed ${seed}: no date for ${t}`); }
+      for (const [f, n] of Object.entries(byF)) if (f && n > world.settings.tags.limit) problems.push(`seed ${seed}: ${n} Tags with ${f}`);
+      for (const t of H.tags) { const m = /^(.*) \((.+)\)$/.exec(t); const o = m && world.settings.tags.register[m[1]]?.opposite; if (o && H.tags.includes(`${o} (${m![2]})`)) problems.push(`seed ${seed}: ${t} and its opposite`); }
+      for (const e of c.st.bills?.events ?? []) { if (/forgotten that you were/.test(e)) count('Tags lapsed'); if (/no longer/.test(e) && /, so no longer/.test(e)) count('opposites cancelled'); }
       for (const [h, x] of Object.entries(H.hum)) if (x < 0 || x > 5) problems.push(`seed ${seed}: ${h} is ${x}`);
       if (H.purse < 0) problems.push(`seed ${seed} turn ${c.st.turn}: purse below nothing`);
       if (H.debts < 0 || H.loans.some(l => l.owed < 0)) problems.push(`seed ${seed} turn ${c.st.turn}: a debt below nothing`);
@@ -282,11 +299,82 @@ function scenarios() {
     if (died < 2 || died > 20) fail(`the brother died ${died} times in 60 new years (chance 15%)`);
   }
 
+  // ---------- Step 8 ----------
+  // an Affliction begins at 5 and ends at 3
+  { const c = fresh(); const H = c.hero; H.hum.Sanguine = 5; const ev: string[] = [];
+    c.updateAfflictions(ev); if (!c.afflicted('Sanguine')) fail('Sanguine 5 without Prodigal');
+    const up = c.weeklyUpkeep(); H.conditions = H.conditions.filter(x => !x.startsWith('Afflicted')); const base = c.weeklyUpkeep(); c.updateAfflictions([]);
+    if (up !== Math.round(base * 1.5)) fail(`Prodigal Upkeep ${up}, expected ${Math.round(base * 1.5)}`);
+    if (!c.setLiving('pinching')) fail('a Prodigal could pinch');
+    H.hum.Sanguine = 4; c.updateAfflictions([]); if (!c.afflicted('Sanguine')) fail('Prodigal ended at 4');
+    H.hum.Sanguine = 3; c.updateAfflictions([]); if (c.afflicted('Sanguine')) fail('Prodigal outlasted 3');
+  }
+  // Prodigal pays twice for a certain costed option
+  { const c = fresh(); const H = c.hero; H.hum.Sanguine = 5; c.updateAfflictions([]); H.purse = 2400;
+    c.startVenture('tom-kings'); const run = c.makeRun(); const chair = run.beats.piazza.options[0];
+    if (run.cost(chair) !== 24) fail(`a Prodigal's chair should cost 2s, not ${run.cost(chair)}`);
+    run.resolve(chair); if (run.S.purse !== 2400 - 24) fail(`a Prodigal paid ${2400 - run.S.purse}d for a chair`);
+    c.st.current = undefined; c.st.phase = 'town';
+  }
+  // Quarrelsome: the quarrel offered, Withdraw locked at the Crisis but not at the Complication
+  { const c = fresh(); const H = c.hero; H.hum.Choleric = 5; c.updateAfflictions([]); c.drawOffers();
+    if (c.st.offers[0] !== 'quarrel') fail(`Quarrelsome offers: ${c.st.offers}`);
+    c.startVenture('quarrel'); const run = c.makeRun();
+    const w2 = run.beats.words.options.find(o => o.withdraw)!, w4 = run.beats.crisis.options.find(o => o.withdraw)!;
+    if (run.locked(w2) || !run.locked(w4)) fail('Quarrelsome: Withdraw should be open at the Complication and locked at the Crisis');
+    c.st.current = undefined; c.st.phase = 'town';
+    H.hum.Choleric = 2; c.updateAfflictions([]); c.drawOffers(); if (c.st.offers.includes('quarrel')) fail('the quarrel offered to a calm man');
+  }
+  // Hipped: every other turn lost, and a lost month does not raise Phlegmatic
+  { const c = fresh(); const H = c.hero; H.hum.Melancholic = 5; c.updateAfflictions([]);
+    const lost: boolean[] = [];
+    for (let t = 0; t < 4; t++) { H.hum.Melancholic = 5; (c as any).beginTurn(); lost.push(!!c.st.lost); if (c.st.lost && c.st.offers.length) fail('offers on a lost turn'); const ph = H.hum.Phlegmatic; if (c.st.lost) { c.idle(); if (H.hum.Phlegmatic > ph) fail('a lost month raised Phlegmatic'); c.st.phase = 'town'; c.st.bills = undefined; } }
+    if (lost.join() !== 'true,false,true,false') fail(`Hipped turns: ${lost}`);
+  }
+  // Torpid: two offers, none dated; lures hidden
+  { const c = fresh(); const H = c.hero; H.hum.Phlegmatic = 5; c.updateAfflictions([]); c.drawOffers();
+    if (c.st.offers.length > 2 || c.st.offers.some(id => c.byId[id].offer?.from)) fail(`Torpid offers: ${c.st.offers}`);
+    c.startVenture('levee'); if (!c.makeRun().opts.hideLures) fail('Torpid lures shown'); c.st.current = undefined; c.st.phase = 'town';
+  }
+  // the engine's own rises, once per humour per turn
+  { const c = fresh(); const H = c.hero; H.hum.Phlegmatic = 1; const ev: string[] = [];
+    (c as any).rise('Phlegmatic', 'x', ev); (c as any).rise('Phlegmatic', 'y', ev);
+    if (H.hum.Phlegmatic !== 2) fail(`two rises in a turn gave Phlegmatic ${H.hum.Phlegmatic}`);
+  }
+  // relief: one a turn; religion gives Pious and cancels Rake with the Church
+  { const c = fresh(); const H = c.hero; H.hum.Melancholic = 4; c.addTag('Rake (the Church)');
+    c.relieve('religion');
+    if (H.hum.Melancholic !== 2 || !H.tags.includes('Pious (the Church)') || H.tags.includes('Rake (the Church)')) fail(`religion: Melancholic ${H.hum.Melancholic}, tags ${H.tags}`);
+    if (!/once this month/.test(c.relieve('vice'))) fail('two reliefs in a month');
+  }
+  { let worse = 0, wasted = 0; for (let k = 0; k < 200; k++) { const c = fresh(1000 + k); const H = c.hero; H.purse = 2400; H.hum.Choleric = 4;
+      const m = c.relieve('physician', 'Choleric'); if (H.purse !== 2400 - 252) fail('the physician’s guinea');
+      if (/Catastrophe/.test(m)) { worse++; if (H.hum.Choleric !== 5 || !H.conditions.includes('Physicked (bled and purged)')) fail('a worse cure'); c.nextTurn(); if (H.conditions.includes('Physicked (bled and purged)')) fail('physicked for good'); }
+      else if (/Reversal/.test(m)) { wasted++; if (H.hum.Choleric !== 4) fail('a wasted guinea cured'); }
+      else if (H.hum.Choleric !== 3) fail('the physician did nothing'); }
+    if (!worse || !wasted) fail(`physician: ${worse} worse, ${wasted} wasted in 200`);
+  }
+  // Tags: the cap, the lapse, Savoyard for good, standing
+  { const c = fresh(); const H = c.hero;
+    for (const t of ['Wit', 'Gallant', 'Agreeable', 'Learned']) { c.addTag(`${t} (the Quality)`); c.st.at++; }
+    if (H.tags.filter(t => t.endsWith('(the Quality)')).length !== 3 || H.tags.includes('Wit (the Quality)')) fail(`the cap: ${H.tags}`);
+    c.addTag('Savoyard (the Quality)'); c.addTag('Rake (the Town)');
+    if (c.standing('the Church') !== -1 || c.standing('the Wits') !== 1) fail(`standing: Church ${c.standing('the Church')}, Wits ${c.standing('the Wits')}`);
+    (c as any).lapseTags(c.st.at + 48, []);
+    if (H.tags.includes('Gallant (the Quality)') || !H.tags.includes('Savoyard (the Quality)')) fail(`the lapse: ${H.tags}`);
+  }
+  // a Step 7 save (version 3) is brought up to date
+  { const c = fresh(); const st = JSON.parse(JSON.stringify(c.st)); st.v = 3; delete st.hero.tagSince; delete st.hero.timed;
+    st.hero.records[st.hero.styled].circles = ['the City', 'the Trade']; st.hero.closed = { 'the Trade': 999 }; st.hero.tags = ['Wit (the Town)'];
+    const m = new Campaign(world, st);
+    if (m.st.v !== 4 || m.hero.records[m.hero.styled].circles.join() !== 'the Projectors,the Town' || !m.hero.closed['the Town'] || m.hero.tagSince['Wit (the Town)'] === undefined) fail('migration from version 3');
+  }
+
   // a Step 6 save (version 2) is brought up to date
   { const c = fresh(); const st = JSON.parse(JSON.stringify(c.st)); st.v = 2; delete st.hero.records; delete st.hero.secret; delete st.hero.closed;
     st.hero.personas['Capt. Nobody'] = 3; st.hero.persona = 'Capt. Nobody';
     const m = new Campaign(world, st);
-    if (m.st.v !== 3 || !m.hero.records['Capt. Nobody'] || !m.hero.records[m.hero.styled] || m.hero.secret !== 'kept') fail('migration from version 2');
+    if (m.st.v !== 4 || !m.hero.records['Capt. Nobody'] || !m.hero.records[m.hero.styled] || m.hero.secret !== 'kept') fail('migration from version 2');
   }
 }
 scenarios();
@@ -297,6 +385,6 @@ console.log(`offered: ${Object.entries(offered).map(([k, x]) => `${k} ${x}`).joi
 console.log(`played:  ${Object.entries(played).map(([k, x]) => `${k} ${x}`).join(', ')}`);
 console.log(`heath offered on ${heathOffered} of ${heathChances} chances (a ready hero, in its window).`);
 console.log(`after 20 turns, on average: purse ${L(endPurse / runs)}, tradesmen ${L(endDebts / runs)}.`);
-console.log(`the economy and the false self: ${Object.entries(tally).sort().map(([k, x]) => `${k} ${x}`).join(', ')}.`);
+console.log(`the economy, the false self and the humours: ${Object.entries(tally).sort().map(([k, x]) => `${k} ${x}`).join(', ')}.`);
 if (problems.length) { console.log(`\n${problems.length} problem(s):`); problems.slice(0, 30).forEach(p => console.log('  ' + p)); process.exit(1); }
 console.log('No problems.');

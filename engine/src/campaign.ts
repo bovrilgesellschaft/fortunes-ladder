@@ -10,7 +10,7 @@
 import { Run, money, odds, parseMoney, type HeroSeed } from './core';
 import { compile, evaluate, type Fn } from './expr';
 import { Rng } from './rng';
-import type { Effect, Origin, Passage, PersonaKind, Rank, Room, Segment, Told, Venture, When, World, Written } from './types';
+import type { Effect, Humour, Origin, Passage, PersonaKind, Rank, Room, Segment, Told, Venture, When, World, Written } from './types';
 import { RANKS, SEGMENTS, SEGMENT_NAMES } from './types';
 import { drawNames, nameVars, type Names } from './names';
 import {
@@ -18,8 +18,16 @@ import {
   type Confinement, type Dress, type Loan, type Note, type Pledge, type Slot, type Writ,
 } from './economy';
 
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
+const HUMOURS: Humour[] = ['Sanguine', 'Choleric', 'Melancholic', 'Phlegmatic'];
 const EPOCH = 1719;
+/** What each Affliction does, as the bills announce it. */
+const AFFLICTION: Record<Humour, string> = {
+  Sanguine: 'Your spirits run away with your purse: Upkeep is half as much again, a certain cost is paid twice over, and you will not hear of pinching.',
+  Choleric: 'You cannot let anything pass: a quarrel finds you every month, and at the Crisis you will not withdraw.',
+  Melancholic: 'You are hipped: every other month passes in your room with the curtains drawn.',
+  Phlegmatic: 'You are torpid: fewer chances come your way, those that will not wait pass you by, and you no longer notice the doors you cannot open.',
+};
 const LIM: Record<string, [number, number]> = { exposure: [0, 10], luck: [0, 3], celebrity: [0, 10], notoriety: [0, 10] };
 
 // ---------- the calendar ----------
@@ -76,6 +84,11 @@ export interface Hero {
   closed: Record<string, number>;
   /** While the Secret is fresh news, Credit is reckoned at a lower rank. */
   lowCredit?: { rank: Rank; until: number };
+  // ----- humours and Reputation (Step 8) -----
+  /** The week each Tag was last earned, for its lapse. */
+  tagSince: Record<string, number>;
+  /** Conditions that pass of themselves, until a week. */
+  timed: Record<string, number>;
 }
 
 /** A name the hero passes under (Step 7 rulings). */
@@ -137,6 +150,17 @@ export interface CampaignState {
   ended?: { how: string; at: number };
   /** One line per turn, for the designer's view. */
   log: string[];
+  // ----- Step 8 -----
+  /** The engine's own humour rises this turn, at most one each. */
+  auto?: Record<string, boolean>;
+  /** A Hipped hero's lost turn: only Idle, and idling does not raise Phlegmatic. */
+  lost?: boolean;
+  /** Whether the last Hipped turn was lost, so that they alternate. */
+  lastLost?: boolean;
+  /** The Venture played last turn, for routine. */
+  lastVenture?: string;
+  /** The turn of the last relief: one a turn. */
+  relieved?: number;
 }
 
 // ---------- the run ----------
@@ -173,6 +197,17 @@ export class Campaign {
         H.records[p] = { ...this.newRec(p, H.claimedRank, 'live', 0), kind: p === alias ? this.origin.hero?.alias_kind : undefined };
       }
       H.secret = 'kept'; H.closed = {};
+      st.v = 3;
+    }
+    if (st.v === 3) {
+      // Step 8: the circles are the factions; Tags date from now
+      const H = st.hero, MAP: Record<string, string> = { 'the City': 'the Projectors', 'the Trade': 'the Town' };
+      const fix = (c: string) => MAP[c] ?? c;
+      for (const r of Object.values(H.records)) r.circles = [...new Set(r.circles.map(fix))];
+      H.closed = Object.fromEntries(Object.entries(H.closed).map(([k, u]) => [fix(k), u]));
+      for (const l of st.post) if (l.circle) l.circle = fix(l.circle);
+      H.tagSince = Object.fromEntries(H.tags.map(t => [t, st.at]));
+      H.timed = {};
       st.v = SAVE_VERSION;
     }
   }
@@ -209,7 +244,7 @@ export class Campaign {
       persona: nv.styled, personas: { [nv.styled]: x.exposure },
       trueRank: h.true_rank, claimedRank: h.claimed_rank, lodging: { ...h.lodging },
       dress: {}, notes: [], loans: [], pledges: [], writs: [], living: 'claimed',
-      records: {}, secret: 'kept', closed: {},
+      records: {}, secret: 'kept', closed: {}, tagSince: Object.fromEntries(x.tags.map(t => [t, at])), timed: {},
     };
     const st: CampaignState = {
       v: SAVE_VERSION, seed, rng: rng.state, hero, at, turn: 1, phase: 'town', offers: [], played: {},
@@ -246,6 +281,8 @@ export class Campaign {
       rumour_says: (w) => this.st.post.some(r => r.effect.includes(w as string)),
       rank_at_least: (r) => rankIndex(H.claimedRank) >= rankIndex(r as Rank),
       known_in: (k) => !!H.records[H.persona]?.circles.includes(k as string),
+      has_tag_in: (t, f) => H.tags.some(x => x.startsWith(`${t} (`) && (x.endsWith(`(${f})`) || x.endsWith('(the Town)'))),
+      standing: (f) => this.standing(f as string),
     };
   }
 
@@ -287,8 +324,15 @@ export class Campaign {
   }
 
   drawOffers() {
-    const pool = this.eligible(), rng = new Rng(this.st.rng), out: string[] = [];
-    while (out.length < 3 && pool.length) {
+    const rng = new Rng(this.st.rng), out: string[] = [], hu = this.world.settings.humours;
+    let pool = this.eligible();
+    // Torpid: fewer offers, and nothing that will not wait (Step 8)
+    const n = this.afflicted('Phlegmatic') ? hu.torpid_offers : 3;
+    if (this.afflicted('Phlegmatic')) pool = pool.filter(v => !v.offer!.from && !v.offer!.to);
+    // Quarrelsome: a quarrel is always among them
+    if (this.afflicted('Choleric')) { const q = pool.find(v => v.id === hu.quarrel); if (q) { out.push(q.id); pool.splice(pool.indexOf(q), 1); } }
+    else pool = pool.filter(v => v.id !== hu.quarrel);
+    while (out.length < n && pool.length) {
       const i = rng.weighted(pool.map(v => v.offer!.weight ?? 1));
       out.push(pool[i].id); pool.splice(i, 1);
     }
@@ -316,6 +360,11 @@ export class Campaign {
       hero: seed, at: c.at, extra: this.extra(), played: (x) => !!this.st.played[x], exposureExtra: xx,
       exposureOf: (p) => (H.records[p] && !['sold', 'dead'].includes(H.records[p].state) ? H.personas[p] : undefined),
       newExposure: this.startExposure(H.claimedRank, true),
+      // the Afflictions, as they stood at the Approach
+      prodigal: H.conditions.includes(this.affName('Sanguine')),
+      noWithdraw: H.conditions.includes(this.affName('Choleric')) ? 'Quarrelsome: you cannot back down' : undefined,
+      hideLures: H.conditions.includes(this.affName('Phlegmatic')),
+      standing: (f) => this.standing(f, H.tags),
     });
   }
 
@@ -357,11 +406,11 @@ export class Campaign {
   finishVenture(run: Run, chapterHeading: string) {
     const c = this.st.current!; const v = this.byId[c.id]; const S = run.S; const H = this.hero;
     for (const k of Object.keys(H.hum)) if (S.hum[k] > c.hero.hum[k]) this.st.raised[k] = true;
+    const events: string[] = [];
     Object.assign(H, {
       purse: S.purse, debts: Math.max(0, S.debts), luck: S.luck, notoriety: S.notoriety, celebrity: S.celebrity,
       attrs: { ...S.attrs }, hum: { ...S.hum }, conditions: [...S.conditions], tags: [...S.tags], items: [...S.items], hooks: [...S.hooks],
     });
-    const events: string[] = [];
     // the name worn: a new one becomes a record; an old one brings back its claim
     const was = c.hero.records[S.persona] ? c.hero.personas[S.persona] : this.startExposure(c.hero.claimedRank, true);
     if (!H.records[S.persona]) {
@@ -393,6 +442,17 @@ export class Campaign {
     if (S.flags.sold_name && H.persona !== H.styled) this.sellPersona(H.persona, !!S.flags.named, events);
     if (S.flags.secret_out) this.secretOut(events);
     if (S.flags.made_real) this.makeReal(H.persona, events);
+    // Reputation: renewals, opposites and the short list (Step 8)
+    H.tags = c.hero.tags.filter(t => S.tags.includes(t)).concat(S.tags.filter(t => !c.hero.tags.includes(t)));
+    this.earnTags(S.earned, events);
+    // the engine's own humour rises (Step 8)
+    const R = this.world.settings.humours.rises, worth = (h: { purse: number; debts: number }) => h.purse - h.debts;
+    if (c.choices.some(ch => ch.seg === 'T')) this.rise('Sanguine', 'A Triumph goes to your head', events);
+    if (S.spoils >= amt(R.spoils)) this.rise('Sanguine', `Spoils of ${money(S.spoils)}`, events);
+    if (worth(c.hero) - worth(H) >= amt(R.loss)) this.rise('Choleric', `${money(worth(c.hero) - worth(H))} lost in a month`, events);
+    if (v.id === 'bailiff') this.rise('Choleric', 'A writ served', events);
+    if (this.st.lastVenture === v.id && !v.system) this.rise('Phlegmatic', 'The same scene twice running', events);
+    this.st.lastVenture = v.id;
     for (const r of S.rumours) {
       // talk from another district takes a week longer to reach the hero's lodging
       const far = v.offer?.district && v.offer.district !== H.lodging.district ? 1 : 0;
@@ -409,10 +469,12 @@ export class Campaign {
 
   /** Idle the month: no Venture, no spin. */
   idle() {
-    const H = this.hero;
-    H.hum.Phlegmatic = Math.min(5, H.hum.Phlegmatic + 1); this.st.raised.Phlegmatic = true;
-    this.st.log.push(`Turn ${this.st.turn}: idled`);
-    this.settle();
+    const events: string[] = [];
+    // a Hipped hero's lost month is not idleness, and does not raise Phlegmatic (Step 8)
+    if (!this.st.lost) this.rise('Phlegmatic', 'An idle month', events);
+    this.st.log.push(`Turn ${this.st.turn}: ${this.st.lost ? 'lost to the hip' : 'idled'}`);
+    this.st.lastVenture = undefined;
+    this.settle(events);
   }
 
   // ----- the economy: Appearances, Credit, debts -----
@@ -458,7 +520,8 @@ export class Campaign {
     const living = amt(s.living[this.livingRank()]);
     const room = Math.round(amt(s.lodging[H.lodging.district]) * s.room[H.lodging.room]);
     const wages = WEEKLY.reduce((a, sl) => a + (H.dress[sl]?.weekly ?? 0), 0);
-    return living + room + wages;
+    // Prodigal: Upkeep +50% (Step 8)
+    return Math.round((living + room + wages) * (this.afflicted('Sanguine') ? s.humours.prodigal_upkeep : 1));
   }
 
   private settle(events: string[] = []) {
@@ -469,6 +532,7 @@ export class Campaign {
       const at = this.st.at + i;
       if (when(at).week === 1) this.newYear(at, events);
       this.cool(events);
+      this.lapseTags(at, events);
       const up = this.weeklyUpkeep();
       const paid = Math.min(up, Math.max(0, H.purse)), owed = up - paid;
       H.purse -= paid; H.debts += owed; total += up; owedAll += owed;
@@ -515,7 +579,7 @@ export class Campaign {
       if (H.celebrity > 0) H.celebrity--;
       events.push('A month in the Liberty of the Savoy: Melancholic +1, Celebrity −1.');
       if (H.savoySince !== undefined && this.st.at + s.turn_weeks - H.savoySince >= e.savoy.season && !H.tags.includes(e.savoy.tag)) {
-        H.tags.push(e.savoy.tag); events.push(`A season in the Savoy: you are now ${e.savoy.tag.replace(/ \(.*\)$/, '')}, and the Quality has forgotten your face.`);
+        this.addTag(e.savoy.tag); events.push(`A season in the Savoy: you are now ${e.savoy.tag.replace(/ \(.*\)$/, '')}, and the Quality has forgotten your face.`);
       }
     }
     if (H.confined?.stage === 'prison' && H.confined.side === 'common') {
@@ -527,7 +591,8 @@ export class Campaign {
     for (const k of Object.keys(H.hum)) {
       if (!this.st.raised[k] && H.hum[k] > 1) { H.hum[k]--; cooled.push(k); }
     }
-    this.st.raised = {};
+    this.st.raised = {}; this.st.auto = {};
+    this.updateAfflictions(events);
     this.syncDebts();
     this.st.news = weeks.flatMap(w => w.letters);
     this.st.bills = { weeks, cooled, total, owed: owedAll, events };
@@ -570,7 +635,7 @@ export class Campaign {
     if (r.on_delivery) {
       for (const e of r.on_delivery) {
         if ('adj' in e) bump(e.adj, typeof e.by === 'number' ? e.by : parseMoney(String(e.by)));
-        else if ('tag' in e) { if (!H.tags.includes(e.tag)) { H.tags.push(e.tag); done.push('Tag: ' + e.tag); } }
+        else if ('tag' in e) { if (!H.tags.includes(e.tag)) done.push('Tag: ' + e.tag); this.addTag(e.tag, events); }
         else if ('hook' in e) { H.hooks.push(e.hook); done.push('New hook'); }
         else if ('unhook' in e) { const i = H.hooks.findIndex(h => h.startsWith(e.unhook)); if (i > -1) { H.hooks.splice(i, 1); done.push('Hook spent'); } }
         else if ('item' in e) { H.items.push(e.item); done.push('Gained: ' + e.item.split(',')[0]); }
@@ -598,6 +663,12 @@ export class Campaign {
 
   private beginTurn() {
     const H = this.hero;
+    // conditions that pass of themselves
+    for (const [k, u] of Object.entries(H.timed)) if (u <= this.st.at) { delete H.timed[k]; H.conditions = H.conditions.filter(x => x !== k); }
+    // Hipped: every other turn is lost (Step 8)
+    this.st.lost = this.afflicted('Melancholic') ? !this.st.lastLost : false;
+    this.st.lastLost = this.st.lost;
+    if (this.st.lost) { this.st.offers = []; return; }
     if (H.confined) {
       if (H.purse >= this.enforceable()) this.release('You pay what is owed, every farthing, and the turnkey lets you out into the street.');
       else { this.st.offers = this.byId.fleet ? ['fleet'] : []; return; }
@@ -835,6 +906,7 @@ export class Campaign {
       events.push(`You are ${H.styled} again, and a ${H.trueRank}, as you always were.`);
     }
     if (r.state !== 'own') r.state = 'dead';
+    this.rise('Melancholic', 'A name blown', events);
     H.celebrity = Math.max(0, H.celebrity - P.blown_celebrity * twice);
     events.push(`Celebrity −${P.blown_celebrity * twice}.`);
     // every tradesman's debt falls due at once
@@ -869,7 +941,7 @@ export class Campaign {
     if (!so) return;
     const chips: string[] = [];
     if (so.credit_rank && so.weeks) { H.lowCredit = { rank: so.credit_rank, until: at + so.weeks }; chips.push(`Credit as a ${so.credit_rank}, ${so.weeks} weeks`); }
-    if (so.tag && !H.tags.includes(so.tag)) { H.tags.push(so.tag); chips.push('Tag: ' + so.tag); }
+    if (so.tag) { this.addTag(so.tag, events); chips.push('Tag: ' + so.tag); }
     if (so.hook) { H.hooks.push(this.fill(so.hook)); chips.push('New hook'); }
     this.tell(so.letter, so.story, at, 'secret', chips, events);
   }
@@ -912,6 +984,137 @@ export class Campaign {
     if (total <= H.debts) return;
     let left = H.debts;
     recs.forEach((r, i) => { r.debts = i === recs.length - 1 ? left : Math.floor(r.debts * H.debts / total); left -= r.debts; });
+  }
+
+  // ----- humours and Reputation (Step 8) -----
+
+  get hset() { return this.world.settings.humours; }
+  affName(h: Humour) { return `Afflicted: ${this.hset.afflictions[h]}`; }
+  afflicted(h: Humour) { return this.hero.conditions.includes(this.affName(h)); }
+  /** The engine's own rise: +1, at most once per humour per turn. */
+  private rise(h: Humour, why: string, events: string[]) {
+    const H = this.hero, st = this.st; st.auto ??= {};
+    if (st.auto[h]) return;
+    st.auto[h] = true;
+    if (H.hum[h] >= this.hset.peak) { st.raised[h] = true; return; }
+    H.hum[h]++; st.raised[h] = true;
+    events.push(`${why}: ${h} +1.`);
+  }
+  /** An Affliction begins at the peak and ends when the humour has fallen far enough. */
+  updateAfflictions(events: string[]) {
+    const H = this.hero, hs = this.hset;
+    for (const h of HUMOURS) {
+      const name = this.affName(h), has = H.conditions.includes(name);
+      if (!has && H.hum[h] >= hs.peak) {
+        H.conditions.push(name);
+        events.push(`<b>${hs.afflictions[h]}.</b> ${AFFLICTION[h]}`);
+        if (h === 'Sanguine' && H.living === 'pinching') H.living = 'claimed';
+        this.st.log.push(`Turn ${this.st.turn}: afflicted, ${hs.afflictions[h]}`);
+      } else if (has && H.hum[h] <= hs.relieved_at) {
+        H.conditions = H.conditions.filter(c => c !== name);
+        events.push(`${h} has fallen to ${H.hum[h]}: you are no longer ${hs.afflictions[h].toLowerCase()}.`);
+      }
+    }
+  }
+
+  /** One relief a turn: vice, religion, or a physician (Ruling 3). Returns what happened. */
+  relieve(kind: 'vice' | 'religion' | 'physician', humour?: Humour): string {
+    const H = this.hero, st = this.st, R = this.hset.relief, ev: string[] = [];
+    if (st.relieved === st.turn) return 'You have sought relief once this month already.';
+    let out = '';
+    if (kind === 'vice') {
+      const h: Humour = H.hum.Sanguine > H.hum.Choleric ? 'Sanguine' : 'Choleric';
+      const cost = amt(this.world.settings.living[this.livingRank()]);
+      if (H.purse < cost) return `A night of it costs ${money(cost)}; you have ${money(H.purse)}.`;
+      H.purse -= cost; H.hum[h] = Math.max(0, H.hum[h] - R.vice.by);
+      out = `A night at the tavern, and later at the bagnio, of which the less said the better. It costs ${money(cost)}. ${h} −${R.vice.by}.`;
+      if (this.random() < R.vice.notoriety) { H.notoriety = Math.min(10, H.notoriety + 1); out += ' The watch took your name on the way home: Notoriety +1.'; }
+    } else if (kind === 'religion') {
+      const late = abs(R.religion.moorfields) <= st.at;
+      H.hum.Melancholic = Math.max(0, H.hum.Melancholic - R.religion.by);
+      this.addTag(R.religion.tag, ev);
+      out = (late ? 'You stand in the crowd at Moorfields while a young clergyman preaches in the open air, and weep, and are comforted. '
+        : H.confined ? 'You hear the chaplain read prayers in the prison chapel, and sit with him afterwards. '
+        : 'You go to divine service, and afterwards the parson talks with you an hour. ')
+        + `Melancholic −${R.religion.by}. The Church marks you down as ${R.religion.tag.replace(/ \(.*$/, '')}.`;
+    } else {
+      const h = humour ?? HUMOURS.reduce((a, b) => (H.hum[b] > H.hum[a] ? b : a));
+      const fee = amt(R.physician.fee);
+      if (H.purse < fee) return `The physician’s fee is ${money(fee)}; you have ${money(H.purse)}.`;
+      H.purse -= fee;
+      const m = Math.max(-3, Math.min(4, (H.attrs[R.physician.attr] ?? 0) - R.physician.diff));
+      const p = odds(m), x = this.random(); let k = 0, acc = 0; for (; k < 4; k++) { acc += p[k]; if (x < acc) break; }
+      const seg = SEGMENTS[k];
+      out = `The physician takes his guinea. Fortune’s Wheel, ${R.physician.attr} ${H.attrs[R.physician.attr]} against ${R.physician.diff}: ${SEGMENT_NAMES[seg]}. `;
+      if (seg === 'R') out += 'His draught does nothing whatever.';
+      else if (seg === 'X') {
+        H.hum[h] = Math.min(5, H.hum[h] + 1);
+        if (!H.conditions.includes(R.physician.condition)) H.conditions.push(R.physician.condition);
+        H.timed[R.physician.condition] = st.at + R.physician.weeks;
+        out += `He bleeds you, and purges you, and you are worse: ${h} +1, and ${R.physician.condition.toLowerCase()} for a month.`;
+      } else { H.hum[h] = Math.max(0, H.hum[h] - R.physician.by); out += `${h} −${R.physician.by}.`; }
+    }
+    st.relieved = st.turn;
+    this.updateAfflictions(ev);
+    st.log.push(`Turn ${st.turn}: relief (${kind})`);
+    return [out, ...ev].join(' ').replace(/<[^>]+>/g, '');
+  }
+
+  // Tags: "Brave (the Underworld)"
+  private parseTag(t: string) { const m = /^(.*) \((.+)\)$/.exec(t); return m ? { name: m[1], faction: m[2] } : { name: t, faction: '' }; }
+  private lastsOf(name: string): number {
+    const e = this.world.settings.tags.register[name], l = e?.lasts;
+    return l === undefined ? this.world.settings.tags.lapse : typeof l === 'number' ? l : Infinity;
+  }
+  /** Gain or renew a Tag, with its opposite cancelled and the short list kept. */
+  addTag(t: string, events: string[] = []) {
+    const H = this.hero;
+    if (!H.tags.includes(t)) H.tags.push(t);
+    this.earnTags([t], events);
+  }
+  private earnTags(earned: string[], events: string[]) {
+    const H = this.hero, T = this.world.settings.tags;
+    for (const t of earned) {
+      H.tagSince[t] = this.st.at;
+      const { name, faction } = this.parseTag(t);
+      const opp = T.register[name]?.opposite;
+      if (opp) {
+        const o = `${opp} (${faction})`;
+        if (H.tags.includes(o)) { H.tags = H.tags.filter(x => x !== o); delete H.tagSince[o]; events.push(`${name} with ${faction}, so no longer ${opp}.`); }
+      }
+      if (!faction) continue;
+      const mine = H.tags.filter(x => this.parseTag(x).faction === faction);
+      while (mine.length > T.limit) {
+        const old = mine.filter(x => x !== t).sort((a, b) => (H.tagSince[a] ?? 0) - (H.tagSince[b] ?? 0))[0];
+        mine.splice(mine.indexOf(old), 1); H.tags = H.tags.filter(x => x !== old); delete H.tagSince[old];
+        events.push(`${faction.replace(/^./, c => c.toUpperCase())} can only think of you in so many ways: ${this.parseTag(old).name} is forgotten.`);
+      }
+    }
+  }
+  /** Tags lapse a year after they were last earned (some never). */
+  private lapseTags(at: number, events: string[]) {
+    const H = this.hero;
+    for (const t of [...H.tags]) {
+      const since = H.tagSince[t] ?? (H.tagSince[t] = at);
+      if (at - since >= this.lastsOf(this.parseTag(t).name)) {
+        H.tags = H.tags.filter(x => x !== t); delete H.tagSince[t];
+        const { name, faction } = this.parseTag(t);
+        events.push(`${faction ? faction.replace(/^./, c => c.toUpperCase()) + ' has' : 'The Town has'} forgotten that you were ${name}.`);
+      }
+    }
+  }
+  /** Standing with a faction: the Tags it likes, less the ones it does not; the Town's count everywhere. */
+  standing(f: string, tags = this.hero.tags): number {
+    const reg = this.world.settings.tags.register;
+    let n = 0;
+    for (const t of tags) {
+      const { name, faction } = this.parseTag(t);
+      if (faction !== f && faction !== 'the Town') continue;
+      const e = reg[name]; if (!e) continue;
+      const good = (e.valence === 'good') !== !!e.except?.includes(f);
+      n += good ? 1 : -1;
+    }
+    return n;
   }
 
   // ----- in the town -----
@@ -1034,6 +1237,9 @@ export class Campaign {
     this.drawOffers();
     return null;
   }
-  setLiving(mode: 'claimed' | 'pinching') { this.hero.living = mode; }
+  setLiving(mode: 'claimed' | 'pinching'): string | null {
+    if (mode === 'pinching' && this.afflicted('Sanguine')) return 'Prodigal: you cannot bring yourself to live below your rank.';
+    this.hero.living = mode; return null;
+  }
   setSide(side: 'common' | 'room') { if (this.hero.confined) this.hero.confined.side = side; }
 }

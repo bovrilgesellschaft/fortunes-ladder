@@ -243,12 +243,27 @@ export interface PersonaKind {
   surnames: string[]; claims: string[];
 }
 export interface PersonaSettings {
-  limit: number; circles: string[]; cool_weeks: number; closed_weeks: number;
+  limit: number; cool_weeks: number; closed_weeks: number;
   blown_celebrity: number; secret_diff: number;
   scandal: { celebrity: number; notoriety: number };
   sale: { min: Amount; max: Amount; named_from: number; named_to: number; named_exposure: number };
   kinds: PersonaKind[];
 }
+
+export type Humour = 'Sanguine' | 'Choleric' | 'Melancholic' | 'Phlegmatic';
+export interface HumourSettings {
+  peak: number; relieved_at: number;
+  afflictions: Record<Humour, string>;
+  prodigal_upkeep: number; torpid_offers: number; quarrel: string;
+  rises: { spoils: Amount; loss: Amount };
+  relief: {
+    vice: { by: number; notoriety: number };
+    religion: { by: number; tag: string; moorfields: When };
+    physician: { by: number; fee: Amount; attr: string; diff: number; condition: string; weeks: number };
+  };
+}
+export interface TagEntry { valence: 'good' | 'bad'; except?: string[]; opposite?: string; lasts?: number | string }
+export interface TagSettings { limit: number; lapse: number; register: Record<string, TagEntry> }
 
 export interface Settings {
   living: Record<Rank, Amount>;
@@ -261,6 +276,10 @@ export interface Settings {
   start_range: { from: number; to: number };
   economy: EconomySettings;
   personas: PersonaSettings;
+  /** The nine factions and the Town (Step 8): Reputation, and the circles where a name is known. */
+  factions: string[];
+  humours: HumourSettings;
+  tags: TagSettings;
 }
 
 /** Everything a run page needs. */

@@ -79,13 +79,20 @@ export function mountRun(world: World) {
       debtRows, writs: h.writs.map(w => `A writ: ${w.creditor}, ${money(c!.writAmount(w))}`),
     };
   };
+  /** Tags grouped by faction, with the standing they add up to (Step 8). */
+  function tagsByFaction(): string[] {
+    const h = H(), by: Record<string, string[]> = {};
+    for (const t of h.tags) { const m = /^(.*) \((.+)\)$/.exec(t); const f = m ? m[2] : 'no faction'; (by[f] ??= []).push(m ? m[1] : t); }
+    return world.settings.factions.filter(f => by[f]).concat(by['no faction'] ? ['no faction'] : [])
+      .map(f => { const n = f === 'no faction' ? 0 : c!.standing(f); return `${f.replace(/^./, x => x.toUpperCase())}${f === 'the Town' ? ', everywhere' : ''} (${n > 0 ? '+' + n : n < 0 ? '−' + -n : '0'}): ${by[f].join(', ')}`; });
+  }
   function heroLedger(): LedgerData {
     const h = H();
     return {
       who: who(), purse: h.purse, debts: h.debts, composure: null, attrs: h.attrs, hum: h.hum,
       exposure: showExposure(h.persona) ? (h.personas[h.persona] ?? 0) : null,
       notoriety: h.notoriety, celebrity: h.celebrity, luck: h.luck,
-      conditions: h.conditions, tags: h.tags, items: possessions(), hooks: h.hooks, circumstances: circumstances(), ...economy(),
+      conditions: h.conditions, tags: tagsByFaction(), items: possessions(), hooks: h.hooks, circumstances: circumstances(), ...economy(),
     };
   }
   const chapterNo = () => `Chap. ${roman(c!.st.story.length + 1)}.`;
@@ -119,6 +126,7 @@ export function mountRun(world: World) {
 
   // ---------- screens ----------
   function render() {
+    if (c && reliefTurn !== c.st.turn) { reliefNote = ''; reliefTurn = c.st.turn; }
     view = null; header(); chrome.switchTab('play'); ledger.reset();
     if (!c) return renderStart();
     if (c.st.phase === 'venture') return renderVenture();
@@ -213,6 +221,7 @@ export function mountRun(world: World) {
   }
 
   let notice = '';
+  let reliefTurn = -1;
   const act = (f: () => string | null | void) => { const r = f(); notice = r || ''; save(); render(); };
 
   /** The hero's affairs: Appearances and the shops, the pawnbroker, the debts, the moneylender. */
@@ -286,6 +295,35 @@ export function mountRun(world: World) {
         <p class="small" id="kindNeeds"></p>`}
       </section>`;
   }
+  let reliefNote = '';
+  /** One relief a month for the humours (Step 8). */
+  function reliefHTML(): string {
+    const h = H(), st = c!.st, R = world.settings.humours.relief, HU = ['Sanguine', 'Choleric', 'Melancholic', 'Phlegmatic'] as const;
+    const aff = HU.filter(x => c!.afflicted(x)).map(x => world.settings.humours.afflictions[x]);
+    const done = st.relieved === st.turn;
+    const vice = priceOf(world.settings.living[c!.livingRank()]);
+    const late = (st.at >= (R.religion.moorfields.year - 1719) * 52 + R.religion.moorfields.week - 1);
+    return `
+      <section class="screen relief">
+        <h2><span class="phase">The humours</span>Physic for the spirits</h2>
+        <p class="lead">${aff.length ? `You are <b>${aff.join('</b> and <b>').toLowerCase()}</b>. ` : ''}An Affliction comes when a humour reaches ${world.settings.humours.peak}, and goes when it has fallen to ${world.settings.humours.relieved_at}. One relief a month.</p>
+        ${reliefNote ? `<p class="notice">${esc(reliefNote)}</p>` : ''}
+        ${done ? '<p class="small">You have sought relief once this month already.</p>' : `<div class="actions" style="align-items:flex-end">
+          <button class="btn" type="button" data-relief="vice">A night of it, ${money(vice)}</button>
+          <button class="btn" type="button" data-relief="religion">${h.confined ? 'The prison chaplain' : late ? 'The preachers at Moorfields' : 'Divine service'}</button>
+          <label class="field">A physician, a guinea <select id="physic">${HU.map(x => `<option ${h.hum[x] === Math.max(...HU.map(y => h.hum[y])) ? 'selected' : ''}>${x}</option>`).join('')}</select></label>
+          <button class="btn" type="button" data-relief="physician">Send for him</button>
+        </div>
+        <p class="small">A night of it takes two from Sanguine or Choleric, whichever is higher, and may cost you your name with the watch. Religion takes two from Melancholic, and the Church will call you Pious. The physician takes one from the humour you choose, if his physic works.</p>`}
+      </section>`;
+  }
+  function wireRelief() {
+    root.querySelectorAll<HTMLButtonElement>('[data-relief]').forEach(b => (b.onclick = () => {
+      const k = b.dataset.relief as 'vice' | 'religion' | 'physician';
+      reliefNote = c!.relieve(k, k === 'physician' ? ($<HTMLSelectElement>('#physic').value as 'Sanguine') : undefined);
+      save(); render();
+    }));
+  }
   function wireNames() {
     root.querySelectorAll<HTMLButtonElement>('[data-retire]').forEach(b => (b.onclick = () => act(() => c!.retirePersona(b.dataset.retire!))));
     const sel = document.querySelector<HTMLSelectElement>('#kind');
@@ -337,8 +375,10 @@ export function mountRun(world: World) {
         <p class="lead">The common side is free, and Melancholic rises a point a month there. A room on the master’s side costs ${money(priceOf(e.prison.room))} a week.</p>
         <div class="actions"><button class="btn" type="button" id="side">${conf.side === 'room' ? 'Go down to the common side' : 'Take a room on the master’s side'}</button></div>
       </section>
+      ${reliefHTML()}
       ${affairsHTML()}`;
     chrome.applyLongS(root);
+    wireRelief();
     root.querySelectorAll<HTMLButtonElement>('[data-v]').forEach(b => (b.onclick = () => { c!.startVenture(b.dataset.v!); save(); render(); top(); }));
     $('#idle').onclick = () => { c!.idle(); save(); render(); top(); };
     $('#side').onclick = () => act(() => c!.setSide(conf.side === 'room' ? 'common' : 'room'));
@@ -361,8 +401,8 @@ export function mountRun(world: World) {
         ${st.post.length ? `<div class="dev" style="margin-top:10px">in the post: ${st.post.map(r => `${r.from} (${dateLabel(r.at)})`).join('; ')}</div>` : ''}
       </section>
       <section class="screen">
-        <h2><span class="phase">This month</span>Three ways to make a fortune, or lose one</h2>
-        <p class="lead">Choose one Venture for the month. Each is played in five beats; the risky choices go to Fortune’s Wheel.</p>
+        <h2><span class="phase">This month</span>${st.lost ? 'A month with the curtains drawn' : offers.length === 3 ? 'Three ways to make a fortune, or lose one' : 'Ways to make a fortune, or lose one'}</h2>
+        <p class="lead">${st.lost ? 'You are hipped. Nothing will tempt you out of your room this month; your affairs, and the post, go on without you.' : `Choose one Venture for the month. Each is played in five beats; the risky choices go to Fortune’s Wheel.${c!.afflicted('Phlegmatic') ? ' You are torpid, and fewer chances come your way.' : ''}${c!.afflicted('Choleric') ? ' You are quarrelsome, and a quarrel has found you.' : ''}`}</p>
         <div class="cards">${offers.map(v => `
           <div class="card">
             <div class="cd">${esc(v.offer!.district)}</div>
@@ -374,13 +414,14 @@ export function mountRun(world: World) {
           </div>`).join('')}
           <div class="card off">
             <div class="cd">Anywhere</div>
-            <div class="ct">Idle the month</div>
-            <div class="cb">No Venture and no spin. The bills come all the same, and Phlegmatic rises.</div>
+            <div class="ct">${st.lost ? 'Let the month pass' : 'Idle the month'}</div>
+            <div class="cb">${st.lost ? 'No Venture and no spin. The bills come all the same; a lost month is not idleness, and Phlegmatic does not rise.' : 'No Venture and no spin. The bills come all the same, and Phlegmatic rises.'}</div>
             <button class="btn" type="button" id="idle">Idle</button>
           </div>
         </div>
       </section>
       ${affairsHTML()}
+      ${reliefHTML()}
       ${namesHTML()}
       <section class="screen">
         <h2><span class="phase">Your lodging</span>A ${h.lodging.room} in ${h.lodging.district}</h2>
@@ -413,7 +454,7 @@ export function mountRun(world: World) {
       if (as !== H().persona) return c!.wear(as, d, rm);
       return c!.move(d, rm) ? null : 'The bailiffs are waiting at the gate. You cannot leave the Liberty until what you owe falls below your Credit outside.';
     });
-    wireNames();
+    wireNames(); wireRelief();
     root.querySelectorAll<HTMLInputElement>('input[name=living]').forEach(r => (r.onchange = () => act(() => c!.setLiving(r.value as 'claimed' | 'pinching'))));
     wireAffairs();
     $('#retire').onclick = () => {

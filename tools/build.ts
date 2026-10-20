@@ -25,9 +25,10 @@ export const DISTRICTS = ['St Giles', 'Southwark', 'The Savoy', 'Moorfields', 'F
 const ROOTS = new Set(['flags', 'attrs', 'hum', 'purse', 'debts', 'composure', 'luck', 'exposure', 'notoriety', 'celebrity', 'spoils', 'start', 'persona', 'year', 'week', 'turn', 'origin', ...NAME_ROOTS, 'writ_amount', 'writ_money', 'creditor', 'prison', 'debts_all', 'debts_money',
   // the false self (Step 7)
   'claimed_rank', 'true_rank', 'secret', 'appearances', 'expected_next', 'lodging_district', 'equipage', 'sale_price', 'sale_money', 'circles_known']);
-const FNS = new Set(['money', 'floor', 'ceil', 'min', 'max', 'if', 'has_item', 'has_item_like', 'has_hook', 'has_tag', 'has_condition', 'has_persona', 'played', 'rumour_says', 'rank_at_least', 'known_in']);
+const FNS = new Set(['money', 'floor', 'ceil', 'min', 'max', 'if', 'has_item', 'has_item_like', 'has_hook', 'has_tag', 'has_condition', 'has_persona', 'played', 'rumour_says', 'rank_at_least', 'known_in', 'has_tag_in', 'standing']);
 
 export interface Report { errors: string[]; warnings: string[] }
+let REGISTER: Record<string, unknown> | null = null;
 
 function loadYaml(file: string) {
   const doc = YAML.parseDocument(fs.readFileSync(file, 'utf8'), { prettyErrors: true });
@@ -50,6 +51,7 @@ export function loadAll() {
   const oSchema = ajv.compile(JSON.parse(fs.readFileSync(C('schema/origins.schema.json'), 'utf8')));
   const settings = loadYaml(C('settings.yaml')) as Settings;
   if (!sSchema(settings)) report.errors.push(...sSchema.errors!.map(e => `settings.yaml ${e.instancePath} ${e.message}`));
+  REGISTER = settings.tags?.register ?? null;
   const origins = loadYaml(C('origins.yaml')) as Origin[];
   if (!oSchema(origins)) report.errors.push(...oSchema.errors!.map(e => `origins.yaml ${e.instancePath} ${e.message}`));
 
@@ -93,7 +95,7 @@ function checkRun(origins: Origin[], settings: Settings, ventures: Venture[], st
     }
   }
   // the false self (Step 7)
-  const P = settings.personas, circles = new Set(P?.circles ?? []);
+  const P = settings.personas, circles = new Set(settings.factions ?? []);
   const kinds = new Set((P?.kinds ?? []).map(k => k.id));
   for (const k of P?.kinds ?? []) {
     const at = `settings.yaml personas.kinds ${k.id}`;
@@ -103,7 +105,18 @@ function checkRun(origins: Origin[], settings: Settings, ventures: Venture[], st
     if (k.test) try { const n = compile(k.test); for (const p of paths(n)) if (!ROOTS.has(p[0])) r.errors.push(`${at}: unknown name “${p.join('.')}” in its test`); for (const c of calls(n)) if (!FNS.has(c)) r.errors.push(`${at}: unknown function ${c}()`); } catch (e) { r.errors.push(`${at}: ${(e as Error).message}`); }
     try { parseMoney(String(k.cost)); } catch (e) { r.errors.push(`${at} cost: ${(e as Error).message}`); }
   }
-  for (const c of P?.circles ?? []) if (!FACTIONS.includes(c) && c !== 'the City') r.warnings.push(`settings.yaml personas.circles: “${c}” is not a faction`);
+  for (const c of settings.factions ?? []) if (!FACTIONS.includes(c)) r.errors.push(`settings.yaml factions: “${c}” is not one of the design document's factions`);
+  // the Tag register (Step 8)
+  const reg = settings.tags?.register ?? {};
+  for (const [n, e] of Object.entries(reg)) {
+    if (e.opposite && !reg[e.opposite]) r.errors.push(`settings.yaml tags: ${n}'s opposite “${e.opposite}” is not in the register`);
+    for (const f of e.except ?? []) if (!FACTIONS.includes(f)) r.errors.push(`settings.yaml tags: ${n} excepts “${f}”, not a faction`);
+  }
+  const tagCheck = (t: string, where: string) => { const m = /^(.*) \((.+)\)$/.exec(t); if (m && !reg[m[1]]) r.warnings.push(`${where}: Tag “${m[1]}” is not in the register (settings.yaml tags)`); };
+  for (const o of origins ?? []) { o.hero?.start.tags.forEach(t => tagCheck(t, `origins.yaml ${o.id}`)); if (o.hero?.secret_out?.tag) tagCheck(o.hero.secret_out.tag, `origins.yaml ${o.id} secret_out`); }
+  tagCheck(settings.economy.savoy.tag, 'settings.yaml economy.savoy'); tagCheck(settings.humours.relief.religion.tag, 'settings.yaml humours.relief');
+  if (!ventures.some(v => v.id === settings.humours.quarrel)) r.errors.push(`settings.yaml humours.quarrel: no Venture “${settings.humours.quarrel}”`);
+  REGISTER = reg;
   for (const o of origins ?? []) {
     if (o.hero?.alias_kind && !kinds.has(o.hero.alias_kind)) r.errors.push(`origins.yaml ${o.id}: alias_kind “${o.hero.alias_kind}” is not a kind of Persona`);
     if (o.available && !o.hero?.secret_out) r.warnings.push(`origins.yaml ${o.id}: no secret_out, so its Secret costs nothing when it comes out`);
@@ -162,6 +175,7 @@ function checkVenture(v: Venture, glossary: Record<string, GlossaryEntry>, r: Re
   const tag = (t: string, where: string) => {
     const m = /\(([^)]+)\)$/.exec(t);
     if (!m || !FACTIONS.includes(m[1])) r.warnings.push(at(`${where}: Tag “${t}” should name a faction or the Town, e.g. “Rake (the Town)” (ruling D7)`));
+    else if (REGISTER && !REGISTER[t.slice(0, t.lastIndexOf(' ('))]) r.warnings.push(at(`${where}: Tag “${t}” is not in the register (settings.yaml tags)`));
   };
   const effects = (es: Effect[] | undefined, where: string) => {
     for (const e of es ?? []) {

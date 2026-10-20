@@ -33,7 +33,7 @@ start:
   celebrity: 1
   attrs: { Address: 4, Wit: 4, Nerve: 3, Constitution: 2, Countenance: 4, Learning: 3 }
   hum: { Sanguine: 1, Choleric: 1, Melancholic: 2, Phlegmatic: 1 }
-  tags: ["a Wit (the Town)"]
+  tags: ["Wit (the Town)"]
   items:
     - A gown of rose lustring, not paid for
     - Your mother’s garnets, paste in two places
